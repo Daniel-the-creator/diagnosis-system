@@ -21,12 +21,14 @@ class AdmissionController extends GetxController {
   final DischargeRepository _dischargeRepo;
   final NotificationRepository? _notificationRepo;
 
-  final RxList<AdmissionRequestModel> admissionRequests = <AdmissionRequestModel>[].obs;
+  final RxList<AdmissionRequestModel> admissionRequests =
+      <AdmissionRequestModel>[].obs;
   final RxList<WardModel> wards = <WardModel>[].obs;
   final RxList<BedModel> beds = <BedModel>[].obs;
 
   final Rx<String?> selectedWardId = Rx<String?>(null);
-  final Rx<AdmissionRequestModel?> selectedRequest = Rx<AdmissionRequestModel?>(null);
+  final Rx<AdmissionRequestModel?> selectedRequest =
+      Rx<AdmissionRequestModel?>(null);
   final Rx<BedModel?> selectedBed = Rx<BedModel?>(null);
 
   final RxBool isLoading = false.obs;
@@ -192,13 +194,15 @@ class AdmissionController extends GetxController {
           recipientId: patientId,
           recipientType: 'patient',
           title: 'Discharge Completed',
-          body: 'You have been formally discharged. Take care and follow your discharge instructions.',
+          body:
+              'You have been formally discharged. Take care and follow your discharge instructions.',
           type: 'DISCHARGE_READY',
           relatedId: disId,
         );
       }
 
-      Get.snackbar('Patient Discharged', 'Discharge record saved and bed released.');
+      Get.snackbar(
+          'Patient Discharged', 'Discharge record saved and bed released.');
       return true;
     } catch (e) {
       errorMessage.value = FirebaseErrorHandler.toMessage(e);
