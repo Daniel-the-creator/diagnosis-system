@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="diagnosis_system">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>diagnosis_system</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Preload Firebase Web Modular SDKs for FlutterFire web interop -->
+  <script type="module">
+    try {
+      const core = await import("https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js");
+      const auth = await import("https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js");
+      let firestore;
+      try {
+        firestore = await import("https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore-pipelines.js");
+      } catch (e) {
+        firestore = await import("https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js");
+      }
+      window.firebase_core = core;
+      window.firebase_auth = auth;
+      window.firebase_firestore = firestore;
+      window.firestore = firestore;
+      window.auth = auth;
+    } catch (err) {
+      console.warn("Firebase modular preload encountered an issue:", err);
+    }
+  </script>
+</head>
+<body>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
