@@ -47,25 +47,43 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
         child: Scaffold(
           backgroundColor: const Color(0xFF0F172A), // Dark high-contrast cinema canvas
           body: SafeArea(
-            child: Column(
-              children: [
-                _buildDisplayHeader(),
-                const Divider(height: 1, color: Colors.white24),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(28),
-                    child: Row(
-                      children: [
-                        // Left 60%: NOW SERVING (Prominent & High Contrast)
-                        Expanded(flex: 6, child: _buildNowServingPanel()),
-                        const SizedBox(width: 28),
-                        // Right 40%: UP NEXT
-                        Expanded(flex: 4, child: _buildUpNextPanel()),
-                      ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isNarrow = constraints.maxWidth < 900;
+                final padding = isNarrow ? 16.0 : 28.0;
+
+                return Column(
+                  children: [
+                    _buildDisplayHeader(isNarrow),
+                    const Divider(height: 1, color: Colors.white24),
+                    Expanded(
+                      child: isNarrow
+                          ? SingleChildScrollView(
+                              padding: EdgeInsets.all(padding),
+                              child: Column(
+                                children: [
+                                  _buildNowServingPanel(isNarrow),
+                                  const SizedBox(height: 18),
+                                  _buildUpNextPanel(isNarrow),
+                                ],
+                              ),
+                            )
+                          : Padding(
+                              padding: EdgeInsets.all(padding),
+                              child: Row(
+                                children: [
+                                  // Left 60%: NOW SERVING (Prominent & High Contrast)
+                                  Expanded(flex: 6, child: _buildNowServingPanel(isNarrow)),
+                                  const SizedBox(width: 28),
+                                  // Right 40%: UP NEXT
+                                  Expanded(flex: 4, child: _buildUpNextPanel(isNarrow)),
+                                ],
+                              ),
+                            ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
         ),
@@ -73,7 +91,114 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     );
   }
 
-  Widget _buildDisplayHeader() {
+  Widget _buildDisplayHeader(bool isNarrow) {
+    if (isNarrow) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        color: const Color(0xFF1E293B),
+        child: Column(
+          children: [
+            // Top Bar: Back button, Title, Mute toggle, Clock
+            Row(
+              children: [
+                IconButton(
+                  tooltip: 'Exit Display',
+                  onPressed: _exitDisplay,
+                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.all(8),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        'CareFlow HMS',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        'Queue & Waiting Room Display',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 11,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Obx(() {
+                  final isAudioOn = _ctrl.audioEnabled.value;
+                  return IconButton(
+                    tooltip: isAudioOn ? 'Mute Announcements' : 'Enable Announcements',
+                    onPressed: _ctrl.toggleAudio,
+                    icon: Icon(
+                      isAudioOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                      color: isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
+                      size: 22,
+                    ),
+                  );
+                }),
+                const SizedBox(width: 4),
+                StreamBuilder<DateTime>(
+                  stream: _clockStream,
+                  builder: (context, snapshot) {
+                    final now = snapshot.data ?? DateTime.now();
+                    return Text(
+                      DateFormat.jm().format(now),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFeatures: [FontFeature.tabularFigures()],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Horizontally scrollable department filters on mobile
+            Obx(() {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    _buildDeptChip('ALL', 'All Units'),
+                    const SizedBox(width: 8),
+                    _buildDeptChip('GEN', 'Doctor OPD'),
+                    const SizedBox(width: 8),
+                    _buildDeptChip('LAB', 'Laboratory'),
+                    const SizedBox(width: 8),
+                    _buildDeptChip('XR', 'X-Ray'),
+                    const SizedBox(width: 8),
+                    _buildDeptChip('SCAN', 'Ultrasound'),
+                    const SizedBox(width: 8),
+                    _buildDeptChip('PHARM', 'Pharmacy'),
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
+      );
+    }
+
+    // Wide screen header (Desktop & TV Screens)
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       color: const Color(0xFF1E293B),
@@ -127,7 +252,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'MediFlow HMS',
+                    'CareFlow HMS',
                     style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                   ),
                   Text(
@@ -195,7 +320,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                       Text(
                         DateFormat.yMMMMEEEEd().format(now),
                         style: TextStyle(
-                            color: Colors.white.withOpacity(0.7), fontSize: 13),
+                            color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
                       ),
                     ],
                   );
@@ -226,7 +351,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     );
   }
 
-  Widget _buildNowServingPanel() {
+  Widget _buildNowServingPanel(bool isNarrow) {
     return Obx(() {
       final serving = _ctrl.currentlyServing.value;
       final isFlash = _ctrl.hasNewCall.value;
@@ -235,23 +360,23 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
         duration: const Duration(milliseconds: 400),
         decoration: BoxDecoration(
           color: isFlash ? const Color(0xFF1E3A8A) : const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(isNarrow ? 18 : 24),
           border: Border.all(
             color: isFlash ? const Color(0xFF60A5FA) : const Color(0xFF334155),
             width: isFlash ? 4 : 2,
           ),
           boxShadow: isFlash
               ? [
-                  BoxShadow(color: const Color(0xFF3B82F6).withOpacity(0.5), blurRadius: 30, spreadRadius: 4),
+                  BoxShadow(color: const Color(0xFF3B82F6).withValues(alpha: 0.5), blurRadius: 30, spreadRadius: 4),
                 ]
               : null,
         ),
-        padding: const EdgeInsets.all(36),
+        padding: EdgeInsets.all(isNarrow ? 20 : 36),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              padding: EdgeInsets.symmetric(horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 8 : 10),
               decoration: BoxDecoration(
                 color: isFlash ? const Color(0xFF22C55E) : const Color(0xFF0284C7),
                 borderRadius: BorderRadius.circular(30),
@@ -259,22 +384,28 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(isFlash ? Icons.campaign_rounded : Icons.person_pin_rounded, color: Colors.white, size: 24),
-                  const SizedBox(width: 10),
+                  Icon(isFlash ? Icons.campaign_rounded : Icons.person_pin_rounded, color: Colors.white, size: isNarrow ? 18 : 24),
+                  const SizedBox(width: 8),
                   Text(
                     isFlash ? 'NOW CALLING' : 'NOW SERVING',
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isNarrow ? 14 : 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: isNarrow ? 20 : 32),
             if (serving == null) ...[
-              const Icon(Icons.hourglass_empty_rounded, color: Colors.white38, size: 80),
-              const SizedBox(height: 16),
-              const Text(
+              Icon(Icons.hourglass_empty_rounded, color: Colors.white38, size: isNarrow ? 56 : 80),
+              const SizedBox(height: 14),
+              Text(
                 'Waiting for Next Patient',
-                style: TextStyle(color: Colors.white60, fontSize: 26, fontWeight: FontWeight.w500),
+                style: TextStyle(color: Colors.white60, fontSize: isNarrow ? 18 : 26, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
               ),
             ] else ...[
               FittedBox(
@@ -282,30 +413,41 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 child: Text(
                   serving.displayQueueNumber,
                   maxLines: 1,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 88,
+                    fontSize: isNarrow ? 54 : 88,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                     height: 1,
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: isNarrow ? 14 : 24),
               Text(
                 serving.departmentName.toUpperCase(),
-                style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 1),
+                style: TextStyle(
+                  color: const Color(0xFF38BDF8),
+                  fontSize: isNarrow ? 17 : 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: isNarrow ? 12 : 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: EdgeInsets.symmetric(horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 10 : 12),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(isNarrow ? 12 : 16),
                 ),
                 child: Text(
                   _formatRoomText(serving.assignedRoomNumber ?? serving.assignedRoomName ?? 'Consultation Room'),
-                  style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isNarrow ? 15 : 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
@@ -324,101 +466,114 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     return 'Please proceed to Room $trimmed';
   }
 
-  Widget _buildUpNextPanel() {
+  Widget _buildUpNextPanel(bool isNarrow) {
     return Obx(() {
       final upcoming = _ctrl.upNextList;
 
       return Container(
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(isNarrow ? 18 : 24),
           border: Border.all(color: const Color(0xFF334155), width: 2),
         ),
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isNarrow ? 18 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF38BDF8), size: 20),
-                const SizedBox(width: 10),
+                const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF38BDF8), size: 18),
+                const SizedBox(width: 8),
                 const Text(
                   'UP NEXT',
-                  style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2),
                 ),
                 const Spacer(),
                 Text(
                   '${upcoming.length} in queue',
-                  style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 14),
             const Divider(color: Color(0xFF334155), height: 1),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             if (upcoming.isEmpty)
-              const Expanded(
-                child: Center(
-                  child: Text('No upcoming patients in line.', style: TextStyle(color: Colors.white38, fontSize: 16)),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: isNarrow ? 24 : 40),
+                child: const Center(
+                  child: Text('No upcoming patients in line.', style: TextStyle(color: Colors.white38, fontSize: 15)),
                 ),
+              )
+            else if (isNarrow)
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: upcoming.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                itemBuilder: (ctx, idx) => _buildUpNextItem(upcoming[idx], idx),
               )
             else
               Expanded(
                 child: ListView.separated(
                   itemCount: upcoming.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (ctx, idx) {
-                    final item = upcoming[idx];
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF334155)),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withOpacity(0.2),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Center(
-                                  child: Text('${idx + 1}', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Text(
-                                item.displayQueueNumber,
-                                style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF334155),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              item.departmentCode,
-                              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                  itemBuilder: (ctx, idx) => _buildUpNextItem(upcoming[idx], idx),
                 ),
               ),
           ],
         ),
       );
     });
+  }
+
+  Widget _buildUpNextItem(dynamic item, int idx) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF334155)),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '${idx + 1}',
+                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                item.displayQueueNumber,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: const Color(0xFF334155),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              item.departmentCode,
+              style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
