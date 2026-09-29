@@ -138,24 +138,27 @@ class _OperationsOverviewTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final isSmall = constraints.maxWidth < 700;
+      final width = constraints.maxWidth;
+      final isMobile = width < 600;
+      final padding = width < 420 ? 12.0 : (isMobile ? 16.0 : 28.0);
+
       return SingleChildScrollView(
-        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        padding: EdgeInsets.all(padding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Welcome Banner ──────────────────────────────────
             _OperationsHeader(),
-            const SizedBox(height: 24),
+            SizedBox(height: isMobile ? 18 : 24),
 
             // ── 12 Real-Time Operational KPIs ───────────────────
             const Text('Real-Time Hospital Vitals', style: AppTextStyles.titleLarge),
             const SizedBox(height: 4),
             const Text('Live operational census continuously updated across all active units',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-            const SizedBox(height: 16),
+            SizedBox(height: isMobile ? 12 : 16),
             Obx(() => _buildRealtimeKpiGrid(context, ctrl)),
-            const SizedBox(height: 32),
+            SizedBox(height: isMobile ? 24 : 32),
 
             // ── Pending Staff Approvals ─────────────────────────
             Obx(() => _PendingStaffSection(
@@ -166,7 +169,7 @@ class _OperationsOverviewTab extends StatelessWidget {
 
             // ── Quick Department Access ─────────────────────────
             const Text('Operational Stations & Command Units', style: AppTextStyles.titleLarge),
-            const SizedBox(height: 16),
+            SizedBox(height: isMobile ? 12 : 16),
             _QuickActions(),
           ],
         ),
@@ -192,23 +195,24 @@ class _OperationsOverviewTab extends StatelessWidget {
 
     return LayoutBuilder(builder: (ctx, constraints) {
       final width = constraints.maxWidth;
-      final crossCount = width > 1200
+      final crossCount = width > 1150
           ? 4
           : (width > 800
               ? 3
-              : (width > 520 ? 2 : 1));
-      final childAspectRatio = width > 1200
+              : (width > 320 ? 2 : 1));
+      final childAspectRatio = width > 1150
           ? 1.55
           : (width > 800
               ? 1.45
-              : (width > 520 ? 1.6 : 2.5));
+              : (width > 320 ? 1.30 : 2.4));
+      final spacing = width > 600 ? 14.0 : 10.0;
 
       return GridView.count(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: crossCount,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+        crossAxisSpacing: spacing,
+        mainAxisSpacing: spacing,
         childAspectRatio: childAspectRatio,
         children: kpis
             .map((c) => StatCardWidget(
@@ -1710,23 +1714,56 @@ class _QuickActions extends StatelessWidget {
       (Icons.hotel_rounded, 'Wards & Admissions', const Color(0xFF1565C0), AppRoutes.admissionDashboard),
       (Icons.tv_rounded, 'Queue Display TV', const Color(0xFF0284C7), AppRoutes.digitalQueueDisplay),
     ];
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: actions
-          .map((a) => OutlinedButton.icon(
-                onPressed: () => Get.offNamed(a.$4),
-                icon: Icon(a.$1, color: a.$3, size: 18),
-                label: Text(a.$2),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: a.$3,
-                  side: BorderSide(color: a.$3.withValues(alpha: 0.4)),
-                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ))
-          .toList(),
-    );
+
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 650;
+      if (isSmall) {
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 2.7,
+          children: actions.map((a) {
+            return OutlinedButton.icon(
+              onPressed: () => Get.offNamed(a.$4),
+              icon: Icon(a.$1, color: a.$3, size: 16),
+              label: Text(
+                a.$2,
+                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: a.$3),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: a.$3,
+                side: BorderSide(color: a.$3.withValues(alpha: 0.35)),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            );
+          }).toList(),
+        );
+      }
+
+      return Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: actions
+            .map((a) => OutlinedButton.icon(
+                  onPressed: () => Get.offNamed(a.$4),
+                  icon: Icon(a.$1, color: a.$3, size: 18),
+                  label: Text(a.$2),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: a.$3,
+                    side: BorderSide(color: a.$3.withValues(alpha: 0.4)),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ))
+            .toList(),
+      );
+    });
   }
 }
 
@@ -1747,10 +1784,12 @@ class _PendingStaffSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 10,
+          runSpacing: 6,
           children: [
             const Text('Pending Staff Verifications', style: AppTextStyles.titleLarge),
-            const SizedBox(width: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(12)),

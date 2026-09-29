@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
 
+/// Clean, responsive stat card widget designed to scale gracefully from mobile phones (2-column grids)
+/// to wide desktop dashboards without text clipping or vertical overflow.
 class StatCardWidget extends StatelessWidget {
   const StatCardWidget({
     super.key,
@@ -27,109 +28,93 @@ class StatCardWidget extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.border),
           boxShadow: AppColors.cardShadow,
         ),
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final isCompact = constraints.maxHeight < 155 || constraints.maxWidth < 175;
-
-            if (isCompact) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(icon, color: color, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(value, style: AppTextStyles.titleLarge.copyWith(fontWeight: FontWeight.bold)),
-                          ),
-                          Text(
-                            title,
-                            style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary, fontSize: 11),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (subtitle != null)
-                            Text(
-                              subtitle!,
-                              style: AppTextStyles.caption.copyWith(color: color, fontSize: 10, fontWeight: FontWeight.w500),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                        ],
-                      ),
-                    ),
-                    if (onTap != null)
-                      const Icon(Icons.arrow_forward_ios, size: 12, color: AppColors.textHint),
-                  ],
-                ),
-              );
-            }
+            final isSmall = constraints.maxWidth < 195 || constraints.maxHeight < 140;
 
             return Padding(
-              padding: const EdgeInsets.all(18),
+              padding: EdgeInsets.all(isSmall ? 12 : 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  // Top Row: Icon + optional badge/indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 44,
-                        height: 44,
+                        width: isSmall ? 32 : 40,
+                        height: isSmall ? 32 : 40,
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(isSmall ? 8 : 10),
                         ),
-                        child: Icon(icon, color: color, size: 22),
+                        child: Icon(icon, color: color, size: isSmall ? 18 : 22),
                       ),
-                      if (onTap != null)
-                        const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.textHint),
+                      if (subtitle != null)
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            margin: const EdgeInsets.only(left: 6),
+                            decoration: BoxDecoration(
+                              color: color.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              subtitle!,
+                              style: TextStyle(
+                                color: color,
+                                fontSize: isSmall ? 9.5 : 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        )
+                      else if (onTap != null)
+                        Icon(Icons.arrow_forward_ios, size: isSmall ? 12 : 14, color: AppColors.textHint),
                     ],
                   ),
-                  const SizedBox(height: 10),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(value, style: AppTextStyles.statValue),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    title,
-                    style: AppTextStyles.statLabel,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle!,
-                      style: AppTextStyles.caption.copyWith(
-                        color: color,
-                        fontWeight: FontWeight.w500,
+
+                  // Middle & Bottom: Value and Title
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          value,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: isSmall ? 22 : 28,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                            height: 1.1,
+                          ),
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                      const SizedBox(height: 3),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: isSmall ? 11 : 13,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.textSecondary,
+                          height: 1.2,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ],
               ),
             );
