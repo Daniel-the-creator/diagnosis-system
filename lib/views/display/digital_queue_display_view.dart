@@ -10,7 +10,8 @@ class DigitalQueueDisplayView extends StatefulWidget {
   const DigitalQueueDisplayView({super.key});
 
   @override
-  State<DigitalQueueDisplayView> createState() => _DigitalQueueDisplayViewState();
+  State<DigitalQueueDisplayView> createState() =>
+      _DigitalQueueDisplayViewState();
 }
 
 class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
@@ -25,7 +26,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     } else {
       _ctrl = Get.put(DigitalQueueDisplayController(Get.find()));
     }
-    _clockStream = Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
+    _clockStream =
+        Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
   }
 
   void _exitDisplay() {
@@ -45,7 +47,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
       child: Focus(
         autofocus: true,
         child: Scaffold(
-          backgroundColor: const Color(0xFF0F172A), // Dark high-contrast cinema canvas
+          backgroundColor:
+              const Color(0xFF0F172A), // Dark high-contrast cinema canvas
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -73,10 +76,14 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                               child: Row(
                                 children: [
                                   // Left 60%: NOW SERVING (Prominent & High Contrast)
-                                  Expanded(flex: 6, child: _buildNowServingPanel(isNarrow)),
+                                  Expanded(
+                                      flex: 6,
+                                      child: _buildNowServingPanel(isNarrow)),
                                   const SizedBox(width: 28),
                                   // Right 40%: UP NEXT
-                                  Expanded(flex: 4, child: _buildUpNextPanel(isNarrow)),
+                                  Expanded(
+                                      flex: 4,
+                                      child: _buildUpNextPanel(isNarrow)),
                                 ],
                               ),
                             ),
@@ -104,10 +111,12 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 IconButton(
                   tooltip: 'Exit Display',
                   onPressed: _exitDisplay,
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                  icon: const Icon(Icons.arrow_back_rounded,
+                      color: Colors.white, size: 20),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.white.withValues(alpha: 0.12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     padding: const EdgeInsets.all(8),
                   ),
                 ),
@@ -143,11 +152,16 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 Obx(() {
                   final isAudioOn = _ctrl.audioEnabled.value;
                   return IconButton(
-                    tooltip: isAudioOn ? 'Mute Announcements' : 'Enable Announcements',
+                    tooltip: isAudioOn
+                        ? 'Mute Announcements'
+                        : 'Enable Announcements',
                     onPressed: _ctrl.toggleAudio,
                     icon: Icon(
-                      isAudioOn ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                      color: isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
+                      isAudioOn
+                          ? Icons.volume_up_rounded
+                          : Icons.volume_off_rounded,
+                      color:
+                          isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
                       size: 22,
                     ),
                   );
@@ -214,7 +228,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                   borderRadius: BorderRadius.circular(10),
                   onTap: _exitDisplay,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
@@ -223,7 +238,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.arrow_back_rounded, color: Colors.white, size: 20),
+                        Icon(Icons.arrow_back_rounded,
+                            color: Colors.white, size: 20),
                         SizedBox(width: 8),
                         Text(
                           'Exit Display',
@@ -245,7 +261,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 28),
+                child: const Icon(Icons.local_hospital_rounded,
+                    color: Colors.white, size: 28),
               ),
               const SizedBox(width: 16),
               Column(
@@ -253,11 +270,17 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 children: [
                   const Text(
                     'CareFlow HMS',
-                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5),
                   ),
                   Text(
                     'Patient Queue & Waiting Room Display',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12),
+                    style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontSize: 12),
                   ),
                 ],
               ),
@@ -295,8 +318,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                     isAudioOn
                         ? Icons.volume_up_rounded
                         : Icons.volume_off_rounded,
-                    color:
-                        isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
+                    color: isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
                     size: 26,
                   ),
                 );
@@ -320,7 +342,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                       Text(
                         DateFormat.yMMMMEEEEd().format(now),
                         style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 13),
                       ),
                     ],
                   );
@@ -345,7 +368,10 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
         ),
         child: Text(
           label,
-          style: TextStyle(color: Colors.white, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, fontSize: 12),
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: 12),
         ),
       ),
     );
@@ -367,7 +393,10 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
           ),
           boxShadow: isFlash
               ? [
-                  BoxShadow(color: const Color(0xFF3B82F6).withValues(alpha: 0.5), blurRadius: 30, spreadRadius: 4),
+                  BoxShadow(
+                      color: const Color(0xFF3B82F6).withValues(alpha: 0.5),
+                      blurRadius: 30,
+                      spreadRadius: 4),
                 ]
               : null,
         ),
@@ -376,15 +405,22 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.symmetric(horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 8 : 10),
+              padding: EdgeInsets.symmetric(
+                  horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 8 : 10),
               decoration: BoxDecoration(
-                color: isFlash ? const Color(0xFF22C55E) : const Color(0xFF0284C7),
+                color:
+                    isFlash ? const Color(0xFF22C55E) : const Color(0xFF0284C7),
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(isFlash ? Icons.campaign_rounded : Icons.person_pin_rounded, color: Colors.white, size: isNarrow ? 18 : 24),
+                  Icon(
+                      isFlash
+                          ? Icons.campaign_rounded
+                          : Icons.person_pin_rounded,
+                      color: Colors.white,
+                      size: isNarrow ? 18 : 24),
                   const SizedBox(width: 8),
                   Text(
                     isFlash ? 'NOW CALLING' : 'NOW SERVING',
@@ -400,11 +436,15 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
             ),
             SizedBox(height: isNarrow ? 20 : 32),
             if (serving == null) ...[
-              Icon(Icons.hourglass_empty_rounded, color: Colors.white38, size: isNarrow ? 56 : 80),
+              Icon(Icons.hourglass_empty_rounded,
+                  color: Colors.white38, size: isNarrow ? 56 : 80),
               const SizedBox(height: 14),
               Text(
                 'Waiting for Next Patient',
-                style: TextStyle(color: Colors.white60, fontSize: isNarrow ? 18 : 26, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: isNarrow ? 18 : 26,
+                    fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
             ] else ...[
@@ -435,13 +475,17 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
               ),
               SizedBox(height: isNarrow ? 12 : 16),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 10 : 12),
+                padding: EdgeInsets.symmetric(
+                    horizontal: isNarrow ? 16 : 24,
+                    vertical: isNarrow ? 10 : 12),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(isNarrow ? 12 : 16),
                 ),
                 child: Text(
-                  _formatRoomText(serving.assignedRoomNumber ?? serving.assignedRoomName ?? 'Consultation Room'),
+                  _formatRoomText(serving.assignedRoomNumber ??
+                      serving.assignedRoomName ??
+                      'Consultation Room'),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: isNarrow ? 15 : 22,
@@ -482,16 +526,22 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
           children: [
             Row(
               children: [
-                const Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF38BDF8), size: 18),
+                const Icon(Icons.arrow_forward_ios_rounded,
+                    color: Color(0xFF38BDF8), size: 18),
                 const SizedBox(width: 8),
                 const Text(
                   'UP NEXT',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2),
                 ),
                 const Spacer(),
                 Text(
                   '${upcoming.length} in queue',
-                  style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+                  style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
                 ),
               ],
             ),
@@ -502,7 +552,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: isNarrow ? 24 : 40),
                 child: const Center(
-                  child: Text('No upcoming patients in line.', style: TextStyle(color: Colors.white38, fontSize: 15)),
+                  child: Text('No upcoming patients in line.',
+                      style: TextStyle(color: Colors.white38, fontSize: 15)),
                 ),
               )
             else if (isNarrow)
@@ -518,7 +569,8 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 child: ListView.separated(
                   itemCount: upcoming.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (ctx, idx) => _buildUpNextItem(upcoming[idx], idx),
+                  itemBuilder: (ctx, idx) =>
+                      _buildUpNextItem(upcoming[idx], idx),
                 ),
               ),
           ],
@@ -550,14 +602,20 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 child: Center(
                   child: Text(
                     '${idx + 1}',
-                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+                    style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Text(
                 item.displayQueueNumber,
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -569,7 +627,10 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
             ),
             child: Text(
               item.departmentCode,
-              style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600),
             ),
           ),
         ],
