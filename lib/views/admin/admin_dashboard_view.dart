@@ -37,9 +37,10 @@ class AdminDashboardView extends StatelessWidget {
             // ── Tab Bar Navigation ────────────────────────────────
             Container(
               color: AppColors.surface,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: TabBar(
                 isScrollable: true,
+                tabAlignment: TabAlignment.start,
                 labelColor: AppColors.primary,
                 unselectedLabelColor: AppColors.textSecondary,
                 indicatorColor: AppColors.primary,
@@ -76,6 +77,55 @@ class AdminDashboardView extends StatelessWidget {
       ),
     );
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESPONSIVE SECTION HEADER HELPER
+// ─────────────────────────────────────────────────────────────────────────────
+Widget _buildAdminSectionHeader({
+  required BuildContext context,
+  required String title,
+  required String subtitle,
+  Widget? action,
+}) {
+  return LayoutBuilder(
+    builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 650;
+      if (isSmall) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: AppTextStyles.titleLarge),
+            const SizedBox(height: 4),
+            Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            if (action != null) ...[
+              const SizedBox(height: 12),
+              action,
+            ],
+          ],
+        );
+      }
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: AppTextStyles.titleLarge),
+                const SizedBox(height: 4),
+                Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              ],
+            ),
+          ),
+          if (action != null) ...[
+            const SizedBox(width: 16),
+            action,
+          ],
+        ],
+      );
+    },
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -141,11 +191,17 @@ class _OperationsOverviewTab extends StatelessWidget {
     ];
 
     return LayoutBuilder(builder: (ctx, constraints) {
-      final crossCount = constraints.maxWidth > 1200
+      final width = constraints.maxWidth;
+      final crossCount = width > 1200
           ? 4
-          : (constraints.maxWidth > 850
+          : (width > 800
               ? 3
-              : (constraints.maxWidth > 550 ? 2 : 1));
+              : (width > 520 ? 2 : 1));
+      final childAspectRatio = width > 1200
+          ? 1.55
+          : (width > 800
+              ? 1.45
+              : (width > 520 ? 1.6 : 2.5));
 
       return GridView.count(
         shrinkWrap: true,
@@ -153,7 +209,7 @@ class _OperationsOverviewTab extends StatelessWidget {
         crossAxisCount: crossCount,
         crossAxisSpacing: 14,
         mainAxisSpacing: 14,
-        childAspectRatio: 1.55,
+        childAspectRatio: childAspectRatio,
         children: kpis
             .map((c) => StatCardWidget(
                   title: c.$1,
@@ -172,68 +228,132 @@ class _OperationsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: AppColors.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.25),
-            blurRadius: 20,
-            offset: const Offset(0, 6),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmall = constraints.maxWidth < 650;
+        return Container(
+          padding: EdgeInsets.all(isSmall ? 16 : 24),
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.25),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white24,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 36),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Hospital Operations & Administration Centre',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+          child: isSmall
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 28),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Hospital Operations Centre',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                DateFormat.yMMMMEEEEd().format(now),
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 12,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
+                        icon: const Icon(Icons.tv_rounded, size: 18),
+                        label: const Text('Open TV Queue Display', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      ),
+                    ),
+                  ],
+                )
+              : Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 36),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Hospital Operations & Administration Centre',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            DateFormat.yMMMMEEEEd().format(now),
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 13,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
+                      icon: const Icon(Icons.tv_rounded, size: 18),
+                      label: const Text('Open TV Queue Display', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  DateFormat.yMMMMEEEEd().format(now),
-                  style: const TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 13,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
-            icon: const Icon(Icons.tv_rounded, size: 18),
-            label: const Text('Open TV Queue Display', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -247,84 +367,78 @@ class _DepartmentQueuesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Department Queue Monitoring', style: AppTextStyles.titleLarge),
-                  SizedBox(height: 4),
-                  Text('Real-time queue throughput, waiting counts, and calculated service durations',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                ],
-              ),
-              OutlinedButton.icon(
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAdminSectionHeader(
+              context: context,
+              title: 'Department Queue Monitoring',
+              subtitle: 'Real-time queue throughput, waiting counts, and calculated service durations',
+              action: OutlinedButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
                 icon: const Icon(Icons.tv_rounded, size: 16),
                 label: const Text('TV Display Mode'),
               ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Obx(() {
-            final stats = ctrl.departmentStats;
-            if (stats.isEmpty) {
-              return const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()));
-            }
+            ),
+            const SizedBox(height: 24),
+            Obx(() {
+              final stats = ctrl.departmentStats;
+              if (stats.isEmpty) {
+                return const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()));
+              }
 
-            final items = [
-              ('REG', 'Registration Desk', Icons.app_registration, AppColors.secondary, AppRoutes.registrationDashboard),
-              ('DOC', 'Consultation (Doctors)', Icons.medical_services, AppColors.primary, AppRoutes.doctorDashboard),
-              ('LAB', 'Laboratory Unit', Icons.biotech, const Color(0xFF673AB7), AppRoutes.diagnosticDashboard),
-              ('XR', 'X-Ray Department', Icons.camera_indoor, const Color(0xFF00897B), AppRoutes.diagnosticDashboard),
-              ('SCAN', 'Ultrasound & Scan', Icons.radar, const Color(0xFF1565C0), AppRoutes.diagnosticDashboard),
-              ('ACC', 'Billing & Accounts', Icons.receipt_long, const Color(0xFF00897B), AppRoutes.accountDashboard),
-              ('PHM', 'Pharmacy & Dispensary', Icons.medication, const Color(0xFFE65100), AppRoutes.pharmacyDashboard),
-              ('ADM', 'Admissions & Wards', Icons.hotel, const Color(0xFF283593), AppRoutes.admissionDashboard),
-              ('DIS', 'Discharge Lounge', Icons.exit_to_app, const Color(0xFF43A047), AppRoutes.admissionDashboard),
-            ];
+              final items = [
+                ('REG', 'Registration Desk', Icons.app_registration, AppColors.secondary, AppRoutes.registrationDashboard),
+                ('DOC', 'Consultation (Doctors)', Icons.medical_services, AppColors.primary, AppRoutes.doctorDashboard),
+                ('LAB', 'Laboratory Unit', Icons.biotech, const Color(0xFF673AB7), AppRoutes.diagnosticDashboard),
+                ('XR', 'X-Ray Department', Icons.camera_indoor, const Color(0xFF00897B), AppRoutes.diagnosticDashboard),
+                ('SCAN', 'Ultrasound & Scan', Icons.radar, const Color(0xFF1565C0), AppRoutes.diagnosticDashboard),
+                ('ACC', 'Billing & Accounts', Icons.receipt_long, const Color(0xFF00897B), AppRoutes.accountDashboard),
+                ('PHM', 'Pharmacy & Dispensary', Icons.medication, const Color(0xFFE65100), AppRoutes.pharmacyDashboard),
+                ('ADM', 'Admissions & Wards', Icons.hotel, const Color(0xFF283593), AppRoutes.admissionDashboard),
+                ('DIS', 'Discharge Lounge', Icons.exit_to_app, const Color(0xFF43A047), AppRoutes.admissionDashboard),
+              ];
 
-            return LayoutBuilder(builder: (ctx, constraints) {
-              final crossCount = constraints.maxWidth > 1100 ? 3 : (constraints.maxWidth > 700 ? 2 : 1);
-              final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
+              return LayoutBuilder(builder: (ctx, constraints) {
+                final crossCount = constraints.maxWidth > 1100 ? 3 : (constraints.maxWidth > 700 ? 2 : 1);
+                final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
 
-              return Wrap(
-                spacing: 16,
-                runSpacing: 16,
-                children: items.map((tuple) {
-                  final stat = stats[tuple.$1] ??
-                      DepartmentQueueStats(
-                        departmentCode: tuple.$1,
-                        departmentName: tuple.$2,
-                        waitingCount: 0,
-                        inServiceCount: 0,
-                        completedCount: 0,
-                        avgWaitingMinutes: 0.0,
-                        avgServiceMinutes: 0.0,
-                      );
+                return Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: items.map((tuple) {
+                    final stat = stats[tuple.$1] ??
+                        DepartmentQueueStats(
+                          departmentCode: tuple.$1,
+                          departmentName: tuple.$2,
+                          waitingCount: 0,
+                          inServiceCount: 0,
+                          completedCount: 0,
+                          avgWaitingMinutes: 0.0,
+                          avgServiceMinutes: 0.0,
+                        );
 
-                  return SizedBox(
-                    width: itemWidth,
-                    child: _DepartmentQueueCard(
-                      stats: stat,
-                      icon: tuple.$3,
-                      accentColor: tuple.$4,
-                      onDrillDown: () => Get.toNamed(tuple.$5),
-                    ),
-                  );
-                }).toList(),
-              );
-            });
-          }),
-        ],
-      ),
-    );
+                    return SizedBox(
+                      width: itemWidth,
+                      child: _DepartmentQueueCard(
+                        stats: stat,
+                        icon: tuple.$3,
+                        accentColor: tuple.$4,
+                        onDrillDown: () => Get.toNamed(tuple.$5),
+                      ),
+                    );
+                  }).toList(),
+                );
+              });
+            }),
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -366,27 +480,32 @@ class _DepartmentQueueCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: accentColor.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(10),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: accentColor.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(icon, color: accentColor, size: 22),
                           ),
-                          child: Icon(icon, color: accentColor, size: 22),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(stats.departmentName, style: AppTextStyles.titleMedium),
-                            Text('Code: ${stats.departmentCode}',
-                                style: const TextStyle(fontSize: 11, color: AppColors.textHint)),
-                          ],
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(stats.departmentName, style: AppTextStyles.titleMedium, overflow: TextOverflow.ellipsis),
+                                Text('Code: ${stats.departmentCode}',
+                                    style: const TextStyle(fontSize: 11, color: AppColors.textHint)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textHint),
                   ],
                 ),
@@ -407,11 +526,14 @@ class _DepartmentQueueCard extends StatelessWidget {
                 const Divider(height: 1),
                 const SizedBox(height: 12),
 
-                // Timestamp-Calculated Timing
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Timestamp-Calculated Timing (Wrap protects against overflow on mobile)
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.spaceBetween,
                   children: [
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.schedule, size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
@@ -420,6 +542,7 @@ class _DepartmentQueueCard extends StatelessWidget {
                       ],
                     ),
                     Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(Icons.timer_outlined, size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
@@ -460,269 +583,32 @@ class _AnalyticsTab extends StatelessWidget {
     final auth = Get.find<AuthController>();
     final canViewFinancials = auth.isAdmin || auth.isAccountOfficer;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Filter Chips (Today, 7 days, 30 days, 3 months, 6 months, 1 year, Custom)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Executive Analytics & Volume Intelligence', style: AppTextStyles.titleLarge),
-                  SizedBox(height: 4),
-                  Text('Calculated duration breakdowns, throughput trends, and resource utilization',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                ],
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Filter Chips (Today, 7 days, 30 days, 3 months, 1 year)
+            _buildAdminSectionHeader(
+              context: context,
+              title: 'Executive Analytics & Volume Intelligence',
+              subtitle: 'Calculated duration breakdowns, throughput trends, and resource utilization',
+              action: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: _buildFilterChips(ctrl),
               ),
-              _buildFilterChips(ctrl),
-            ],
-          ),
-          const SizedBox(height: 28),
+            ),
+            const SizedBox(height: 24),
 
-          // ── Timing Analytics Section ──────────────────────────
-          Obx(() {
-            final timings = ctrl.waitingBreakdown.value;
-            if (timings == null) return const SizedBox.shrink();
-
-            return Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.divider),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Timestamp-Calculated Journey Times', style: AppTextStyles.titleMedium),
-                  const SizedBox(height: 4),
-                  const Text('Evaluated automatically from queue item transition timestamps',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildTimerBadge('Overall Avg Wait', '${timings.overallAvgWaitMinutes} min', Icons.hourglass_empty, AppColors.warning),
-                      _buildTimerBadge('Overall Avg Service', '${timings.overallAvgServiceMinutes} min', Icons.medical_services_outlined, AppColors.secondary),
-                      _buildTimerBadge('Avg Total Journey', '${timings.overallAvgJourneyMinutes} min', Icons.route_rounded, AppColors.primary),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }),
-          const SizedBox(height: 28),
-
-          // ── Charts Row (fl_chart) ─────────────────────────────
-          Obx(() {
-            final vol = ctrl.volumeData.value;
-            if (vol == null) return const Center(child: CircularProgressIndicator());
-
-            return LayoutBuilder(builder: (ctx, constraints) {
-              final isWide = constraints.maxWidth > 900;
-              return Flex(
-                direction: isWide ? Axis.horizontal : Axis.vertical,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Left: Patient Priority Distribution (Pie Chart)
-                  Expanded(
-                    flex: isWide ? 5 : 0,
-                    child: Container(
-                      height: 340,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.divider),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Priority Volume Distribution', style: AppTextStyles.titleMedium),
-                          const SizedBox(height: 16),
-                          Expanded(
-                            child: PieChart(
-                              PieChartData(
-                                sectionsSpace: 3,
-                                centerSpaceRadius: 40,
-                                sections: [
-                                  PieChartSectionData(
-                                    color: AppColors.primary,
-                                    value: (vol.emergencyVsRegular['REGULAR'] ?? 1).toDouble(),
-                                    title: 'Reg',
-                                    radius: 50,
-                                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                  PieChartSectionData(
-                                    color: AppColors.warning,
-                                    value: (vol.emergencyVsRegular['URGENT'] ?? 0).toDouble(),
-                                    title: 'Urg',
-                                    radius: 50,
-                                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                  PieChartSectionData(
-                                    color: AppColors.emergency,
-                                    value: (vol.emergencyVsRegular['EMERGENCY'] ?? 0).toDouble(),
-                                    title: 'Emg',
-                                    radius: 50,
-                                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                  PieChartSectionData(
-                                    color: Colors.purple,
-                                    value: (vol.emergencyVsRegular['CRITICAL_EMERGENCY'] ?? 0).toDouble(),
-                                    title: 'Crit',
-                                    radius: 50,
-                                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (isWide) const SizedBox(width: 20) else const SizedBox(height: 20),
-
-                  // Right: Patients by Department (Bar Chart)
-                  Expanded(
-                    flex: isWide ? 7 : 0,
-                    child: Container(
-                      height: 340,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.divider),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Patient Volume by Operational Station', style: AppTextStyles.titleMedium),
-                          const SizedBox(height: 16),
-                          Expanded(
-                            child: BarChart(
-                              BarChartData(
-                                alignment: BarChartAlignment.spaceAround,
-                                maxY: 25,
-                                barTouchData: BarTouchData(enabled: true),
-                                titlesData: FlTitlesData(
-                                  show: true,
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      getTitlesWidget: (val, meta) {
-                                        final depts = ['REG', 'DOC', 'LAB', 'XR', 'PHM', 'ADM'];
-                                        final idx = val.toInt();
-                                        if (idx >= 0 && idx < depts.length) {
-                                          return Text(depts[idx], style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold));
-                                        }
-                                        return const SizedBox.shrink();
-                                      },
-                                    ),
-                                  ),
-                                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                ),
-                                gridData: const FlGridData(show: false),
-                                borderData: FlBorderData(show: false),
-                                barGroups: [
-                                  _makeGroupData(0, (vol.patientsByDept['REG'] ?? 0).toDouble(), AppColors.secondary),
-                                  _makeGroupData(1, (vol.patientsByDept['DOC'] ?? 0).toDouble(), AppColors.primary),
-                                  _makeGroupData(2, (vol.patientsByDept['LAB'] ?? 0).toDouble(), const Color(0xFF673AB7)),
-                                  _makeGroupData(3, (vol.patientsByDept['XR'] ?? 0).toDouble(), const Color(0xFF00897B)),
-                                  _makeGroupData(4, (vol.patientsByDept['PHM'] ?? 0).toDouble(), const Color(0xFFE65100)),
-                                  _makeGroupData(5, (vol.patientsByDept['ADM'] ?? 0).toDouble(), const Color(0xFF1565C0)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            });
-          }),
-          const SizedBox(height: 28),
-
-          // ── Diagnostic & Pharmacy Analytics ───────────────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Obx(() {
-                  final diag = ctrl.diagnosticData.value;
-                  if (diag == null) return const SizedBox.shrink();
-
-                  return Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.divider),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Diagnostics Analytics', style: AppTextStyles.titleMedium),
-                        const SizedBox(height: 14),
-                        _buildRowStat('Lab Requests', diag.labRequests.toString()),
-                        _buildRowStat('X-Ray Requests', diag.xrayRequests.toString()),
-                        _buildRowStat('Scan Requests', diag.scanRequests.toString()),
-                        _buildRowStat('Completed Tests', diag.completedTests.toString()),
-                        _buildRowStat('Avg Turnaround Time', '${diag.avgCompletionMinutes} min'),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Obx(() {
-                  final pharm = ctrl.pharmacyData.value;
-                  if (pharm == null) return const SizedBox.shrink();
-
-                  return Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.divider),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Pharmacy & Inventory Analytics', style: AppTextStyles.titleMedium),
-                        const SizedBox(height: 14),
-                        _buildRowStat('Total Prescriptions', pharm.totalPrescriptions.toString()),
-                        _buildRowStat('Dispensed', pharm.dispensedPrescriptions.toString()),
-                        _buildRowStat('Low Stock Drugs', pharm.lowStockDrugs.toString(), isAlert: pharm.lowStockDrugs > 0),
-                        _buildRowStat('Expired / Near Expiry', '${pharm.expiredDrugs + pharm.nearExpiryDrugs}', isAlert: (pharm.expiredDrugs + pharm.nearExpiryDrugs) > 0),
-                        _buildRowStat('Inventory Valuation', '\$${pharm.inventoryValue.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ],
-          ),
-          const SizedBox(height: 28),
-
-          // ── Financial Analytics (Role-Restricted) ──────────────
-          if (canViewFinancials)
+            // ── Timing Analytics Section ──────────────────────────
             Obx(() {
-              final fin = ctrl.financialData.value;
-              if (fin == null) return const SizedBox.shrink();
+              final timings = ctrl.waitingBreakdown.value;
+              if (timings == null) return const SizedBox.shrink();
 
               return Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: AppColors.surface,
                   borderRadius: BorderRadius.circular(16),
@@ -731,31 +617,313 @@ class _AnalyticsTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Financial Revenue & Billing Aggregation', style: AppTextStyles.titleMedium),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                          child: const Text('Authorized Role View', style: TextStyle(color: AppColors.success, fontSize: 11, fontWeight: FontWeight.bold)),
-                        ),
-                      ],
-                    ),
+                    const Text('Timestamp-Calculated Journey Times', style: AppTextStyles.titleMedium),
+                    const SizedBox(height: 4),
+                    const Text('Evaluated automatically from queue item transition timestamps',
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                     const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    Wrap(
+                      spacing: 24,
+                      runSpacing: 16,
+                      alignment: WrapAlignment.spaceAround,
                       children: [
-                        _buildFinMetric('Daily Revenue', '\$${fin.dailyRevenue.toStringAsFixed(2)}', AppColors.success),
-                        _buildFinMetric('Weekly Revenue', '\$${fin.weeklyRevenue.toStringAsFixed(2)}', AppColors.primary),
-                        _buildFinMetric('Consultation Rev', '\$${fin.consultationRevenue.toStringAsFixed(2)}', const Color(0xFF673AB7)),
-                        _buildFinMetric('Outstanding Balance', '\$${fin.outstandingBalance.toStringAsFixed(2)}', AppColors.warning),
+                        _buildTimerBadge('Overall Avg Wait', '${timings.overallAvgWaitMinutes} min', Icons.hourglass_empty, AppColors.warning),
+                        _buildTimerBadge('Overall Avg Service', '${timings.overallAvgServiceMinutes} min', Icons.medical_services_outlined, AppColors.secondary),
+                        _buildTimerBadge('Avg Total Journey', '${timings.overallAvgJourneyMinutes} min', Icons.route_rounded, AppColors.primary),
                       ],
                     ),
                   ],
                 ),
               );
             }),
+            const SizedBox(height: 24),
+
+            // ── Charts Row (fl_chart) ─────────────────────────────
+            Obx(() {
+              final vol = ctrl.volumeData.value;
+              if (vol == null) return const Center(child: CircularProgressIndicator());
+
+              return LayoutBuilder(builder: (ctx, chartConstraints) {
+                final isWide = chartConstraints.maxWidth > 900;
+                final pieCard = _buildPieChartCard(vol);
+                final barCard = _buildBarChartCard(vol);
+
+                if (isWide) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(flex: 5, child: pieCard),
+                      const SizedBox(width: 20),
+                      Expanded(flex: 7, child: barCard),
+                    ],
+                  );
+                }
+
+                return Column(
+                  children: [
+                    pieCard,
+                    const SizedBox(height: 20),
+                    barCard,
+                  ],
+                );
+              });
+            }),
+            const SizedBox(height: 24),
+
+            // ── Diagnostic & Pharmacy Analytics ───────────────────
+            LayoutBuilder(builder: (ctx, diagConstraints) {
+              final isWide = diagConstraints.maxWidth > 800;
+              final diagCard = Obx(() {
+                final diag = ctrl.diagnosticData.value;
+                if (diag == null) return const SizedBox.shrink();
+
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.divider),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Diagnostics Analytics', style: AppTextStyles.titleMedium),
+                      const SizedBox(height: 14),
+                      _buildRowStat('Lab Requests', diag.labRequests.toString()),
+                      _buildRowStat('X-Ray Requests', diag.xrayRequests.toString()),
+                      _buildRowStat('Scan Requests', diag.scanRequests.toString()),
+                      _buildRowStat('Completed Tests', diag.completedTests.toString()),
+                      _buildRowStat('Avg Turnaround Time', '${diag.avgCompletionMinutes} min'),
+                    ],
+                  ),
+                );
+              });
+
+              final pharmCard = Obx(() {
+                final pharm = ctrl.pharmacyData.value;
+                if (pharm == null) return const SizedBox.shrink();
+
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.divider),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Pharmacy & Inventory Analytics', style: AppTextStyles.titleMedium),
+                      const SizedBox(height: 14),
+                      _buildRowStat('Total Prescriptions', pharm.totalPrescriptions.toString()),
+                      _buildRowStat('Dispensed', pharm.dispensedPrescriptions.toString()),
+                      _buildRowStat('Low Stock Drugs', pharm.lowStockDrugs.toString(), isAlert: pharm.lowStockDrugs > 0),
+                      _buildRowStat('Expired / Near Expiry', '${pharm.expiredDrugs + pharm.nearExpiryDrugs}', isAlert: (pharm.expiredDrugs + pharm.nearExpiryDrugs) > 0),
+                      _buildRowStat('Inventory Valuation', '\$${pharm.inventoryValue.toStringAsFixed(2)}'),
+                    ],
+                  ),
+                );
+              });
+
+              if (isWide) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: diagCard),
+                    const SizedBox(width: 20),
+                    Expanded(child: pharmCard),
+                  ],
+                );
+              }
+
+              return Column(
+                children: [
+                  diagCard,
+                  const SizedBox(height: 20),
+                  pharmCard,
+                ],
+              );
+            }),
+            const SizedBox(height: 24),
+
+            // ── Financial Analytics (Role-Restricted) ──────────────
+            if (canViewFinancials)
+              Obx(() {
+                final fin = ctrl.financialData.value;
+                if (fin == null) return const SizedBox.shrink();
+
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.divider),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(
+                            child: Text('Financial Revenue & Billing Aggregation',
+                                style: AppTextStyles.titleMedium, overflow: TextOverflow.ellipsis),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                            child: const Text('Authorized View', style: TextStyle(color: AppColors.success, fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      LayoutBuilder(
+                        builder: (ctx, finConstraints) {
+                          final isNarrow = finConstraints.maxWidth < 650;
+                          final metrics = [
+                            _buildFinMetric('Daily Revenue', '\$${fin.dailyRevenue.toStringAsFixed(2)}', AppColors.success),
+                            _buildFinMetric('Weekly Revenue', '\$${fin.weeklyRevenue.toStringAsFixed(2)}', AppColors.primary),
+                            _buildFinMetric('Consultation Rev', '\$${fin.consultationRevenue.toStringAsFixed(2)}', const Color(0xFF673AB7)),
+                            _buildFinMetric('Outstanding Balance', '\$${fin.outstandingBalance.toStringAsFixed(2)}', AppColors.warning),
+                          ];
+
+                          if (isNarrow) {
+                            return GridView.count(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 14,
+                              childAspectRatio: 2.2,
+                              children: metrics,
+                            );
+                          }
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: metrics,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildPieChartCard(VolumeAnalyticsData vol) {
+    return Container(
+      height: 340,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Priority Volume Distribution', style: AppTextStyles.titleMedium),
+          const SizedBox(height: 16),
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 3,
+                centerSpaceRadius: 40,
+                sections: [
+                  PieChartSectionData(
+                    color: AppColors.primary,
+                    value: (vol.emergencyVsRegular['REGULAR'] ?? 1).toDouble(),
+                    title: 'Reg',
+                    radius: 50,
+                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  PieChartSectionData(
+                    color: AppColors.warning,
+                    value: (vol.emergencyVsRegular['URGENT'] ?? 0).toDouble(),
+                    title: 'Urg',
+                    radius: 50,
+                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  PieChartSectionData(
+                    color: AppColors.emergency,
+                    value: (vol.emergencyVsRegular['EMERGENCY'] ?? 0).toDouble(),
+                    title: 'Emg',
+                    radius: 50,
+                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                  PieChartSectionData(
+                    color: Colors.purple,
+                    value: (vol.emergencyVsRegular['CRITICAL_EMERGENCY'] ?? 0).toDouble(),
+                    title: 'Crit',
+                    radius: 50,
+                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBarChartCard(VolumeAnalyticsData vol) {
+    return Container(
+      height: 340,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.divider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Patient Volume by Operational Station', style: AppTextStyles.titleMedium),
+          const SizedBox(height: 16),
+          Expanded(
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                maxY: 25,
+                barTouchData: BarTouchData(enabled: true),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      getTitlesWidget: (val, meta) {
+                        final depts = ['REG', 'DOC', 'LAB', 'XR', 'PHM', 'ADM'];
+                        final idx = val.toInt();
+                        if (idx >= 0 && idx < depts.length) {
+                          return Text(depts[idx], style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold));
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                ),
+                gridData: const FlGridData(show: false),
+                borderData: FlBorderData(show: false),
+                barGroups: [
+                  _makeGroupData(0, (vol.patientsByDept['REG'] ?? 0).toDouble(), AppColors.secondary),
+                  _makeGroupData(1, (vol.patientsByDept['DOC'] ?? 0).toDouble(), AppColors.primary),
+                  _makeGroupData(2, (vol.patientsByDept['LAB'] ?? 0).toDouble(), const Color(0xFF673AB7)),
+                  _makeGroupData(3, (vol.patientsByDept['XR'] ?? 0).toDouble(), const Color(0xFF00897B)),
+                  _makeGroupData(4, (vol.patientsByDept['PHM'] ?? 0).toDouble(), const Color(0xFFE65100)),
+                  _makeGroupData(5, (vol.patientsByDept['ADM'] ?? 0).toDouble(), const Color(0xFF1565C0)),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -779,10 +947,11 @@ class _AnalyticsTab extends StatelessWidget {
     final filters = ['Today', 'Last 7 days', 'Last 30 days', '3 months', '1 year'];
     return Obx(() {
       return Row(
+        mainAxisSize: MainAxisSize.min,
         children: filters.map((f) {
           final isSelected = ctrl.selectedDateFilter.value == f;
           return Padding(
-            padding: const EdgeInsets.only(left: 6),
+            padding: const EdgeInsets.only(right: 6),
             child: ChoiceChip(
               label: Text(f, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
               selected: isSelected,
@@ -799,8 +968,9 @@ class _AnalyticsTab extends StatelessWidget {
       children: [
         CircleAvatar(radius: 20, backgroundColor: color.withValues(alpha: 0.12), child: Icon(icon, color: color, size: 20)),
         const SizedBox(height: 8),
-        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
         Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -838,24 +1008,18 @@ class _StaffAndSchedulingTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Staff Management & Duty Scheduling', style: AppTextStyles.titleLarge),
-                  SizedBox(height: 4),
-                  Text('Administer staff accounts, roles, departments, rooms, specialties, and conflict-checked rosters',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                ],
-              ),
-              ElevatedButton.icon(
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAdminSectionHeader(
+              context: context,
+              title: 'Staff Management & Duty Scheduling',
+              subtitle: 'Administer staff accounts, roles, departments, rooms, specialties, and conflict-checked rosters',
+              action: ElevatedButton.icon(
                 onPressed: () => _showCreateScheduleDialog(context, ctrl),
                 icon: const Icon(Icons.add_task_rounded, size: 16),
                 label: const Text('Assign Duty Schedule'),
@@ -865,112 +1029,112 @@ class _StaffAndSchedulingTab extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 24),
+            ),
+            const SizedBox(height: 24),
 
-          // ── Staff Directory ───────────────────────────────────
-          const Text('Hospital Staff Directory', style: AppTextStyles.titleMedium),
-          const SizedBox(height: 12),
-          Obx(() {
-            final staff = ctrl.allStaff;
-            if (staff.isEmpty) {
-              return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No staff members registered.')));
-            }
+            // ── Staff Directory ───────────────────────────────────
+            const Text('Hospital Staff Directory', style: AppTextStyles.titleMedium),
+            const SizedBox(height: 12),
+            Obx(() {
+              final staff = ctrl.allStaff;
+              if (staff.isEmpty) {
+                return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No staff members registered.')));
+              }
 
-            return Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: staff.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (ctx, idx) {
-                  final s = staff[idx];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                      child: Text(AppUtils.getInitials(s.fullName), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                    ),
-                    title: Row(
-                      children: [
-                        Text(s.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(6)),
-                          child: Text(AppUtils.getRoleLabel(s.role), style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
-                        ),
-                        if (s.specialty != null && s.specialty!.isNotEmpty) ...[
-                          const SizedBox(width: 6),
-                          Text('• ${s.specialty}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              return Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: staff.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (ctx, idx) {
+                    final s = staff[idx];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                        child: Text(AppUtils.getInitials(s.fullName), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                      ),
+                      title: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          Text(s.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(6)),
+                            child: Text(AppUtils.getRoleLabel(s.role), style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
+                          ),
+                          if (s.specialty != null && s.specialty!.isNotEmpty)
+                            Text('• ${s.specialty}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
                         ],
-                      ],
-                    ),
-                    subtitle: Text('${s.email} | Dept: ${s.departmentId ?? "All"} | Room: ${s.roomId ?? "N/A"}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 18),
-                          tooltip: 'Edit Profile & Room',
-                          onPressed: () => _showEditStaffDialog(context, ctrl, s),
-                        ),
-                        Switch(
-                          value: s.active,
-                          activeColor: AppColors.success,
-                          onChanged: (_) => ctrl.toggleStaffStatus(s),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
-          const SizedBox(height: 32),
+                      ),
+                      subtitle: Text('${s.email} | Dept: ${s.departmentId ?? "All"} | Room: ${s.roomId ?? "N/A"}'),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 18),
+                            tooltip: 'Edit Profile & Room',
+                            onPressed: () => _showEditStaffDialog(context, ctrl, s),
+                          ),
+                          Switch(
+                            value: s.active,
+                            activeColor: AppColors.success,
+                            onChanged: (_) => ctrl.toggleStaffStatus(s),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
+            const SizedBox(height: 32),
 
-          // ── Duty Schedules Roster ─────────────────────────────
-          const Text('Upcoming Active Duty Schedules', style: AppTextStyles.titleMedium),
-          const SizedBox(height: 12),
-          Obx(() {
-            final scheds = ctrl.schedules;
-            if (scheds.isEmpty) {
-              return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No active schedules for this period.')));
-            }
+            // ── Duty Schedules Roster ─────────────────────────────
+            const Text('Upcoming Active Duty Schedules', style: AppTextStyles.titleMedium),
+            const SizedBox(height: 12),
+            Obx(() {
+              final scheds = ctrl.schedules;
+              if (scheds.isEmpty) {
+                return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No active schedules for this period.')));
+              }
 
-            return Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: scheds.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (ctx, idx) {
-                  final sc = scheds[idx];
-                  return ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: Colors.blueGrey,
-                      child: Icon(Icons.calendar_month, color: Colors.white, size: 20),
-                    ),
-                    title: Text('${sc.staffName} (${AppUtils.getRoleLabel(sc.role)})', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text(
-                        'Date: ${DateFormat.yMMMd().format(sc.date)} | Shift: ${sc.startTime} - ${sc.endTime} | Room: ${sc.roomName ?? sc.roomId ?? "N/A"}'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
-                      tooltip: 'Cancel Shift',
-                      onPressed: () => ctrl.cancelSchedule(sc.scheduleId),
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
-        ],
-      ),
-    );
+              return Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: scheds.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (ctx, idx) {
+                    final sc = scheds[idx];
+                    return ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Colors.blueGrey,
+                        child: Icon(Icons.calendar_month, color: Colors.white, size: 20),
+                      ),
+                      title: Text('${sc.staffName} (${AppUtils.getRoleLabel(sc.role)})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(
+                          'Date: ${DateFormat.yMMMd().format(sc.date)} | Shift: ${sc.startTime} - ${sc.endTime} | Room: ${sc.roomName ?? sc.roomId ?? "N/A"}'),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                        tooltip: 'Cancel Shift',
+                        onPressed: () => ctrl.cancelSchedule(sc.scheduleId),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      );
+    });
   }
 
   void _showCreateScheduleDialog(BuildContext context, AdminController ctrl) {
@@ -990,38 +1154,41 @@ class _StaffAndSchedulingTab extends StatelessWidget {
       StatefulBuilder(builder: (ctx, setState) {
         return AlertDialog(
           title: const Text('Assign Duty Schedule'),
-          content: SizedBox(
-            width: 420,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<UserModel>(
-                  value: selectedUser,
-                  decoration: const InputDecoration(labelText: 'Staff Member'),
-                  items: staff
-                      .map((u) => DropdownMenuItem(value: u, child: Text('${u.fullName} (${AppUtils.getRoleLabel(u.role)})')))
-                      .toList(),
-                  onChanged: (u) => setState(() => selectedUser = u!),
-                ),
-                const SizedBox(height: 12),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text('Date: ${DateFormat.yMMMd().format(selectedDate)}'),
-                  trailing: const Icon(Icons.calendar_today),
-                  onTap: () async {
-                    final d = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime.now().subtract(const Duration(days: 1)),
-                      lastDate: DateTime.now().add(const Duration(days: 90)),
-                    );
-                    if (d != null) setState(() => selectedDate = d);
-                  },
-                ),
-                TextField(controller: startCtrl, decoration: const InputDecoration(labelText: 'Start Time (HH:mm)')),
-                TextField(controller: endCtrl, decoration: const InputDecoration(labelText: 'End Time (HH:mm)')),
-                TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Assigned Room (Optional)')),
-              ],
+          content: Container(
+            width: double.maxFinite,
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButtonFormField<UserModel>(
+                    value: selectedUser,
+                    decoration: const InputDecoration(labelText: 'Staff Member'),
+                    items: staff
+                        .map((u) => DropdownMenuItem(value: u, child: Text('${u.fullName} (${AppUtils.getRoleLabel(u.role)})')))
+                        .toList(),
+                    onChanged: (u) => setState(() => selectedUser = u!),
+                  ),
+                  const SizedBox(height: 12),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text('Date: ${DateFormat.yMMMd().format(selectedDate)}'),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: () async {
+                      final d = await showDatePicker(
+                        context: context,
+                        initialDate: selectedDate,
+                        firstDate: DateTime.now().subtract(const Duration(days: 1)),
+                        lastDate: DateTime.now().add(const Duration(days: 90)),
+                      );
+                      if (d != null) setState(() => selectedDate = d);
+                    },
+                  ),
+                  TextField(controller: startCtrl, decoration: const InputDecoration(labelText: 'Start Time (HH:mm)')),
+                  TextField(controller: endCtrl, decoration: const InputDecoration(labelText: 'End Time (HH:mm)')),
+                  TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Assigned Room (Optional)')),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -1057,33 +1224,36 @@ class _StaffAndSchedulingTab extends StatelessWidget {
       StatefulBuilder(builder: (ctx, setState) {
         return AlertDialog(
           title: Text('Edit Profile: ${staff.fullName}'),
-          content: SizedBox(
-            width: 420,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full Name')),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: selectedRole,
-                  decoration: const InputDecoration(labelText: 'Assigned Role'),
-                  items: const [
-                    DropdownMenuItem(value: 'doctor', child: Text('Doctor')),
-                    DropdownMenuItem(value: 'nurse', child: Text('Nurse')),
-                    DropdownMenuItem(value: 'pharmacist', child: Text('Pharmacist')),
-                    DropdownMenuItem(value: 'diagnostic_staff', child: Text('Diagnostic / Lab Tech')),
-                    DropdownMenuItem(value: 'account_officer', child: Text('Account Officer')),
-                    DropdownMenuItem(value: 'registration_officer', child: Text('Registration Officer')),
-                    DropdownMenuItem(value: 'gate_officer', child: Text('Gate Officer')),
-                    DropdownMenuItem(value: 'admission_officer', child: Text('Admission Officer')),
-                    DropdownMenuItem(value: 'hospital_admin', child: Text('Hospital Admin')),
-                  ],
-                  onChanged: (r) => setState(() => selectedRole = r!),
-                ),
-                const SizedBox(height: 12),
-                TextField(controller: specCtrl, decoration: const InputDecoration(labelText: 'Specialty (e.g. Pediatrics, Cardiology)')),
-                TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Default Room (e.g. 102)')),
-              ],
+          content: Container(
+            width: double.maxFinite,
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full Name')),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: selectedRole,
+                    decoration: const InputDecoration(labelText: 'Assigned Role'),
+                    items: const [
+                      DropdownMenuItem(value: 'doctor', child: Text('Doctor')),
+                      DropdownMenuItem(value: 'nurse', child: Text('Nurse')),
+                      DropdownMenuItem(value: 'pharmacist', child: Text('Pharmacist')),
+                      DropdownMenuItem(value: 'diagnostic_staff', child: Text('Diagnostic / Lab Tech')),
+                      DropdownMenuItem(value: 'account_officer', child: Text('Account Officer')),
+                      DropdownMenuItem(value: 'registration_officer', child: Text('Registration Officer')),
+                      DropdownMenuItem(value: 'gate_officer', child: Text('Gate Officer')),
+                      DropdownMenuItem(value: 'admission_officer', child: Text('Admission Officer')),
+                      DropdownMenuItem(value: 'hospital_admin', child: Text('Hospital Admin')),
+                    ],
+                    onChanged: (r) => setState(() => selectedRole = r!),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(controller: specCtrl, decoration: const InputDecoration(labelText: 'Specialty (e.g. Pediatrics, Cardiology)')),
+                  TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Default Room (e.g. 102)')),
+                ],
+              ),
             ),
           ),
           actions: [
@@ -1118,97 +1288,104 @@ class _AuditLogsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('System Audit Logs & Security Trails', style: AppTextStyles.titleLarge),
-                  SizedBox(height: 4),
-                  Text('Read-only tamper-evident event log recording clinical, financial, and operational decisions',
-                      style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                ],
-              ),
-              Obx(() {
-                return DropdownButton<String>(
-                  value: ctrl.selectedAuditModule.value,
-                  items: const [
-                    DropdownMenuItem(value: 'ALL', child: Text('All Modules')),
-                    DropdownMenuItem(value: 'QUEUE', child: Text('Queue Module')),
-                    DropdownMenuItem(value: 'DOCTOR', child: Text('Doctor Consultations')),
-                    DropdownMenuItem(value: 'DIAGNOSTICS', child: Text('Diagnostics & Lab')),
-                    DropdownMenuItem(value: 'BILLING', child: Text('Billing & Payments')),
-                    DropdownMenuItem(value: 'PHARMACY', child: Text('Pharmacy Dispensing')),
-                    DropdownMenuItem(value: 'ADMISSION', child: Text('Admissions & Beds')),
-                    DropdownMenuItem(value: 'STAFF', child: Text('Staff Administration')),
-                    DropdownMenuItem(value: 'SETTINGS', child: Text('System Settings')),
-                  ],
-                  onChanged: (m) => ctrl.filterAuditLogs(m ?? 'ALL'),
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildAdminSectionHeader(
+              context: context,
+              title: 'System Audit Logs & Security Trails',
+              subtitle: 'Read-only tamper-evident event log recording clinical, financial, and operational decisions',
+              action: Obx(() {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.divider),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: ctrl.selectedAuditModule.value,
+                      items: const [
+                        DropdownMenuItem(value: 'ALL', child: Text('All Modules')),
+                        DropdownMenuItem(value: 'QUEUE', child: Text('Queue Module')),
+                        DropdownMenuItem(value: 'DOCTOR', child: Text('Doctor Consultations')),
+                        DropdownMenuItem(value: 'DIAGNOSTICS', child: Text('Diagnostics & Lab')),
+                        DropdownMenuItem(value: 'BILLING', child: Text('Billing & Payments')),
+                        DropdownMenuItem(value: 'PHARMACY', child: Text('Pharmacy Dispensing')),
+                        DropdownMenuItem(value: 'ADMISSION', child: Text('Admissions & Beds')),
+                        DropdownMenuItem(value: 'STAFF', child: Text('Staff Administration')),
+                        DropdownMenuItem(value: 'SETTINGS', child: Text('System Settings')),
+                      ],
+                      onChanged: (m) => ctrl.filterAuditLogs(m ?? 'ALL'),
+                    ),
+                  ),
                 );
               }),
-            ],
-          ),
-          const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 20),
 
-          Obx(() {
-            final logs = ctrl.auditLogs;
-            if (logs.isEmpty) {
-              return const Center(child: Padding(padding: EdgeInsets.all(40), child: Text('No audit events found.')));
-            }
+            Obx(() {
+              final logs = ctrl.auditLogs;
+              if (logs.isEmpty) {
+                return const Center(child: Padding(padding: EdgeInsets.all(40), child: Text('No audit events found.')));
+              }
 
-            return Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: logs.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (ctx, idx) {
-                  final log = logs[idx];
-                  return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    leading: CircleAvatar(
-                      backgroundColor: _getModuleColor(log.module).withValues(alpha: 0.12),
-                      child: Icon(_getModuleIcon(log.module), color: _getModuleColor(log.module), size: 18),
-                    ),
-                    title: Row(
-                      children: [
-                        Text(log.action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                          child: Text(log.module, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                        ),
-                      ],
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('By: ${log.userName} (${log.role}) • Record: ${log.recordId}', style: const TextStyle(fontSize: 12)),
-                        if (log.details != null)
-                          Text(log.details!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                      ],
-                    ),
-                    trailing: Text(
-                      DateFormat('MMM d, h:mm:ss a').format(log.timestamp),
-                      style: const TextStyle(fontSize: 11, color: AppColors.textHint),
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
-        ],
-      ),
-    );
+              return Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: logs.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (ctx, idx) {
+                    final log = logs[idx];
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      leading: CircleAvatar(
+                        backgroundColor: _getModuleColor(log.module).withValues(alpha: 0.12),
+                        child: Icon(_getModuleIcon(log.module), color: _getModuleColor(log.module), size: 18),
+                      ),
+                      title: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        children: [
+                          Text(log.action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
+                            child: Text(log.module, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 2),
+                          Text('By: ${log.userName} (${log.role}) • Record: ${log.recordId}', style: const TextStyle(fontSize: 12)),
+                          if (log.details != null)
+                            Text(log.details!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat('MMM d, h:mm:ss a').format(log.timestamp),
+                            style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      );
+    });
   }
 
   Color _getModuleColor(String mod) {
@@ -1271,70 +1448,73 @@ class _ReportsTab extends StatelessWidget {
       (ReportType.staffPerformance, Icons.badge, 'Staff consultations, workloads, and service durations'),
     ];
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Downloadable & Printable Operational Reports', style: AppTextStyles.titleLarge),
-          const SizedBox(height: 4),
-          const Text('Export RFC-4180 standard CSV datasets ready for auditing, reporting, and printing',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-          const SizedBox(height: 24),
-          LayoutBuilder(builder: (ctx, constraints) {
-            final crossCount = constraints.maxWidth > 950 ? 3 : (constraints.maxWidth > 650 ? 2 : 1);
-            final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Downloadable & Printable Operational Reports', style: AppTextStyles.titleLarge),
+            const SizedBox(height: 4),
+            const Text('Export RFC-4180 standard CSV datasets ready for auditing, reporting, and printing',
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            const SizedBox(height: 24),
+            LayoutBuilder(builder: (ctx, constraints) {
+              final crossCount = constraints.maxWidth > 950 ? 3 : (constraints.maxWidth > 650 ? 2 : 1);
+              final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
 
-            return Wrap(
-              spacing: 16,
-              runSpacing: 16,
-              children: reports.map((r) {
-                return SizedBox(
-                  width: itemWidth,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.divider),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                              child: Icon(r.$2, color: AppColors.primary, size: 20),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(child: Text(r.$1.displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(r.$3, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary), maxLines: 2),
-                        const SizedBox(height: 16),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              return Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                children: reports.map((r) {
+                  return SizedBox(
+                    width: itemWidth,
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.divider),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                                child: Icon(r.$2, color: AppColors.primary, size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(child: Text(r.$1.displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+                            ],
                           ),
-                          onPressed: () => _previewAndDownloadReport(context, ctrl, r.$1),
-                          icon: const Icon(Icons.download_rounded, size: 16),
-                          label: const Text('Export & Preview', style: TextStyle(fontSize: 12)),
-                        ),
-                      ],
+                          const SizedBox(height: 10),
+                          Text(r.$3, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary), maxLines: 2),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            ),
+                            onPressed: () => _previewAndDownloadReport(context, ctrl, r.$1),
+                            icon: const Icon(Icons.download_rounded, size: 16),
+                            label: const Text('Export & Preview', style: TextStyle(fontSize: 12)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
-            );
-          }),
-        ],
-      ),
-    );
+                  );
+                }).toList(),
+              );
+            }),
+          ],
+        ),
+      );
+    });
   }
 
   void _previewAndDownloadReport(BuildContext context, AdminController ctrl, ReportType type) {
@@ -1342,9 +1522,9 @@ class _ReportsTab extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: Text(type.displayName),
-        content: SizedBox(
-          width: 600,
-          height: 400,
+        content: Container(
+          width: double.maxFinite,
+          constraints: const BoxConstraints(maxWidth: 600, maxHeight: 400),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -1387,32 +1567,26 @@ class _SystemSettingsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Obx(() {
-        final s = ctrl.systemSettings.value;
-        final nameCtrl = TextEditingController(text: s.hospitalName);
-        final tagCtrl = TextEditingController(text: s.hospitalTagline);
-        final phoneCtrl = TextEditingController(text: s.phone);
-        final emailCtrl = TextEditingController(text: s.email);
-        final addrCtrl = TextEditingController(text: s.address);
+    return LayoutBuilder(builder: (context, constraints) {
+      final isSmall = constraints.maxWidth < 700;
+      return SingleChildScrollView(
+        padding: EdgeInsets.all(isSmall ? 16 : 28),
+        child: Obx(() {
+          final s = ctrl.systemSettings.value;
+          final nameCtrl = TextEditingController(text: s.hospitalName);
+          final tagCtrl = TextEditingController(text: s.hospitalTagline);
+          final phoneCtrl = TextEditingController(text: s.phone);
+          final emailCtrl = TextEditingController(text: s.email);
+          final addrCtrl = TextEditingController(text: s.address);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Hospital System Configuration', style: AppTextStyles.titleLarge),
-                    SizedBox(height: 4),
-                    Text('Adjust hospital identity, queue display speech parameters, and financial rules',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                  ],
-                ),
-                ElevatedButton.icon(
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildAdminSectionHeader(
+                context: context,
+                title: 'Hospital System Configuration',
+                subtitle: 'Adjust hospital identity, queue display speech parameters, and financial rules',
+                action: ElevatedButton.icon(
                   onPressed: () {
                     ctrl.updateSettings(s.copyWith(
                       hospitalName: nameCtrl.text.trim(),
@@ -1430,79 +1604,93 @@ class _SystemSettingsTab extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
+              ),
+              const SizedBox(height: 24),
 
-            // Identity Form
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.divider),
+              // Identity Form
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.divider),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Hospital Identity', style: AppTextStyles.titleMedium),
+                    const SizedBox(height: 16),
+                    TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Hospital Name')),
+                    const SizedBox(height: 12),
+                    TextField(controller: tagCtrl, decoration: const InputDecoration(labelText: 'Tagline')),
+                    const SizedBox(height: 12),
+                    LayoutBuilder(builder: (ctx, c) {
+                      if (c.maxWidth < 600) {
+                        return Column(
+                          children: [
+                            TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact Phone')),
+                            const SizedBox(height: 12),
+                            TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Contact Email')),
+                          ],
+                        );
+                      }
+                      return Row(
+                        children: [
+                          Expanded(child: TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact Phone'))),
+                          const SizedBox(width: 16),
+                          Expanded(child: TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Contact Email'))),
+                        ],
+                      );
+                    }),
+                    const SizedBox(height: 12),
+                    TextField(controller: addrCtrl, decoration: const InputDecoration(labelText: 'Physical Address')),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Hospital Identity', style: AppTextStyles.titleMedium),
-                  const SizedBox(height: 16),
-                  TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Hospital Name')),
-                  const SizedBox(height: 12),
-                  TextField(controller: tagCtrl, decoration: const InputDecoration(labelText: 'Tagline')),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(child: TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact Phone'))),
-                      const SizedBox(width: 16),
-                      Expanded(child: TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Contact Email'))),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(controller: addrCtrl, decoration: const InputDecoration(labelText: 'Physical Address')),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Audio & Workflow Rules
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.divider),
+              // Audio & Workflow Rules
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.divider),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Queue & Audio Announcements', style: AppTextStyles.titleMedium),
+                    const SizedBox(height: 12),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Enable Voice Queue Announcements'),
+                      subtitle: const Text('Plays: "Queue number DOC-024, please proceed to Room 103"'),
+                      value: s.enableAudioAnnouncements,
+                      onChanged: (val) => ctrl.updateSettings(s.copyWith(enableAudioAnnouncements: val)),
+                    ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Require Payment Prior to Diagnostic Execution'),
+                      subtitle: const Text('Diagnostic requests cannot begin until marked PAID at cashier'),
+                      value: s.requirePaymentBeforeDiagnostics,
+                      onChanged: (val) => ctrl.updateSettings(s.copyWith(requirePaymentBeforeDiagnostics: val)),
+                    ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('24-Hour Emergency Operation Mode'),
+                      subtitle: const Text('Keep Emergency Gate and Triage units open continuously'),
+                      value: s.emergencyOpen24h,
+                      onChanged: (val) => ctrl.updateSettings(s.copyWith(emergencyOpen24h: val)),
+                    ),
+                  ],
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Queue & Audio Announcements', style: AppTextStyles.titleMedium),
-                  const SizedBox(height: 12),
-                  SwitchListTile(
-                    title: const Text('Enable Voice Queue Announcements'),
-                    subtitle: const Text('Plays: "Queue number DOC-024, please proceed to Room 103"'),
-                    value: s.enableAudioAnnouncements,
-                    onChanged: (val) => ctrl.updateSettings(s.copyWith(enableAudioAnnouncements: val)),
-                  ),
-                  SwitchListTile(
-                    title: const Text('Require Payment Prior to Diagnostic Execution'),
-                    subtitle: const Text('Diagnostic requests cannot begin until marked PAID at cashier'),
-                    value: s.requirePaymentBeforeDiagnostics,
-                    onChanged: (val) => ctrl.updateSettings(s.copyWith(requirePaymentBeforeDiagnostics: val)),
-                  ),
-                  SwitchListTile(
-                    title: const Text('24-Hour Emergency Operation Mode'),
-                    subtitle: const Text('Keep Emergency Gate and Triage units open continuously'),
-                    value: s.emergencyOpen24h,
-                    onChanged: (val) => ctrl.updateSettings(s.copyWith(emergencyOpen24h: val)),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      }),
-    );
+            ],
+          );
+        }),
+      );
+    });
   }
 }
 
@@ -1572,75 +1760,157 @@ class _PendingStaffSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: AppColors.warning.withValues(alpha: 0.4)),
-          ),
-          color: AppColors.surface,
-          child: ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: pendingList.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (context, idx) {
-              final staff = pendingList[idx];
-              return ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                leading: CircleAvatar(
-                  backgroundColor: AppColors.primaryLight,
-                  child: Text(AppUtils.getInitials(staff.fullName),
-                      style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
-                ),
-                title: Row(
-                  children: [
-                    Text(staff.fullName, style: AppTextStyles.titleMedium),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmall = constraints.maxWidth < 650;
+
+            return Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: AppColors.warning.withValues(alpha: 0.4)),
+              ),
+              color: AppColors.surface,
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: pendingList.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, idx) {
+                  final staff = pendingList[idx];
+
+                  if (isSmall) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: AppColors.primaryLight,
+                                child: Text(AppUtils.getInitials(staff.fullName),
+                                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(staff.fullName, style: AppTextStyles.titleMedium),
+                                    const SizedBox(height: 2),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(AppUtils.getRoleLabel(staff.role),
+                                          style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Text('${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
+                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.error,
+                                    side: const BorderSide(color: AppColors.error),
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  onPressed: () => onReject(staff.uid),
+                                  icon: const Icon(Icons.close, size: 16),
+                                  label: const Text('Reject'),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.success,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  onPressed: () => onApprove(staff.uid),
+                                  icon: const Icon(Icons.check, size: 16),
+                                  label: const Text('Approve'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      child: Text(AppUtils.getRoleLabel(staff.role),
-                          style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                    );
+                  }
+
+                  return ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    leading: CircleAvatar(
+                      backgroundColor: AppColors.primaryLight,
+                      child: Text(AppUtils.getInitials(staff.fullName),
+                          style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
                     ),
-                  ],
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text('${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => onReject(staff.uid),
-                      icon: const Icon(Icons.close, size: 16, color: AppColors.error),
-                      label: const Text('Reject', style: TextStyle(color: AppColors.error)),
+                    title: Row(
+                      children: [
+                        Text(staff.fullName, style: AppTextStyles.titleMedium),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(AppUtils.getRoleLabel(staff.role),
+                              style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onPressed: () => onApprove(staff.uid),
-                      icon: const Icon(Icons.check, size: 16),
-                      label: const Text('Approve & Activate'),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text('${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
+                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () => onReject(staff.uid),
+                          icon: const Icon(Icons.close, size: 16, color: AppColors.error),
+                          label: const Text('Reject', style: TextStyle(color: AppColors.error)),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.success,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () => onApprove(staff.uid),
+                          icon: const Icon(Icons.check, size: 16),
+                          label: const Text('Approve & Activate'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
         const SizedBox(height: 32),
       ],
     );
   }
 }
+
