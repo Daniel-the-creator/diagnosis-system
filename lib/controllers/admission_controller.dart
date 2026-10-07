@@ -109,7 +109,7 @@ class AdmissionController extends GetxController {
 
       // Notify patient
       if (_notificationRepo != null && req.patientId.isNotEmpty) {
-        await _notificationRepo!.notify(
+        await _notificationRepo.notify(
           recipientId: req.patientId,
           recipientType: 'patient',
           title: 'Bed Assigned',
@@ -190,7 +190,7 @@ class AdmissionController extends GetxController {
       );
 
       if (_notificationRepo != null && patientId.isNotEmpty) {
-        await _notificationRepo!.notify(
+        await _notificationRepo.notify(
           recipientId: patientId,
           recipientType: 'patient',
           title: 'Discharge Completed',

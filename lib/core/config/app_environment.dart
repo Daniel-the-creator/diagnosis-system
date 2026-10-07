@@ -52,7 +52,7 @@ class AppConfig {
         );
         break;
       case Environment.production:
-        _current = AppConfig(
+        _current = const AppConfig(
           environment: Environment.production,
           appName: 'MediFlow HMS',
           enableDebugLogging: false,

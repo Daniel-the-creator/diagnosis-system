@@ -87,7 +87,8 @@ class _DoctorBody extends StatelessWidget {
     final auth = Get.find<AuthController>();
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isWide = screenWidth > 900;
-    final queueWidth = screenWidth > 1300 ? 380.0 : (screenWidth > 1050 ? 330.0 : 300.0);
+    final queueWidth =
+        screenWidth > 1300 ? 380.0 : (screenWidth > 1050 ? 330.0 : 300.0);
 
     // Wire up appointment stream with doctor's UID immediately and post-frame
     final currentUid = auth.user?.uid ?? '';
@@ -155,7 +156,9 @@ class _QueuePanel extends StatelessWidget {
                     children: [
                       const Text('Queue', style: AppTextStyles.h4),
                       Obx(() {
-                        final count = ctrl.doctorQueue.where((i) => i.status == QueueStatus.waiting).length;
+                        final count = ctrl.doctorQueue
+                            .where((i) => i.status == QueueStatus.waiting)
+                            .length;
                         return Text(
                           '$count waiting',
                           style: AppTextStyles.bodySmall
@@ -175,7 +178,8 @@ class _QueuePanel extends StatelessWidget {
                       label: 'Call Next',
                       onPressed: isServing
                           ? null
-                          : () => ctrl.callNextPatient(auth.user?.uid ?? ctrl.doctorId),
+                          : () => ctrl
+                              .callNextPatient(auth.user?.uid ?? ctrl.doctorId),
                       isLoading: ctrl.isLoading.value,
                       icon: Icons.campaign,
                     ),
@@ -193,7 +197,9 @@ class _QueuePanel extends StatelessWidget {
               color: AppColors.surface,
               child: Row(
                 children: [
-                  const Text('Dept:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  const Text('Dept:',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                   const SizedBox(width: 8),
                   Expanded(
                     child: DropdownButton<String>(
@@ -201,15 +207,24 @@ class _QueuePanel extends StatelessWidget {
                       isDense: true,
                       isExpanded: true,
                       underline: const SizedBox.shrink(),
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textPrimary),
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textPrimary),
                       items: const [
-                        DropdownMenuItem(value: 'ALL', child: Text('All Departments (Hospital)')),
-                        DropdownMenuItem(value: 'GEN', child: Text('General Medicine')),
-                        DropdownMenuItem(value: 'CARD', child: Text('Cardiology')),
-                        DropdownMenuItem(value: 'PEDS', child: Text('Pediatrics')),
+                        DropdownMenuItem(
+                            value: 'ALL',
+                            child: Text('All Departments (Hospital)')),
+                        DropdownMenuItem(
+                            value: 'GEN', child: Text('General Medicine')),
+                        DropdownMenuItem(
+                            value: 'CARD', child: Text('Cardiology')),
+                        DropdownMenuItem(
+                            value: 'PEDS', child: Text('Pediatrics')),
                         DropdownMenuItem(value: 'DENT', child: Text('Dental')),
-                        DropdownMenuItem(value: 'ORTHO', child: Text('Orthopedics')),
-                        DropdownMenuItem(value: 'ENT', child: Text('ENT / Otorhinolaryngology')),
+                        DropdownMenuItem(
+                            value: 'ORTHO', child: Text('Orthopedics')),
+                        DropdownMenuItem(
+                            value: 'ENT',
+                            child: Text('ENT / Otorhinolaryngology')),
                       ],
                       onChanged: (val) {
                         if (val != null) ctrl.setDepartmentCode(val);
@@ -238,8 +253,8 @@ class _QueuePanel extends StatelessWidget {
                   final item = queue[i];
                   return QueueItemCard(
                     item: item,
-                    onCall: () => ctrl.callPatient(
-                        item.queueId, auth.user?.uid ?? ''),
+                    onCall: () =>
+                        ctrl.callPatient(item.queueId, auth.user?.uid ?? ''),
                     onStart: () => ctrl.startConsultation(item),
                     onSkip: () => ctrl.skipPatient(item.queueId),
                     onNoShow: () => ctrl.markNoShow(item.queueId),
@@ -335,6 +350,7 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
   Widget build(BuildContext context) {
     final ctrl = widget.ctrl;
     final auth = widget.auth;
+    final isPhone = MediaQuery.of(context).size.width < 600;
 
     return Obx(() {
       final serving = ctrl.currentlyServing.value;
@@ -351,13 +367,13 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
       }
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(isPhone ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Banner
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(isPhone ? 16 : 20),
               decoration: BoxDecoration(
                 gradient: serving.isEmergency
                     ? AppColors.emergencyGradient
@@ -366,14 +382,16 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.medical_services, color: Colors.white, size: 32),
+                  const Icon(Icons.medical_services,
+                      color: Colors.white, size: 32),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Consultation in Progress',
-                            style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 12)),
                         Text(serving.queueNumber,
                             style: const TextStyle(
                               fontSize: 28,
@@ -401,7 +419,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
               const SizedBox(height: 24),
 
               // ── Clinical Vitals ──────────────────────────────────────────
-              Text('Clinical Observations & Vitals', style: AppTextStyles.h4),
+              const Text('Clinical Observations & Vitals',
+                  style: AppTextStyles.h4),
               const SizedBox(height: 12),
               LayoutBuilder(
                 builder: (ctx, constraints) {
@@ -434,9 +453,17 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                   if (isCompact) {
                     return Column(
                       children: [
-                        Row(children: [Expanded(child: bp), const SizedBox(width: 12), Expanded(child: pulse)]),
+                        Row(children: [
+                          Expanded(child: bp),
+                          const SizedBox(width: 12),
+                          Expanded(child: pulse)
+                        ]),
                         const SizedBox(height: 12),
-                        Row(children: [Expanded(child: temp), const SizedBox(width: 12), Expanded(child: weight)]),
+                        Row(children: [
+                          Expanded(child: temp),
+                          const SizedBox(width: 12),
+                          Expanded(child: weight)
+                        ]),
                       ],
                     );
                   }
@@ -466,7 +493,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
               const SizedBox(height: 14),
               AppTextField(
                 label: 'Clinical Observations / Examination',
-                hint: 'e.g. Chest clear on auscultation, throat mildly congested',
+                hint:
+                    'e.g. Chest clear on auscultation, throat mildly congested',
                 maxLines: 2,
                 onChanged: (v) => ctrl.observations.value = v,
               ),
@@ -486,12 +514,17 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
               const SizedBox(height: 28),
 
               // ── Multi-Diagnostic Orders Section ─────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 4,
                 children: [
-                  Text('Diagnostic Orders (Lab / X-Ray / Scan)', style: AppTextStyles.h4),
+                  const Text('Diagnostic Orders (Lab / X-Ray / Scan)',
+                      style: AppTextStyles.h4),
                   Text('${ctrl.pendingDiagnostics.length} orders added',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.primary)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -509,25 +542,46 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                         final isNarrow = constraints.maxWidth < 620;
                         final typeDropdown = DropdownButtonFormField<String>(
                           isExpanded: true,
-                          value: _selectedDiagType,
+                          initialValue: _selectedDiagType,
                           decoration: const InputDecoration(labelText: 'Type'),
                           items: const [
-                            DropdownMenuItem(value: 'LAB', child: Text('Laboratory', overflow: TextOverflow.ellipsis)),
-                            DropdownMenuItem(value: 'XR', child: Text('X-Ray', overflow: TextOverflow.ellipsis)),
-                            DropdownMenuItem(value: 'SCAN', child: Text('Ultrasound', overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'LAB',
+                                child: Text('Laboratory',
+                                    overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'XR',
+                                child: Text('X-Ray',
+                                    overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'SCAN',
+                                child: Text('Ultrasound',
+                                    overflow: TextOverflow.ellipsis)),
                           ],
                           onChanged: (v) {
-                            if (v != null) setState(() => _selectedDiagType = v);
+                            if (v != null)
+                              setState(() => _selectedDiagType = v);
                           },
                         );
-                        final priorityDropdown = DropdownButtonFormField<String>(
+                        final priorityDropdown =
+                            DropdownButtonFormField<String>(
                           isExpanded: true,
-                          value: _diagPriority,
-                          decoration: const InputDecoration(labelText: 'Priority'),
+                          initialValue: _diagPriority,
+                          decoration:
+                              const InputDecoration(labelText: 'Priority'),
                           items: const [
-                            DropdownMenuItem(value: 'ROUTINE', child: Text('Routine', overflow: TextOverflow.ellipsis)),
-                            DropdownMenuItem(value: 'URGENT', child: Text('Urgent', overflow: TextOverflow.ellipsis)),
-                            DropdownMenuItem(value: 'EMERGENCY', child: Text('Emergency', overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'ROUTINE',
+                                child: Text('Routine',
+                                    overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'URGENT',
+                                child: Text('Urgent',
+                                    overflow: TextOverflow.ellipsis)),
+                            DropdownMenuItem(
+                                value: 'EMERGENCY',
+                                child: Text('Emergency',
+                                    overflow: TextOverflow.ellipsis)),
                           ],
                           onChanged: (v) {
                             if (v != null) setState(() => _diagPriority = v);
@@ -600,13 +654,19 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                             margin: const EdgeInsets.only(bottom: 6),
                             child: ListTile(
                               leading: CircleAvatar(
-                                child: Text(d.diagnosticType, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                child: Text(d.diagnosticType,
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold)),
                               ),
                               title: Text(d.testName),
-                              subtitle: Text('Priority: ${d.priority} • Est. Fee: \$${d.fee.toStringAsFixed(2)}'),
+                              subtitle: Text(
+                                  'Priority: ${d.priority} • Est. Fee: \$${d.fee.toStringAsFixed(2)}'),
                               trailing: IconButton(
-                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                                onPressed: () => ctrl.removeDiagnosticOrder(idx),
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.error),
+                                onPressed: () =>
+                                    ctrl.removeDiagnosticOrder(idx),
                               ),
                             ),
                           );
@@ -619,12 +679,17 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
               const SizedBox(height: 28),
 
               // ── Prescriptions Section ───────────────────────────────────
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 4,
                 children: [
-                  Text('Prescription & Medication', style: AppTextStyles.h4),
+                  const Text('Prescription & Medication',
+                      style: AppTextStyles.h4),
                   Text('${ctrl.pendingPrescriptions.length} items added',
-                      style: AppTextStyles.caption.copyWith(color: AppColors.primary)),
+                      style: AppTextStyles.caption
+                          .copyWith(color: AppColors.primary)),
                 ],
               ),
               const SizedBox(height: 12),
@@ -716,12 +781,17 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                           return Card(
                             margin: const EdgeInsets.only(bottom: 6),
                             child: ListTile(
-                              leading: const Icon(Icons.medication_rounded, color: AppColors.primary),
-                              title: Text('${rx.medicationName} (${rx.dosage})'),
-                              subtitle: Text('${rx.frequency} for ${rx.duration} • Total Qty: ${rx.quantity}'),
+                              leading: const Icon(Icons.medication_rounded,
+                                  color: AppColors.primary),
+                              title:
+                                  Text('${rx.medicationName} (${rx.dosage})'),
+                              subtitle: Text(
+                                  '${rx.frequency} for ${rx.duration} • Total Qty: ${rx.quantity}'),
                               trailing: IconButton(
-                                icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                                onPressed: () => ctrl.removePrescriptionOrder(idx),
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.error),
+                                onPressed: () =>
+                                    ctrl.removePrescriptionOrder(idx),
                               ),
                             ),
                           );
@@ -751,11 +821,13 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                           children: [
                             Checkbox(
                               value: ctrl.admissionRequested.value,
-                              onChanged: (v) => ctrl.admissionRequested.value = v ?? false,
+                              onChanged: (v) =>
+                                  ctrl.admissionRequested.value = v ?? false,
                             ),
                             const Expanded(
                               child: Text('Request In-Patient Admission',
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
@@ -764,7 +836,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                           AppTextField(
                             controller: _admissionReasonCtrl,
                             label: 'Admission Clinical Reason',
-                            hint: 'e.g. Acute severe asthma exacerbation requiring nebulization',
+                            hint:
+                                'e.g. Acute severe asthma exacerbation requiring nebulization',
                             onChanged: (v) => ctrl.admissionReason.value = v,
                           ),
                         ],
@@ -786,11 +859,13 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                           children: [
                             Checkbox(
                               value: ctrl.dischargeRecommended.value,
-                              onChanged: (v) => ctrl.dischargeRecommended.value = v ?? false,
+                              onChanged: (v) =>
+                                  ctrl.dischargeRecommended.value = v ?? false,
                             ),
                             const Expanded(
                               child: Text('Recommend Discharge',
-                                  style: TextStyle(fontWeight: FontWeight.bold)),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                             ),
                           ],
                         ),
@@ -799,7 +874,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                           AppTextField(
                             controller: _dischargeSummaryCtrl,
                             label: 'Discharge Summary & Instructions',
-                            hint: 'e.g. Patient stable, continue oral medications at home',
+                            hint:
+                                'e.g. Patient stable, continue oral medications at home',
                             onChanged: (v) => ctrl.dischargeSummary.value = v,
                           ),
                         ],
@@ -831,7 +907,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
 
               // Error notification
               Obx(() {
-                if (ctrl.errorMessage.value.isEmpty) return const SizedBox.shrink();
+                if (ctrl.errorMessage.value.isEmpty)
+                  return const SizedBox.shrink();
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(12),
@@ -839,7 +916,9 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                     color: AppColors.errorLight,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(ctrl.errorMessage.value, style: AppTextStyles.bodySmall.copyWith(color: AppColors.error)),
+                  child: Text(ctrl.errorMessage.value,
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.error)),
                 );
               }),
 
@@ -848,7 +927,8 @@ class _ConsultationPanelState extends State<_ConsultationPanel> {
                     label: 'Finalize & Complete Consultation',
                     onPressed: () async {
                       if (ctrl.diagnosis.value.trim().isEmpty) {
-                        Get.snackbar('Diagnosis Required', 'Please enter a diagnosis before finalizing.');
+                        Get.snackbar('Diagnosis Required',
+                            'Please enter a diagnosis before finalizing.');
                         return;
                       }
                       final ok = await ctrl.completeConsultation(
@@ -886,8 +966,9 @@ class _PatientSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = MediaQuery.of(context).size.width < 600;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isPhone ? 12 : 16),
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
@@ -909,7 +990,9 @@ class _PatientSummary extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    patient.fullName.isNotEmpty ? patient.fullName[0].toUpperCase() : '?',
+                    patient.fullName.isNotEmpty
+                        ? patient.fullName[0].toUpperCase()
+                        : '?',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -923,19 +1006,41 @@ class _PatientSummary extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(patient.fullName, style: AppTextStyles.h4),
+                    Text(
+                      patient.fullName,
+                      style: AppTextStyles.h4,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     Text(
                       '${patient.hospitalNumber} • ${patient.gender} • ${patient.displayAge}',
-                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                      style: AppTextStyles.bodySmall
+                          .copyWith(color: AppColors.textSecondary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              if (patient.bloodGroup != null)
-                Chip(
-                  label: Text('Blood: ${patient.bloodGroup}'),
-                  backgroundColor: AppColors.primary.withOpacity(0.08),
+              if (patient.bloodGroup != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${patient.bloodGroup}',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
+              ],
             ],
           ),
         ],
@@ -963,9 +1068,18 @@ class _VisitSummary extends StatelessWidget {
         spacing: 16,
         runSpacing: 8,
         children: [
-          Text('Visit Type: ${visit.patientType}', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
-          Text('Priority: ${visit.priority.label}', style: TextStyle(color: visit.isEmergency ? AppColors.emergency : AppColors.primary, fontWeight: FontWeight.bold)),
-          Text('Care Stage: ${visit.careStage ?? visit.status}', style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+          Text('Visit Type: ${visit.patientType}',
+              style: AppTextStyles.bodyMedium
+                  .copyWith(fontWeight: FontWeight.w600)),
+          Text('Priority: ${visit.priority.label}',
+              style: TextStyle(
+                  color: visit.isEmergency
+                      ? AppColors.emergency
+                      : AppColors.primary,
+                  fontWeight: FontWeight.bold)),
+          Text('Care Stage: ${visit.careStage ?? visit.status}',
+              style: AppTextStyles.caption
+                  .copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -1032,7 +1146,8 @@ class _AppointmentsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       final today = ctrl.todayAppointments.toList();
-      final all = ctrl.allAppointments.toList()
+      final all = ctrl.allAppointments
+          .toList()
           .where((a) => a.status == 'SCHEDULED' || a.status == 'CONFIRMED')
           .toList();
       final err = ctrl.errorMessage.value;
@@ -1057,7 +1172,9 @@ class _AppointmentsPanel extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          ctrl.isAdmin.value ? 'Appointments (All Doctors)' : 'Appointments',
+                          ctrl.isAdmin.value
+                              ? 'Appointments (All Doctors)'
+                              : 'Appointments',
                           style: AppTextStyles.h4,
                         ),
                         Text(
@@ -1098,7 +1215,8 @@ class _AppointmentsPanel extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.error_outline, size: 16, color: AppColors.error),
+                        const Icon(Icons.error_outline,
+                            size: 16, color: AppColors.error),
                         const SizedBox(width: 6),
                         const Expanded(
                           child: Text(
@@ -1112,12 +1230,15 @@ class _AppointmentsPanel extends StatelessWidget {
                         ),
                         TextButton(
                           onPressed: () => ctrl.refreshAppointments(),
-                          child: const Text('Retry', style: TextStyle(fontSize: 12)),
+                          child: const Text('Retry',
+                              style: TextStyle(fontSize: 12)),
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(err, style: const TextStyle(color: AppColors.error, fontSize: 11)),
+                    Text(err,
+                        style: const TextStyle(
+                            color: AppColors.error, fontSize: 11)),
                   ],
                 ),
               ),
@@ -1141,15 +1262,18 @@ class _AppointmentsPanel extends StatelessWidget {
               ...today.map((apt) => _AppointmentTile(
                     apt: apt,
                     statusColor: _statusColor(apt.status),
-                    onStart: apt.status != 'CANCELLED' && apt.status != 'COMPLETED'
-                        ? () => ctrl.startAppointmentConsultation(
-                            apt, Get.find<AuthController>().user?.uid ?? '')
-                        : null,
+                    onStart:
+                        apt.status != 'CANCELLED' && apt.status != 'COMPLETED'
+                            ? () => ctrl.startAppointmentConsultation(
+                                apt, Get.find<AuthController>().user?.uid ?? '')
+                            : null,
                     onConfirm: apt.status == 'SCHEDULED'
                         ? () => ctrl.confirmAppointment(apt.appointmentId)
                         : null,
-                    onCancel: apt.status != 'CANCELLED' && apt.status != 'COMPLETED'
-                        ? () => ctrl.cancelAppointmentByDoctor(apt.appointmentId)
+                    onCancel: apt.status != 'CANCELLED' &&
+                            apt.status != 'COMPLETED'
+                        ? () =>
+                            ctrl.cancelAppointmentByDoctor(apt.appointmentId)
                         : null,
                   )),
 
@@ -1176,10 +1300,11 @@ class _AppointmentsPanel extends StatelessWidget {
               }).map((apt) => _AppointmentTile(
                     apt: apt,
                     statusColor: _statusColor(apt.status),
-                    onStart: apt.status != 'CANCELLED' && apt.status != 'COMPLETED'
-                        ? () => ctrl.startAppointmentConsultation(
-                            apt, Get.find<AuthController>().user?.uid ?? '')
-                        : null,
+                    onStart:
+                        apt.status != 'CANCELLED' && apt.status != 'COMPLETED'
+                            ? () => ctrl.startAppointmentConsultation(
+                                apt, Get.find<AuthController>().user?.uid ?? '')
+                            : null,
                     onConfirm: apt.status == 'SCHEDULED'
                         ? () => ctrl.confirmAppointment(apt.appointmentId)
                         : null,
@@ -1236,8 +1361,7 @@ class _AppointmentTile extends StatelessWidget {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(6),
@@ -1256,7 +1380,8 @@ class _AppointmentTile extends StatelessWidget {
           if (apt.doctorName.isNotEmpty) ...[
             Row(
               children: [
-                const Icon(Icons.person_pin_rounded, size: 13, color: AppColors.primary),
+                const Icon(Icons.person_pin_rounded,
+                    size: 13, color: AppColors.primary),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -1287,33 +1412,38 @@ class _AppointmentTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
           ],
-          if (!compact && (onStart != null || onConfirm != null || onCancel != null)) ...[
+          if (!compact &&
+              (onStart != null || onConfirm != null || onCancel != null)) ...[
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 6,
+              runSpacing: 4,
               children: [
                 if (onStart != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 6),
-                    child: ElevatedButton.icon(
-                      onPressed: onStart,
-                      icon: const Icon(Icons.play_arrow_rounded, size: 15),
-                      label: const Text('Start', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
+                  ElevatedButton.icon(
+                    onPressed: onStart,
+                    icon: const Icon(Icons.play_arrow_rounded, size: 15),
+                    label: const Text('Start',
+                        style: TextStyle(
+                            fontSize: 11, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
                 if (onConfirm != null)
                   TextButton.icon(
                     onPressed: onConfirm,
                     icon: const Icon(Icons.check_circle_outline, size: 15),
-                    label: const Text('Confirm', style: TextStyle(fontSize: 12)),
+                    label:
+                        const Text('Confirm', style: TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
                         foregroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(horizontal: 8)),
@@ -1335,4 +1465,3 @@ class _AppointmentTile extends StatelessWidget {
     );
   }
 }
-

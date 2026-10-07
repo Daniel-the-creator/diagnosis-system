@@ -198,22 +198,25 @@ class _SignUpViewState extends State<SignUpView> {
             ),
 
           // ── Right panel (Sign Up form) ─────────────────────────
-          Container(
-            width: isWide ? 500 : size.width,
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-            ),
-            child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+              ),
+              child: SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: isWide ? 40 : 20, vertical: 32),
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(maxWidth: isWide ? 500 : 440),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
                         if (!isWide) ...[
                           Container(
                             width: 48,
@@ -525,7 +528,9 @@ class _SignUpViewState extends State<SignUpView> {
               ),
             ),
           ),
-        ],
+        ),
+      ),
+    ],
       ),
     );
   }

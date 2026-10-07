@@ -183,6 +183,7 @@ class _PatientPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = MediaQuery.of(context).size.width < 600;
     return Obx(() {
       final serving = ctrl.currentlyServing.value;
       final patient = ctrl.currentPatient.value;
@@ -196,7 +197,7 @@ class _PatientPanel extends StatelessWidget {
       }
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(isPhone ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -373,8 +374,12 @@ class _PatientInfoFormState extends State<_PatientInfoForm> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.patient.fullName,
-                        style: AppTextStyles.headlineSmall),
+                    Text(
+                      widget.patient.fullName,
+                      style: AppTextStyles.headlineSmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     Text(widget.patient.hospitalNumber,
                         style: AppTextStyles.hospitalNumber),
                   ],

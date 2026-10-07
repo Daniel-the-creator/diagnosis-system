@@ -15,7 +15,10 @@ class DiagnosticDashboardView extends StatelessWidget {
   const DiagnosticDashboardView({super.key});
 
   static const List<SidebarItem> _sidebar = [
-    SidebarItem(icon: Icons.biotech, label: 'Diagnostics Workspace', route: AppRoutes.diagnosticDashboard),
+    SidebarItem(
+        icon: Icons.biotech,
+        label: 'Diagnostics Workspace',
+        route: AppRoutes.diagnosticDashboard),
   ];
 
   @override
@@ -50,7 +53,8 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
       _ctrl = Get.find<DiagnosticController>();
     } else {
       _ctrl = Get.put(
-        DiagnosticController(Get.find(), Get.find(), notificationRepo: Get.find()),
+        DiagnosticController(Get.find(), Get.find(),
+            notificationRepo: Get.find()),
       );
     }
   }
@@ -65,7 +69,8 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isWide = screenWidth > 900;
-    final queueWidth = screenWidth > 1300 ? 420.0 : (screenWidth > 1100 ? 360.0 : 310.0);
+    final queueWidth =
+        screenWidth > 1300 ? 420.0 : (screenWidth > 1100 ? 360.0 : 310.0);
 
     return Obx(() {
       final hasSelected = _ctrl.currentRequest.value != null;
@@ -88,11 +93,13 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
                         children: [
                           Container(
                             color: AppColors.surface,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             child: Row(
                               children: [
                                 TextButton.icon(
-                                  onPressed: () => _ctrl.currentRequest.value = null,
+                                  onPressed: () =>
+                                      _ctrl.currentRequest.value = null,
                                   icon: const Icon(Icons.arrow_back),
                                   label: const Text('Back to Diagnostic Queue'),
                                 ),
@@ -117,15 +124,28 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            const Text('Diagnostic Unit: ', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Diagnostic Unit: ',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(width: 12),
             Obx(() {
               return SegmentedButton<String>(
                 segments: const [
-                  ButtonSegment(value: 'ALL', label: Text('All Units'), icon: Icon(Icons.grid_view_rounded)),
-                  ButtonSegment(value: 'LAB', label: Text('Laboratory'), icon: Icon(Icons.biotech)),
-                  ButtonSegment(value: 'XR', label: Text('X-Ray & Radiology'), icon: Icon(Icons.photo_camera_front)),
-                  ButtonSegment(value: 'SCAN', label: Text('Ultrasound & Scan'), icon: Icon(Icons.radar)),
+                  ButtonSegment(
+                      value: 'ALL',
+                      label: Text('All Units'),
+                      icon: Icon(Icons.grid_view_rounded)),
+                  ButtonSegment(
+                      value: 'LAB',
+                      label: Text('Laboratory'),
+                      icon: Icon(Icons.biotech)),
+                  ButtonSegment(
+                      value: 'XR',
+                      label: Text('X-Ray & Radiology'),
+                      icon: Icon(Icons.photo_camera_front)),
+                  ButtonSegment(
+                      value: 'SCAN',
+                      label: Text('Ultrasound & Scan'),
+                      icon: Icon(Icons.radar)),
                 ],
                 selected: {_ctrl.selectedType.value},
                 onSelectionChanged: (set) => _ctrl.setDiagnosticType(set.first),
@@ -148,7 +168,8 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle_outline, size: 48, color: AppColors.textSecondary),
+                Icon(Icons.check_circle_outline,
+                    size: 48, color: AppColors.textSecondary),
                 SizedBox(height: 12),
                 Text('No pending diagnostic requests for this unit.'),
               ],
@@ -163,30 +184,45 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (ctx, idx) {
           final req = reqs[idx];
-          final isSelected = _ctrl.currentRequest.value?.diagnosticRequestId == req.diagnosticRequestId;
+          final isSelected = _ctrl.currentRequest.value?.diagnosticRequestId ==
+              req.diagnosticRequestId;
 
           return Card(
             elevation: isSelected ? 3 : 1,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
-              side: isSelected ? const BorderSide(color: AppColors.primary, width: 2) : BorderSide.none,
+              side: isSelected
+                  ? const BorderSide(color: AppColors.primary, width: 2)
+                  : BorderSide.none,
             ),
             child: ListTile(
               contentPadding: const EdgeInsets.all(14),
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(req.patientName.isNotEmpty ? req.patientName : 'Patient', style: AppTextStyles.h4),
+                  Expanded(
+                    child: Text(
+                      req.patientName.isNotEmpty ? req.patientName : 'Patient',
+                      style: AppTextStyles.h4,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: req.priority == 'EMERGENCY' ? AppColors.emergency.withOpacity(0.15) : AppColors.primary.withOpacity(0.1),
+                      color: req.priority == 'EMERGENCY'
+                          ? AppColors.emergency.withOpacity(0.15)
+                          : AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       req.priority,
                       style: TextStyle(
-                        color: req.priority == 'EMERGENCY' ? AppColors.emergency : AppColors.primary,
+                        color: req.priority == 'EMERGENCY'
+                            ? AppColors.emergency
+                            : AppColors.primary,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
@@ -198,16 +234,21 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 6),
-                  Text('Test: ${req.testName}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Test: ${req.testName}',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
-                  Text('Dr. ${req.doctorName} • Status: ${req.status}', style: AppTextStyles.caption),
+                  Text('Dr. ${req.doctorName} • Status: ${req.status}',
+                      style: AppTextStyles.caption),
                   if (req.instructions.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text('Instructions: ${req.instructions}', style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                    Text('Instructions: ${req.instructions}',
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textSecondary)),
                   ],
                 ],
               ),
               trailing: AppButton(
+                height: 36,
                 text: isSelected ? 'Active' : 'Start Test',
                 onPressed: () => _ctrl.startProcessing(req),
               ),
@@ -219,6 +260,9 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
   }
 
   Widget _buildProcessingPanel() {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isPhone = screenWidth < 600;
+
     return Obx(() {
       final req = _ctrl.currentRequest.value;
 
@@ -227,40 +271,46 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.assignment_turned_in_outlined, size: 54, color: AppColors.textSecondary),
+              Icon(Icons.assignment_turned_in_outlined,
+                  size: 54, color: AppColors.textSecondary),
               SizedBox(height: 12),
-              Text('Select a test from the queue to record findings and release reports.'),
+              Text(
+                  'Select a test from the queue to record findings and release reports.'),
             ],
           ),
         );
       }
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(isPhone ? 16 : 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppCard(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(isPhone ? 14 : 20),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.science_rounded, color: AppColors.primary, size: 32),
+                      child: const Icon(Icons.science_rounded,
+                          color: AppColors.primary, size: 28),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${req.diagnosticTypeLabel}: ${req.testName}', style: AppTextStyles.h3),
+                          Text('${req.diagnosticTypeLabel}: ${req.testName}',
+                              style: isPhone ? AppTextStyles.h4 : AppTextStyles.h3),
                           const SizedBox(height: 4),
-                          Text('Patient: ${req.patientName} • Ordered by: Dr. ${req.doctorName}', style: AppTextStyles.bodyMedium),
+                          Text(
+                              'Patient: ${req.patientName} • Ordered by: Dr. ${req.doctorName}',
+                              style: AppTextStyles.bodyMedium),
                         ],
                       ),
                     ),
@@ -274,27 +324,31 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
             ),
             const SizedBox(height: 24),
 
-            Text('Test Findings & Laboratory Data *', style: AppTextStyles.h4),
+            const Text('Test Findings & Laboratory Data *',
+                style: AppTextStyles.h4),
             const SizedBox(height: 8),
             AppTextField(
               label: 'Detailed Findings',
-              hint: 'e.g. Hemoglobin: 13.5 g/dL, WBC: 6,500 /mcL, Platelets: 250,000 /mcL (Normal limits)',
+              hint:
+                  'e.g. Hemoglobin: 13.5 g/dL, WBC: 6,500 /mcL, Platelets: 250,000 /mcL (Normal limits)',
               maxLines: 4,
               onChanged: (v) => _ctrl.findings.value = v,
             ),
             const SizedBox(height: 16),
 
-            Text('Clinical Interpretation & Impressions', style: AppTextStyles.h4),
+            const Text('Clinical Interpretation & Impressions',
+                style: AppTextStyles.h4),
             const SizedBox(height: 8),
             AppTextField(
               label: 'Interpretation',
-              hint: 'e.g. Normal complete blood count profile. No acute abnormalities.',
+              hint:
+                  'e.g. Normal complete blood count profile. No acute abnormalities.',
               maxLines: 2,
               onChanged: (v) => _ctrl.interpretation.value = v,
             ),
             const SizedBox(height: 16),
 
-            Text('Specialist Notes', style: AppTextStyles.h4),
+            const Text('Specialist Notes', style: AppTextStyles.h4),
             const SizedBox(height: 8),
             AppTextField(
               label: 'Notes & Recommendations',
@@ -331,7 +385,8 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
                 spacing: 8,
                 children: _ctrl.attachments.asMap().entries.map((e) {
                   return Chip(
-                    label: Text('File ${e.key + 1}', style: const TextStyle(fontSize: 12)),
+                    label: Text('File ${e.key + 1}',
+                        style: const TextStyle(fontSize: 12)),
                     onDeleted: () => _ctrl.removeAttachment(e.key),
                   );
                 }).toList(),
@@ -341,20 +396,27 @@ class _DiagnosticBodyState extends State<_DiagnosticBody> {
 
             // Release to Patient toggle
             SwitchListTile(
-              title: const Text('Release Report to Patient Portal', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: const Text('When enabled, the patient can view this report immediately in their mobile / web portal.'),
+              title: const Text('Release Report to Patient Portal',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              subtitle: const Text(
+                  'When enabled, the patient can view this report immediately in their mobile / web portal.'),
               value: _ctrl.releaseToPatient.value,
               onChanged: (v) => _ctrl.releaseToPatient.value = v,
             ),
             const SizedBox(height: 24),
 
             Obx(() {
-              if (_ctrl.errorMessage.value.isEmpty) return const SizedBox.shrink();
+              if (_ctrl.errorMessage.value.isEmpty)
+                return const SizedBox.shrink();
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(8)),
-                child: Text(_ctrl.errorMessage.value, style: AppTextStyles.bodySmall.copyWith(color: AppColors.error)),
+                decoration: BoxDecoration(
+                    color: AppColors.errorLight,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Text(_ctrl.errorMessage.value,
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.error)),
               );
             }),
 

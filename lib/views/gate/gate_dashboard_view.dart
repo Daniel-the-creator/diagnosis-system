@@ -133,8 +133,9 @@ class _SearchTabState extends State<_SearchTab> {
   Widget build(BuildContext context) {
     final ctrl = widget.ctrl;
     final auth = widget.auth;
+    final isPhone = MediaQuery.of(context).size.width < 600;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isPhone ? 16 : 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -238,8 +239,12 @@ class _SelectedPatientPanel extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(patient.fullName,
-                              style: AppTextStyles.headlineSmall),
+                          Text(
+                            patient.fullName,
+                            style: AppTextStyles.headlineSmall,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
@@ -423,9 +428,10 @@ class _QueueTicket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEmergency = patientType == 'EMERGENCY';
+    final isPhone = MediaQuery.of(context).size.width < 600;
     return Container(
       margin: const EdgeInsets.only(top: 24),
-      padding: const EdgeInsets.all(28),
+      padding: EdgeInsets.all(isPhone ? 20 : 28),
       decoration: BoxDecoration(
         gradient: isEmergency
             ? AppColors.emergencyGradient
@@ -471,6 +477,9 @@ class _QueueTicket extends StatelessWidget {
             ),
             child: Text(
               '${patient.fullName}  •  ${isEmergency ? '🚨 Emergency' : 'Regular'}',
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 14,
@@ -560,8 +569,52 @@ class _RegisterTabState extends State<_RegisterTab> {
 
   @override
   Widget build(BuildContext context) {
+    final isPhone = MediaQuery.of(context).size.width < 600;
+    final genderField = DropdownButtonFormField<String>(
+      initialValue: _gender,
+      decoration: InputDecoration(
+        labelText: 'Gender *',
+        filled: true,
+        fillColor: AppColors.surfaceVariant,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+      ),
+      items: ['Male', 'Female', 'Other']
+          .map((g) => DropdownMenuItem(value: g, child: Text(g)))
+          .toList(),
+      onChanged: (v) => setState(() => _gender = v!),
+    );
+
+    final dobField = AppTextField(
+      label: 'Date of Birth',
+      readOnly: true,
+      controller: _dobCtrl,
+      prefixIcon: Icons.calendar_today,
+      hint: 'DD MMM YYYY',
+      onTap: () async {
+        final d = await showDatePicker(
+          context: context,
+          initialDate: DateTime(1990),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (d != null) {
+          setState(() {
+            _dob = d;
+            _dobCtrl.text = AppUtils.formatDate(_dob);
+          });
+        }
+      },
+    );
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(isPhone ? 16 : 24),
       child: Form(
         key: _formKey,
         child: Column(
@@ -589,57 +642,20 @@ class _RegisterTabState extends State<_RegisterTab> {
             ),
             const SizedBox(height: 16),
 
-            // Gender + DOB row
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    initialValue: _gender,
-                    decoration: InputDecoration(
-                      labelText: 'Gender *',
-                      filled: true,
-                      fillColor: AppColors.surfaceVariant,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: const BorderSide(color: AppColors.border),
-                      ),
-                    ),
-                    items: ['Male', 'Female', 'Other']
-                        .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                        .toList(),
-                    onChanged: (v) => setState(() => _gender = v!),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppTextField(
-                    label: 'Date of Birth',
-                    readOnly: true,
-                    controller: _dobCtrl,
-                    prefixIcon: Icons.calendar_today,
-                    hint: 'DD MMM YYYY',
-                    onTap: () async {
-                      final d = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime(1990),
-                        firstDate: DateTime(1900),
-                        lastDate: DateTime.now(),
-                      );
-                      if (d != null) {
-                        setState(() {
-                          _dob = d;
-                          _dobCtrl.text = AppUtils.formatDate(_dob);
-                        });
-                      }
-                    },
-                  ),
-                ),
-              ],
-            ),
+            // Gender + DOB
+            if (isPhone) ...[
+              genderField,
+              const SizedBox(height: 16),
+              dobField,
+            ] else ...[
+              Row(
+                children: [
+                  Expanded(child: genderField),
+                  const SizedBox(width: 12),
+                  Expanded(child: dobField),
+                ],
+              ),
+            ],
             const SizedBox(height: 16),
 
             // Phone

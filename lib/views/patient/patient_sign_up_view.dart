@@ -85,24 +85,34 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
       phone: _phoneCtrl.text.trim(),
       gender: _gender,
       dateOfBirth: _dob,
-      address: _addressCtrl.text.trim().isNotEmpty ? _addressCtrl.text.trim() : null,
-      emergencyContactName:
-          _emergencyNameCtrl.text.trim().isNotEmpty ? _emergencyNameCtrl.text.trim() : null,
-      emergencyContactPhone:
-          _emergencyPhoneCtrl.text.trim().isNotEmpty ? _emergencyPhoneCtrl.text.trim() : null,
+      address:
+          _addressCtrl.text.trim().isNotEmpty ? _addressCtrl.text.trim() : null,
+      emergencyContactName: _emergencyNameCtrl.text.trim().isNotEmpty
+          ? _emergencyNameCtrl.text.trim()
+          : null,
+      emergencyContactPhone: _emergencyPhoneCtrl.text.trim().isNotEmpty
+          ? _emergencyPhoneCtrl.text.trim()
+          : null,
       bloodGroup: _bloodGroup,
       genotype: _genotype,
       allergies: rawAllergies,
-      medicalHistory: _medHistoryCtrl.text.trim().isNotEmpty ? _medHistoryCtrl.text.trim() : null,
-      insuranceProvider:
-          _insuranceProviderCtrl.text.trim().isNotEmpty ? _insuranceProviderCtrl.text.trim() : null,
-      insuranceNumber:
-          _insuranceNumCtrl.text.trim().isNotEmpty ? _insuranceNumCtrl.text.trim() : null,
+      medicalHistory: _medHistoryCtrl.text.trim().isNotEmpty
+          ? _medHistoryCtrl.text.trim()
+          : null,
+      insuranceProvider: _insuranceProviderCtrl.text.trim().isNotEmpty
+          ? _insuranceProviderCtrl.text.trim()
+          : null,
+      insuranceNumber: _insuranceNumCtrl.text.trim().isNotEmpty
+          ? _insuranceNumCtrl.text.trim()
+          : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isPhone = screenWidth < 600;
+
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
@@ -116,14 +126,16 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          padding: EdgeInsets.symmetric(
+              horizontal: isPhone ? 14 : 24, vertical: isPhone ? 14 : 20),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 760),
             child: Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               child: Padding(
-                padding: const EdgeInsets.all(32),
+                padding: EdgeInsets.all(isPhone ? 18 : 32),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -137,18 +149,24 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                               color: AppColors.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.person_add_rounded, color: AppColors.primary, size: 28),
+                            child: const Icon(Icons.person_add_rounded,
+                                color: AppColors.primary, size: 28),
                           ),
                           const SizedBox(width: 14),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Create Patient Account', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.bold)),
-                              Text(
-                                'Register to access live queue tracking, test results & digital health records',
-                                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
-                              ),
-                            ],
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Create Patient Account',
+                                    style: (isPhone ? AppTextStyles.h3 : AppTextStyles.h2)
+                                        .copyWith(fontWeight: FontWeight.bold)),
+                                Text(
+                                  'Register to access live queue tracking, test results & digital health records',
+                                  style: AppTextStyles.bodySmall
+                                      .copyWith(color: AppColors.textSecondary),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -165,14 +183,18 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                           decoration: BoxDecoration(
                             color: AppColors.error.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                            border: Border.all(
+                                color: AppColors.error.withOpacity(0.3)),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                              const Icon(Icons.error_outline,
+                                  color: AppColors.error, size: 20),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Text(error, style: AppTextStyles.bodySmall.copyWith(color: AppColors.error)),
+                                child: Text(error,
+                                    style: AppTextStyles.bodySmall
+                                        .copyWith(color: AppColors.error)),
                               ),
                             ],
                           ),
@@ -180,70 +202,141 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                       }),
 
                       // ── Personal Info ──────────────────────────
-                      Text('Personal Information', style: AppTextStyles.h4.copyWith(color: AppColors.primary)),
+                      Text('Personal Information',
+                          style: AppTextStyles.h4
+                              .copyWith(color: AppColors.primary)),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: _nameCtrl,
-                              label: 'Full Name *',
-                              hint: 'e.g. Sarah Connor',
-                              prefixIcon: const Icon(Icons.person_outline),
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Full name is required' : null,
-                            ),
+                      if (isPhone) ...[
+                        AppTextField(
+                          controller: _nameCtrl,
+                          label: 'Full Name *',
+                          hint: 'e.g. Sarah Connor',
+                          prefixIcon: const Icon(Icons.person_outline),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Full name is required'
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          initialValue: _gender,
+                          decoration: const InputDecoration(
+                            labelText: 'Gender *',
+                            prefixIcon: Icon(Icons.wc_outlined),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _gender,
-                              decoration: const InputDecoration(
-                                labelText: 'Gender *',
-                                prefixIcon: Icon(Icons.wc_outlined),
+                          items: ['Male', 'Female', 'Other']
+                              .map((g) => DropdownMenuItem(
+                                  value: g, child: Text(g)))
+                              .toList(),
+                          onChanged: (v) {
+                            if (v != null) setState(() => _gender = v);
+                          },
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                controller: _nameCtrl,
+                                label: 'Full Name *',
+                                hint: 'e.g. Sarah Connor',
+                                prefixIcon: const Icon(Icons.person_outline),
+                                validator: (v) => (v == null || v.trim().isEmpty)
+                                    ? 'Full name is required'
+                                    : null,
                               ),
-                              items: ['Male', 'Female', 'Other']
-                                  .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                                  .toList(),
-                              onChanged: (v) {
-                                if (v != null) setState(() => _gender = v);
-                              },
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: _gender,
+                                decoration: const InputDecoration(
+                                  labelText: 'Gender *',
+                                  prefixIcon: Icon(Icons.wc_outlined),
+                                ),
+                                items: ['Male', 'Female', 'Other']
+                                    .map((g) => DropdownMenuItem(
+                                        value: g, child: Text(g)))
+                                    .toList(),
+                                onChanged: (v) {
+                                  if (v != null) setState(() => _gender = v);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      if (isPhone) ...[
+                        InkWell(
+                          onTap: _pickDob,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'Date of Birth',
+                              prefixIcon: Icon(Icons.cake_outlined),
+                            ),
+                            child: Text(
+                              _dob == null
+                                  ? 'Select Date of Birth'
+                                  : DateFormat.yMMMd().format(_dob!),
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: _dob == null
+                                    ? AppColors.textSecondary
+                                    : AppColors.textPrimary,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: _pickDob,
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  labelText: 'Date of Birth',
-                                  prefixIcon: Icon(Icons.cake_outlined),
-                                ),
-                                child: Text(
-                                  _dob == null ? 'Select Date of Birth' : DateFormat.yMMMd().format(_dob!),
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: _dob == null ? AppColors.textSecondary : AppColors.textPrimary,
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          controller: _phoneCtrl,
+                          label: 'Phone Number *',
+                          hint: 'e.g. +1 555-0199',
+                          keyboardType: TextInputType.phone,
+                          prefixIcon: const Icon(Icons.phone_outlined),
+                          validator: (v) => (v == null || v.trim().isEmpty)
+                              ? 'Phone number is required'
+                              : null,
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: _pickDob,
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Date of Birth',
+                                    prefixIcon: Icon(Icons.cake_outlined),
+                                  ),
+                                  child: Text(
+                                    _dob == null
+                                        ? 'Select Date of Birth'
+                                        : DateFormat.yMMMd().format(_dob!),
+                                    style: AppTextStyles.bodyMedium.copyWith(
+                                      color: _dob == null
+                                          ? AppColors.textSecondary
+                                          : AppColors.textPrimary,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AppTextField(
-                              controller: _phoneCtrl,
-                              label: 'Phone Number *',
-                              hint: 'e.g. +1 555-0199',
-                              keyboardType: TextInputType.phone,
-                              prefixIcon: const Icon(Icons.phone_outlined),
-                              validator: (v) => (v == null || v.trim().isEmpty) ? 'Phone number is required' : null,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: AppTextField(
+                                controller: _phoneCtrl,
+                                label: 'Phone Number *',
+                                hint: 'e.g. +1 555-0199',
+                                keyboardType: TextInputType.phone,
+                                prefixIcon: const Icon(Icons.phone_outlined),
+                                validator: (v) => (v == null || v.trim().isEmpty)
+                                    ? 'Phone number is required'
+                                    : null,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       AppTextField(
                         controller: _addressCtrl,
@@ -253,65 +346,138 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                       ),
 
                       const SizedBox(height: 24),
-                      Text('Emergency Contact', style: AppTextStyles.h4.copyWith(color: AppColors.primary)),
+                      Text('Emergency Contact',
+                          style: AppTextStyles.h4
+                              .copyWith(color: AppColors.primary)),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: _emergencyNameCtrl,
-                              label: 'Contact Name',
-                              hint: 'e.g. John Connor (Spouse)',
-                              prefixIcon: const Icon(Icons.contact_phone_outlined),
+                      if (isPhone) ...[
+                        AppTextField(
+                          controller: _emergencyNameCtrl,
+                          label: 'Contact Name',
+                          hint: 'e.g. John Connor (Spouse)',
+                          prefixIcon:
+                              const Icon(Icons.contact_phone_outlined),
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          controller: _emergencyPhoneCtrl,
+                          label: 'Contact Phone',
+                          hint: 'e.g. +1 555-0200',
+                          keyboardType: TextInputType.phone,
+                          prefixIcon:
+                              const Icon(Icons.phone_in_talk_outlined),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                controller: _emergencyNameCtrl,
+                                label: 'Contact Name',
+                                hint: 'e.g. John Connor (Spouse)',
+                                prefixIcon:
+                                    const Icon(Icons.contact_phone_outlined),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AppTextField(
-                              controller: _emergencyPhoneCtrl,
-                              label: 'Contact Phone',
-                              hint: 'e.g. +1 555-0200',
-                              keyboardType: TextInputType.phone,
-                              prefixIcon: const Icon(Icons.phone_in_talk_outlined),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: AppTextField(
+                                controller: _emergencyPhoneCtrl,
+                                label: 'Contact Phone',
+                                hint: 'e.g. +1 555-0200',
+                                keyboardType: TextInputType.phone,
+                                prefixIcon:
+                                    const Icon(Icons.phone_in_talk_outlined),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
 
                       const SizedBox(height: 24),
-                      Text('Medical Information', style: AppTextStyles.h4.copyWith(color: AppColors.primary)),
+                      Text('Medical Information',
+                          style: AppTextStyles.h4
+                              .copyWith(color: AppColors.primary)),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _bloodGroup,
-                              decoration: const InputDecoration(
-                                labelText: 'Blood Group',
-                                prefixIcon: Icon(Icons.bloodtype_outlined),
-                              ),
-                              items: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
-                                  .map((bg) => DropdownMenuItem(value: bg, child: Text(bg)))
-                                  .toList(),
-                              onChanged: (v) => setState(() => _bloodGroup = v),
-                            ),
+                      if (isPhone) ...[
+                        DropdownButtonFormField<String>(
+                          initialValue: _bloodGroup,
+                          decoration: const InputDecoration(
+                            labelText: 'Blood Group',
+                            prefixIcon: Icon(Icons.bloodtype_outlined),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _genotype,
-                              decoration: const InputDecoration(
-                                labelText: 'Genotype',
-                                prefixIcon: Icon(Icons.biotech_outlined),
-                              ),
-                              items: ['AA', 'AS', 'SS', 'AC']
-                                  .map((gt) => DropdownMenuItem(value: gt, child: Text(gt)))
-                                  .toList(),
-                              onChanged: (v) => setState(() => _genotype = v),
-                            ),
+                          items: [
+                            'A+',
+                            'A-',
+                            'B+',
+                            'B-',
+                            'AB+',
+                            'AB-',
+                            'O+',
+                            'O-'
+                          ]
+                              .map((bg) => DropdownMenuItem(
+                                  value: bg, child: Text(bg)))
+                              .toList(),
+                          onChanged: (v) => setState(() => _bloodGroup = v),
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          initialValue: _genotype,
+                          decoration: const InputDecoration(
+                            labelText: 'Genotype',
+                            prefixIcon: Icon(Icons.biotech_outlined),
                           ),
-                        ],
-                      ),
+                          items: ['AA', 'AS', 'SS', 'AC']
+                              .map((gt) => DropdownMenuItem(
+                                  value: gt, child: Text(gt)))
+                              .toList(),
+                          onChanged: (v) => setState(() => _genotype = v),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: _bloodGroup,
+                                decoration: const InputDecoration(
+                                  labelText: 'Blood Group',
+                                  prefixIcon: Icon(Icons.bloodtype_outlined),
+                                ),
+                                items: [
+                                  'A+',
+                                  'A-',
+                                  'B+',
+                                  'B-',
+                                  'AB+',
+                                  'AB-',
+                                  'O+',
+                                  'O-'
+                                ]
+                                    .map((bg) => DropdownMenuItem(
+                                        value: bg, child: Text(bg)))
+                                    .toList(),
+                                onChanged: (v) => setState(() => _bloodGroup = v),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                initialValue: _genotype,
+                                decoration: const InputDecoration(
+                                  labelText: 'Genotype',
+                                  prefixIcon: Icon(Icons.biotech_outlined),
+                                ),
+                                items: ['AA', 'AS', 'SS', 'AC']
+                                    .map((gt) => DropdownMenuItem(
+                                        value: gt, child: Text(gt)))
+                                    .toList(),
+                                onChanged: (v) => setState(() => _genotype = v),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       AppTextField(
                         controller: _allergiesCtrl,
@@ -328,7 +494,9 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                       ),
 
                       const SizedBox(height: 24),
-                      Text('Account Security', style: AppTextStyles.h4.copyWith(color: AppColors.primary)),
+                      Text('Account Security',
+                          style: AppTextStyles.h4
+                              .copyWith(color: AppColors.primary)),
                       const SizedBox(height: 16),
                       AppTextField(
                         controller: _emailCtrl,
@@ -337,51 +505,103 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                         keyboardType: TextInputType.emailAddress,
                         prefixIcon: const Icon(Icons.email_outlined),
                         validator: (v) {
-                          if (v == null || v.trim().isEmpty) return 'Email is required';
-                          if (!GetUtils.isEmail(v.trim())) return 'Enter a valid email address';
+                          if (v == null || v.trim().isEmpty)
+                            return 'Email is required';
+                          if (!GetUtils.isEmail(v.trim()))
+                            return 'Enter a valid email address';
                           return null;
                         },
                       ),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AppTextField(
-                              controller: _passCtrl,
-                              label: 'Password *',
-                              hint: 'Minimum 6 characters',
-                              obscureText: _obscure,
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                                onPressed: () => setState(() => _obscure = !_obscure),
-                              ),
-                              validator: (v) {
-                                if (v == null || v.length < 6) return 'Password must be at least 6 chars';
-                                return null;
-                              },
-                            ),
+                      if (isPhone) ...[
+                        AppTextField(
+                          controller: _passCtrl,
+                          label: 'Password *',
+                          hint: 'Minimum 6 characters',
+                          obscureText: _obscure,
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined),
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AppTextField(
-                              controller: _confirmPassCtrl,
-                              label: 'Confirm Password *',
-                              hint: 'Re-enter password',
-                              obscureText: _obscureConfirm,
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscureConfirm ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                                onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                              ),
-                              validator: (v) {
-                                if (v != _passCtrl.text) return 'Passwords do not match';
-                                return null;
-                              },
-                            ),
+                          validator: (v) {
+                            if (v == null || v.length < 6)
+                              return 'Password must be at least 6 chars';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        AppTextField(
+                          controller: _confirmPassCtrl,
+                          label: 'Confirm Password *',
+                          hint: 'Re-enter password',
+                          obscureText: _obscureConfirm,
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(_obscureConfirm
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined),
+                            onPressed: () => setState(
+                                () => _obscureConfirm = !_obscureConfirm),
                           ),
-                        ],
-                      ),
+                          validator: (v) {
+                            if (v != _passCtrl.text)
+                              return 'Passwords do not match';
+                            return null;
+                          },
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AppTextField(
+                                controller: _passCtrl,
+                                label: 'Password *',
+                                hint: 'Minimum 6 characters',
+                                obscureText: _obscure,
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: IconButton(
+                                  icon: Icon(_obscure
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined),
+                                  onPressed: () =>
+                                      setState(() => _obscure = !_obscure),
+                                ),
+                                validator: (v) {
+                                  if (v == null || v.length < 6)
+                                    return 'Password must be at least 6 chars';
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: AppTextField(
+                                controller: _confirmPassCtrl,
+                                label: 'Confirm Password *',
+                                hint: 'Re-enter password',
+                                obscureText: _obscureConfirm,
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                suffixIcon: IconButton(
+                                  icon: Icon(_obscureConfirm
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined),
+                                  onPressed: () => setState(
+                                      () => _obscureConfirm = !_obscureConfirm),
+                                ),
+                                validator: (v) {
+                                  if (v != _passCtrl.text)
+                                    return 'Passwords do not match';
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
 
                       const SizedBox(height: 32),
                       Obx(() => AppButton(
@@ -394,7 +614,8 @@ class _PatientSignUpViewState extends State<PatientSignUpView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Already registered? ', style: AppTextStyles.bodySmall),
+                          const Text('Already registered? ',
+                              style: AppTextStyles.bodySmall),
                           GestureDetector(
                             onTap: () => Get.toNamed(AppRoutes.patientLogin),
                             child: Text(

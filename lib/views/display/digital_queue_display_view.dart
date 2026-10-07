@@ -53,11 +53,12 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isNarrow = constraints.maxWidth < 900;
-                final padding = isNarrow ? 16.0 : 28.0;
+                final isPhone = constraints.maxWidth < 600;
+                final padding = isPhone ? 12.0 : (isNarrow ? 16.0 : 28.0);
 
                 return Column(
                   children: [
-                    _buildDisplayHeader(isNarrow),
+                    _buildDisplayHeader(isNarrow, isPhone),
                     const Divider(height: 1, color: Colors.white24),
                     Expanded(
                       child: isNarrow
@@ -65,9 +66,9 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                               padding: EdgeInsets.all(padding),
                               child: Column(
                                 children: [
-                                  _buildNowServingPanel(isNarrow),
-                                  const SizedBox(height: 18),
-                                  _buildUpNextPanel(isNarrow),
+                                  _buildNowServingPanel(isNarrow, isPhone),
+                                  SizedBox(height: isPhone ? 14 : 18),
+                                  _buildUpNextPanel(isNarrow, isPhone),
                                 ],
                               ),
                             )
@@ -78,12 +79,12 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                                   // Left 60%: NOW SERVING (Prominent & High Contrast)
                                   Expanded(
                                       flex: 6,
-                                      child: _buildNowServingPanel(isNarrow)),
+                                      child: _buildNowServingPanel(isNarrow, isPhone)),
                                   const SizedBox(width: 28),
                                   // Right 40%: UP NEXT
                                   Expanded(
                                       flex: 4,
-                                      child: _buildUpNextPanel(isNarrow)),
+                                      child: _buildUpNextPanel(isNarrow, isPhone)),
                                 ],
                               ),
                             ),
@@ -98,10 +99,11 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     );
   }
 
-  Widget _buildDisplayHeader(bool isNarrow) {
+  Widget _buildDisplayHeader(bool isNarrow, [bool isPhone = false]) {
     if (isNarrow) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(
+            horizontal: isPhone ? 12 : 16, vertical: isPhone ? 10 : 12),
         color: const Color(0xFF1E293B),
         child: Column(
           children: [
@@ -112,25 +114,25 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                   tooltip: 'Exit Display',
                   onPressed: _exitDisplay,
                   icon: const Icon(Icons.arrow_back_rounded,
-                      color: Colors.white, size: 20),
+                      color: Colors.white, size: 18),
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.white.withValues(alpha: 0.12),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    padding: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(7),
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'CareFlow HMS',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: isPhone ? 14 : 16,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
                         ),
@@ -141,7 +143,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                         'Queue & Waiting Room Display',
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
-                          fontSize: 11,
+                          fontSize: isPhone ? 10 : 11,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -162,22 +164,22 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                           : Icons.volume_off_rounded,
                       color:
                           isAudioOn ? const Color(0xFF38BDF8) : Colors.white38,
-                      size: 22,
+                      size: isPhone ? 20 : 22,
                     ),
                   );
                 }),
-                const SizedBox(width: 4),
+                const SizedBox(width: 2),
                 StreamBuilder<DateTime>(
                   stream: _clockStream,
                   builder: (context, snapshot) {
                     final now = snapshot.data ?? DateTime.now();
                     return Text(
                       DateFormat.jm().format(now),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
-                        fontSize: 14,
+                        fontSize: isPhone ? 12 : 14,
                         fontWeight: FontWeight.bold,
-                        fontFeatures: [FontFeature.tabularFigures()],
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     );
                   },
@@ -377,7 +379,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     );
   }
 
-  Widget _buildNowServingPanel(bool isNarrow) {
+  Widget _buildNowServingPanel(bool isNarrow, [bool isPhone = false]) {
     return Obx(() {
       final serving = _ctrl.currentlyServing.value;
       final isFlash = _ctrl.hasNewCall.value;
@@ -386,7 +388,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
         duration: const Duration(milliseconds: 400),
         decoration: BoxDecoration(
           color: isFlash ? const Color(0xFF1E3A8A) : const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(isNarrow ? 18 : 24),
+          borderRadius: BorderRadius.circular(isPhone ? 14 : (isNarrow ? 18 : 24)),
           border: Border.all(
             color: isFlash ? const Color(0xFF60A5FA) : const Color(0xFF334155),
             width: isFlash ? 4 : 2,
@@ -400,13 +402,14 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 ]
               : null,
         ),
-        padding: EdgeInsets.all(isNarrow ? 20 : 36),
+        padding: EdgeInsets.all(isPhone ? 16 : (isNarrow ? 20 : 36)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               padding: EdgeInsets.symmetric(
-                  horizontal: isNarrow ? 16 : 24, vertical: isNarrow ? 8 : 10),
+                  horizontal: isPhone ? 14 : (isNarrow ? 16 : 24),
+                  vertical: isPhone ? 6 : (isNarrow ? 8 : 10)),
               decoration: BoxDecoration(
                 color:
                     isFlash ? const Color(0xFF22C55E) : const Color(0xFF0284C7),
@@ -420,30 +423,30 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                           ? Icons.campaign_rounded
                           : Icons.person_pin_rounded,
                       color: Colors.white,
-                      size: isNarrow ? 18 : 24),
-                  const SizedBox(width: 8),
+                      size: isPhone ? 16 : (isNarrow ? 18 : 24)),
+                  const SizedBox(width: 6),
                   Text(
                     isFlash ? 'NOW CALLING' : 'NOW SERVING',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: isNarrow ? 14 : 18,
+                      fontSize: isPhone ? 12 : (isNarrow ? 14 : 18),
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.5,
+                      letterSpacing: isPhone ? 1.0 : 1.5,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: isNarrow ? 20 : 32),
+            SizedBox(height: isPhone ? 14 : (isNarrow ? 20 : 32)),
             if (serving == null) ...[
               Icon(Icons.hourglass_empty_rounded,
-                  color: Colors.white38, size: isNarrow ? 56 : 80),
-              const SizedBox(height: 14),
+                  color: Colors.white38, size: isPhone ? 46 : (isNarrow ? 56 : 80)),
+              const SizedBox(height: 12),
               Text(
                 'Waiting for Next Patient',
                 style: TextStyle(
                     color: Colors.white60,
-                    fontSize: isNarrow ? 18 : 26,
+                    fontSize: isPhone ? 16 : (isNarrow ? 18 : 26),
                     fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               ),
@@ -455,32 +458,32 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                   maxLines: 1,
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: isNarrow ? 54 : 88,
+                    fontSize: isPhone ? 46 : (isNarrow ? 54 : 88),
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                     height: 1,
                   ),
                 ),
               ),
-              SizedBox(height: isNarrow ? 14 : 24),
+              SizedBox(height: isPhone ? 10 : (isNarrow ? 14 : 24)),
               Text(
                 serving.departmentName.toUpperCase(),
                 style: TextStyle(
                   color: const Color(0xFF38BDF8),
-                  fontSize: isNarrow ? 17 : 24,
+                  fontSize: isPhone ? 15 : (isNarrow ? 17 : 24),
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: isNarrow ? 12 : 16),
+              SizedBox(height: isPhone ? 10 : (isNarrow ? 12 : 16)),
               Container(
                 padding: EdgeInsets.symmetric(
-                    horizontal: isNarrow ? 16 : 24,
-                    vertical: isNarrow ? 10 : 12),
+                    horizontal: isPhone ? 14 : (isNarrow ? 16 : 24),
+                    vertical: isPhone ? 8 : (isNarrow ? 10 : 12)),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(isNarrow ? 12 : 16),
+                  borderRadius: BorderRadius.circular(isPhone ? 10 : (isNarrow ? 12 : 16)),
                 ),
                 child: Text(
                   _formatRoomText(serving.assignedRoomNumber ??
@@ -488,7 +491,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                       'Consultation Room'),
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: isNarrow ? 15 : 22,
+                    fontSize: isPhone ? 13 : (isNarrow ? 15 : 22),
                     fontWeight: FontWeight.w600,
                   ),
                   textAlign: TextAlign.center,
@@ -510,30 +513,30 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
     return 'Please proceed to Room $trimmed';
   }
 
-  Widget _buildUpNextPanel(bool isNarrow) {
+  Widget _buildUpNextPanel(bool isNarrow, [bool isPhone = false]) {
     return Obx(() {
       final upcoming = _ctrl.upNextList;
 
       return Container(
         decoration: BoxDecoration(
           color: const Color(0xFF1E293B),
-          borderRadius: BorderRadius.circular(isNarrow ? 18 : 24),
+          borderRadius: BorderRadius.circular(isPhone ? 14 : (isNarrow ? 18 : 24)),
           border: Border.all(color: const Color(0xFF334155), width: 2),
         ),
-        padding: EdgeInsets.all(isNarrow ? 18 : 28),
+        padding: EdgeInsets.all(isPhone ? 14 : (isNarrow ? 18 : 28)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 const Icon(Icons.arrow_forward_ios_rounded,
-                    color: Color(0xFF38BDF8), size: 18),
+                    color: Color(0xFF38BDF8), size: 16),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'UP NEXT',
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 18,
+                      fontSize: isPhone ? 15 : 18,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2),
                 ),
@@ -541,19 +544,19 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 Text(
                   '${upcoming.length} in queue',
                   style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.6), fontSize: 12),
+                      color: Colors.white.withValues(alpha: 0.6), fontSize: isPhone ? 11 : 12),
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             const Divider(color: Color(0xFF334155), height: 1),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             if (upcoming.isEmpty)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: isNarrow ? 24 : 40),
                 child: const Center(
                   child: Text('No upcoming patients in line.',
-                      style: TextStyle(color: Colors.white38, fontSize: 15)),
+                      style: TextStyle(color: Colors.white38, fontSize: 14)),
                 ),
               )
             else if (isNarrow)
@@ -561,7 +564,7 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: upcoming.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (ctx, idx) => _buildUpNextItem(upcoming[idx], idx),
               )
             else
@@ -581,44 +584,50 @@ class _DigitalQueueDisplayViewState extends State<DigitalQueueDisplayView> {
 
   Widget _buildUpNextItem(dynamic item, int idx) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: const Color(0xFF0F172A),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: const Color(0xFF334155)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    '${idx + 1}',
-                    style: const TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${idx + 1}',
+                      style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                item.displayQueueNumber,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    item.displayQueueNumber,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(

@@ -14,8 +14,11 @@ void main() {
   group('Phase 3 Critical Queue Logic Tests', () {
     final now = DateTime.now();
 
-    test('1. Priority weight order: Critical Emergency > Emergency > Urgent > Regular', () {
-      expect(Priority.criticalEmergency.weight, greaterThan(Priority.emergency.weight));
+    test(
+        '1. Priority weight order: Critical Emergency > Emergency > Urgent > Regular',
+        () {
+      expect(Priority.criticalEmergency.weight,
+          greaterThan(Priority.emergency.weight));
       expect(Priority.emergency.weight, greaterThan(Priority.urgent.weight));
       expect(Priority.urgent.weight, greaterThan(Priority.regular.weight));
     });
@@ -57,7 +60,9 @@ void main() {
       expect(queue.last.queueId, equals('Q-2'));
     });
 
-    test('3. Higher priority preempts earlier regular arrivals in waiting queue', () {
+    test(
+        '3. Higher priority preempts earlier regular arrivals in waiting queue',
+        () {
       final regularEarly = QueueItemModel(
         queueId: 'Q-REG',
         queueNumber: 'DOC-001',
@@ -108,16 +113,40 @@ void main() {
 
     test('4. Queue state transitions and terminal states validation', () {
       // Valid transitions
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.waiting, QueueStatus.called), isTrue);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.called, QueueStatus.inProgress), isTrue);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.inProgress, QueueStatus.completed), isTrue);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.waiting, QueueStatus.noShow), isTrue);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.waiting, QueueStatus.transferred), isTrue);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.waiting, QueueStatus.called),
+          isTrue);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.called, QueueStatus.inProgress),
+          isTrue);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.inProgress, QueueStatus.completed),
+          isTrue);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.waiting, QueueStatus.noShow),
+          isTrue);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.waiting, QueueStatus.transferred),
+          isTrue);
 
       // Invalid transitions
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.completed, QueueStatus.waiting), isFalse);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.cancelled, QueueStatus.inProgress), isFalse);
-      expect(HospitalDataValidator.isValidQueueTransition(QueueStatus.noShow, QueueStatus.called), isFalse);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.completed, QueueStatus.waiting),
+          isFalse);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.cancelled, QueueStatus.inProgress),
+          isFalse);
+      expect(
+          HospitalDataValidator.isValidQueueTransition(
+              QueueStatus.noShow, QueueStatus.called),
+          isFalse);
     });
   });
 
@@ -129,8 +158,18 @@ void main() {
         patientName: 'Alice',
         visitId: 'VIS-1',
         items: const [
-          InvoiceItemModel(description: 'Doctor Consultation', category: 'CONSULTATION', unitPrice: 80.0, quantity: 1, total: 80.0),
-          InvoiceItemModel(description: 'Laboratory FBC', category: 'LABORATORY', unitPrice: 40.0, quantity: 1, total: 40.0),
+          InvoiceItemModel(
+              description: 'Doctor Consultation',
+              category: 'CONSULTATION',
+              unitPrice: 80.0,
+              quantity: 1,
+              total: 80.0),
+          InvoiceItemModel(
+              description: 'Laboratory FBC',
+              category: 'LABORATORY',
+              unitPrice: 40.0,
+              quantity: 1,
+              total: 40.0),
         ],
         subtotal: 120.0,
         discount: 20.0,
@@ -146,12 +185,14 @@ void main() {
       expect(invoice.isPending, isTrue);
 
       // Partial payment
-      final partial = invoice.copyWith(amountPaid: 60.0, balance: 40.0, status: 'PARTIALLY_PAID');
+      final partial = invoice.copyWith(
+          amountPaid: 60.0, balance: 40.0, status: 'PARTIALLY_PAID');
       expect(partial.isPartiallyPaid, isTrue);
       expect(partial.balance, equals(40.0));
 
       // Full payment
-      final paid = partial.copyWith(amountPaid: 100.0, balance: 0.0, status: 'PAID');
+      final paid =
+          partial.copyWith(amountPaid: 100.0, balance: 0.0, status: 'PAID');
       expect(paid.isPaid, isTrue);
       expect(paid.balance, equals(0.0));
     });
@@ -171,14 +212,26 @@ void main() {
       );
 
       // Negative amount rejected
-      expect(() => HospitalDataValidator.validatePayment(invoice: invoice, paymentAmount: -10.0), throwsArgumentError);
-      expect(() => HospitalDataValidator.validatePayment(invoice: invoice, paymentAmount: 0.0), throwsArgumentError);
+      expect(
+          () => HospitalDataValidator.validatePayment(
+              invoice: invoice, paymentAmount: -10.0),
+          throwsArgumentError);
+      expect(
+          () => HospitalDataValidator.validatePayment(
+              invoice: invoice, paymentAmount: 0.0),
+          throwsArgumentError);
 
       // Payment exceeding remaining balance rejected
-      expect(() => HospitalDataValidator.validatePayment(invoice: invoice, paymentAmount: 40.0), throwsArgumentError);
+      expect(
+          () => HospitalDataValidator.validatePayment(
+              invoice: invoice, paymentAmount: 40.0),
+          throwsArgumentError);
 
       // Valid payment allowed
-      expect(() => HospitalDataValidator.validatePayment(invoice: invoice, paymentAmount: 30.0), returnsNormally);
+      expect(
+          () => HospitalDataValidator.validatePayment(
+              invoice: invoice, paymentAmount: 30.0),
+          returnsNormally);
     });
   });
 
@@ -213,21 +266,25 @@ void main() {
 
     test('1. Valid medication dispensing deduction calculation', () {
       expect(rx.remaining, equals(10));
-      expect(() => HospitalDataValidator.validateDispensing(
-        prescription: rx,
-        medication: med,
-        dispenseQuantity: 5,
-      ), returnsNormally);
+      expect(
+          () => HospitalDataValidator.validateDispensing(
+                prescription: rx,
+                medication: med,
+                dispenseQuantity: 5,
+              ),
+          returnsNormally);
     });
 
     test('2. Insufficient stock prevention', () {
       // Trying to dispense 15 when med only has 10 units in stock
       final medLow = med.copyWith(stockQuantity: 4);
-      expect(() => HospitalDataValidator.validateDispensing(
-        prescription: rx,
-        medication: medLow,
-        dispenseQuantity: 6,
-      ), throwsStateError);
+      expect(
+          () => HospitalDataValidator.validateDispensing(
+                prescription: rx,
+                medication: medLow,
+                dispenseQuantity: 6,
+              ),
+          throwsStateError);
     });
 
     test('3. Expired medication cannot be dispensed', () {
@@ -235,16 +292,18 @@ void main() {
         expiryDate: DateTime.now().subtract(const Duration(days: 10)),
       );
       expect(expiredMed.isExpired, isTrue);
-      expect(() => HospitalDataValidator.validateDispensing(
-        prescription: rx,
-        medication: expiredMed,
-        dispenseQuantity: 2,
-      ), throwsStateError);
+      expect(
+          () => HospitalDataValidator.validateDispensing(
+                prescription: rx,
+                medication: expiredMed,
+                dispenseQuantity: 2,
+              ),
+          throwsStateError);
     });
   });
 
   group('Phase 3 Critical Admission & Bed Tests', () {
-    final availableBed = BedModel(
+    const availableBed = BedModel(
       bedId: 'BED-101',
       wardId: 'WARD-A',
       wardName: 'General Ward A',
@@ -252,7 +311,7 @@ void main() {
       status: 'AVAILABLE',
     );
 
-    final occupiedBed = BedModel(
+    const occupiedBed = BedModel(
       bedId: 'BED-102',
       wardId: 'WARD-A',
       wardName: 'General Ward A',
@@ -272,17 +331,22 @@ void main() {
     );
 
     test('1. Bed availability validation', () {
-      expect(() => HospitalDataValidator.validateBedAssignment(
-        bed: availableBed,
-        admission: admReq,
-      ), returnsNormally);
+      expect(
+          () => HospitalDataValidator.validateBedAssignment(
+                bed: availableBed,
+                admission: admReq,
+              ),
+          returnsNormally);
     });
 
-    test('2. Duplicate bed prevention prevents assigning already occupied bed', () {
-      expect(() => HospitalDataValidator.validateBedAssignment(
-        bed: occupiedBed,
-        admission: admReq,
-      ), throwsStateError);
+    test('2. Duplicate bed prevention prevents assigning already occupied bed',
+        () {
+      expect(
+          () => HospitalDataValidator.validateBedAssignment(
+                bed: occupiedBed,
+                admission: admReq,
+              ),
+          throwsStateError);
     });
   });
 
@@ -306,32 +370,40 @@ void main() {
 
     test('1. Overlapping shift detection for same staff member', () {
       // Overlaps 10:00 - 16:00
-      expect(schedule1.overlapsWith(
-        otherDate: today,
-        otherStart: '10:00',
-        otherEnd: '16:00',
-      ), isTrue);
+      expect(
+          schedule1.overlapsWith(
+            otherDate: today,
+            otherStart: '10:00',
+            otherEnd: '16:00',
+          ),
+          isTrue);
 
       // Non-overlapping: earlier shift
-      expect(schedule1.overlapsWith(
-        otherDate: today,
-        otherStart: '06:00',
-        otherEnd: '08:00',
-      ), isFalse);
+      expect(
+          schedule1.overlapsWith(
+            otherDate: today,
+            otherStart: '06:00',
+            otherEnd: '08:00',
+          ),
+          isFalse);
 
       // Non-overlapping: later shift
-      expect(schedule1.overlapsWith(
-        otherDate: today,
-        otherStart: '14:00',
-        otherEnd: '20:00',
-      ), isFalse);
+      expect(
+          schedule1.overlapsWith(
+            otherDate: today,
+            otherStart: '14:00',
+            otherEnd: '20:00',
+          ),
+          isFalse);
 
       // Non-overlapping: different date
-      expect(schedule1.overlapsWith(
-        otherDate: today.add(const Duration(days: 1)),
-        otherStart: '08:00',
-        otherEnd: '14:00',
-      ), isFalse);
+      expect(
+          schedule1.overlapsWith(
+            otherDate: today.add(const Duration(days: 1)),
+            otherStart: '08:00',
+            otherEnd: '14:00',
+          ),
+          isFalse);
     });
   });
 

@@ -23,14 +23,16 @@ class PharmacyController extends GetxController {
   final NotificationRepository? _notificationRepo;
 
   final RxList<PrescriptionModel> allPrescriptions = <PrescriptionModel>[].obs;
-  final RxList<PrescriptionModel> pendingPrescriptions = <PrescriptionModel>[].obs;
+  final RxList<PrescriptionModel> pendingPrescriptions =
+      <PrescriptionModel>[].obs;
   final RxList<MedicationModel> inventory = <MedicationModel>[].obs;
   final RxList<MedicationModel> lowStockAlerts = <MedicationModel>[].obs;
 
   // Filter: 'PENDING' | 'DISPENSED' | 'ALL'
   final RxString filterStatus = 'PENDING'.obs;
 
-  final Rx<PrescriptionModel?> selectedPrescription = Rx<PrescriptionModel?>(null);
+  final Rx<PrescriptionModel?> selectedPrescription =
+      Rx<PrescriptionModel?>(null);
   final Rx<MedicationModel?> matchedMedication = Rx<MedicationModel?>(null);
 
   final RxInt dispenseQuantity = 1.obs;
@@ -64,7 +66,8 @@ class PharmacyController extends GetxController {
       return allPrescriptions.where((rx) => rx.status == 'DISPENSED').toList();
     } else if (status == 'PENDING') {
       return allPrescriptions
-          .where((rx) => rx.status == 'PENDING' || rx.status == 'PARTIALLY_DISPENSED')
+          .where((rx) =>
+              rx.status == 'PENDING' || rx.status == 'PARTIALLY_DISPENSED')
           .toList();
     }
     return allPrescriptions.toList();
@@ -80,7 +83,8 @@ class PharmacyController extends GetxController {
       _pharmacyRepo.streamAllPrescriptions().listen((list) {
         allPrescriptions.assignAll(list);
         pendingPrescriptions.assignAll(
-          list.where((rx) => rx.status == 'PENDING' || rx.status == 'PARTIALLY_DISPENSED'),
+          list.where((rx) =>
+              rx.status == 'PENDING' || rx.status == 'PARTIALLY_DISPENSED'),
         );
       }),
     );
@@ -104,7 +108,8 @@ class PharmacyController extends GetxController {
 
     // Try finding in inventory by name
     final match = inventory.firstWhereOrNull(
-      (m) => m.drugName.toLowerCase().contains(rx.medicationName.toLowerCase()) ||
+      (m) =>
+          m.drugName.toLowerCase().contains(rx.medicationName.toLowerCase()) ||
           rx.medicationName.toLowerCase().contains(m.drugName.toLowerCase()),
     );
     matchedMedication.value = match;
@@ -124,12 +129,14 @@ class PharmacyController extends GetxController {
     }
 
     if (dispenseQuantity.value <= 0 || dispenseQuantity.value > rx.remaining) {
-      errorMessage.value = 'Dispense quantity must be between 1 and ${rx.remaining}.';
+      errorMessage.value =
+          'Dispense quantity must be between 1 and ${rx.remaining}.';
       return false;
     }
 
     if (med.quantity < dispenseQuantity.value) {
-      errorMessage.value = 'Insufficient stock. Available in inventory: ${med.quantity}.';
+      errorMessage.value =
+          'Insufficient stock. Available in inventory: ${med.quantity}.';
       return false;
     }
 
@@ -146,7 +153,8 @@ class PharmacyController extends GetxController {
       );
 
       // Check if this was the last pending prescription for this visit
-      final remainingRxList = await _pharmacyRepo.getPrescriptionById(rx.prescriptionId);
+      final remainingRxList =
+          await _pharmacyRepo.getPrescriptionById(rx.prescriptionId);
       if (remainingRxList != null && remainingRxList.isDispensed) {
         await _visitRepo.updateVisit(rx.visitId, {
           'careStage': 'READY_FOR_DISCHARGE',
@@ -155,11 +163,12 @@ class PharmacyController extends GetxController {
 
       // Notify patient
       if (_notificationRepo != null && rx.patientId.isNotEmpty) {
-        await _notificationRepo!.notify(
+        await _notificationRepo.notify(
           recipientId: rx.patientId,
           recipientType: 'patient',
           title: 'Medications Dispensed',
-          body: '${rx.medicationName} (${dispenseQuantity.value} units) has been dispensed and is ready for pickup.',
+          body:
+              '${rx.medicationName} (${dispenseQuantity.value} units) has been dispensed and is ready for pickup.',
           type: 'PRESCRIPTION_READY',
           relatedId: rx.prescriptionId,
         );

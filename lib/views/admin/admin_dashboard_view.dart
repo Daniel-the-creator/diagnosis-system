@@ -38,21 +38,35 @@ class AdminDashboardView extends StatelessWidget {
             Container(
               color: AppColors.surface,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: TabBar(
+              child: const TabBar(
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
                 labelColor: AppColors.primary,
                 unselectedLabelColor: AppColors.textSecondary,
                 indicatorColor: AppColors.primary,
                 indicatorWeight: 3,
-                tabs: const [
-                  Tab(icon: Icon(Icons.dashboard_outlined, size: 20), text: 'Operations Overview'),
-                  Tab(icon: Icon(Icons.table_chart_outlined, size: 20), text: 'Department Queues'),
-                  Tab(icon: Icon(Icons.insights_rounded, size: 20), text: 'Analytics & Insights'),
-                  Tab(icon: Icon(Icons.badge_outlined, size: 20), text: 'Staff & Schedules'),
-                  Tab(icon: Icon(Icons.history_edu_outlined, size: 20), text: 'Audit Trails'),
-                  Tab(icon: Icon(Icons.summarize_outlined, size: 20), text: 'Reports & Export'),
-                  Tab(icon: Icon(Icons.tune_rounded, size: 20), text: 'System Settings'),
+                tabs: [
+                  Tab(
+                      icon: Icon(Icons.dashboard_outlined, size: 20),
+                      text: 'Operations Overview'),
+                  Tab(
+                      icon: Icon(Icons.table_chart_outlined, size: 20),
+                      text: 'Department Queues'),
+                  Tab(
+                      icon: Icon(Icons.insights_rounded, size: 20),
+                      text: 'Analytics & Insights'),
+                  Tab(
+                      icon: Icon(Icons.badge_outlined, size: 20),
+                      text: 'Staff & Schedules'),
+                  Tab(
+                      icon: Icon(Icons.history_edu_outlined, size: 20),
+                      text: 'Audit Trails'),
+                  Tab(
+                      icon: Icon(Icons.summarize_outlined, size: 20),
+                      text: 'Reports & Export'),
+                  Tab(
+                      icon: Icon(Icons.tune_rounded, size: 20),
+                      text: 'System Settings'),
                 ],
               ),
             ),
@@ -97,7 +111,9 @@ Widget _buildAdminSectionHeader({
           children: [
             Text(title, style: AppTextStyles.titleLarge),
             const SizedBox(height: 4),
-            Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            Text(subtitle,
+                style: const TextStyle(
+                    color: AppColors.textSecondary, fontSize: 13)),
             if (action != null) ...[
               const SizedBox(height: 12),
               action,
@@ -114,7 +130,9 @@ Widget _buildAdminSectionHeader({
               children: [
                 Text(title, style: AppTextStyles.titleLarge),
                 const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                Text(subtitle,
+                    style: const TextStyle(
+                        color: AppColors.textSecondary, fontSize: 13)),
               ],
             ),
           ),
@@ -152,9 +170,11 @@ class _OperationsOverviewTab extends StatelessWidget {
             SizedBox(height: isMobile ? 18 : 24),
 
             // ── 12 Real-Time Operational KPIs ───────────────────
-            const Text('Real-Time Hospital Vitals', style: AppTextStyles.titleLarge),
+            const Text('Real-Time Hospital Vitals',
+                style: AppTextStyles.titleLarge),
             const SizedBox(height: 4),
-            const Text('Live operational census continuously updated across all active units',
+            const Text(
+                'Live operational census continuously updated across all active units',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
             SizedBox(height: isMobile ? 12 : 16),
             Obx(() => _buildRealtimeKpiGrid(context, ctrl)),
@@ -168,7 +188,8 @@ class _OperationsOverviewTab extends StatelessWidget {
                 )),
 
             // ── Quick Department Access ─────────────────────────
-            const Text('Operational Stations & Command Units', style: AppTextStyles.titleLarge),
+            const Text('Operational Stations & Command Units',
+                style: AppTextStyles.titleLarge),
             SizedBox(height: isMobile ? 12 : 16),
             _QuickActions(),
           ],
@@ -179,32 +200,99 @@ class _OperationsOverviewTab extends StatelessWidget {
 
   Widget _buildRealtimeKpiGrid(BuildContext context, AdminController ctrl) {
     final kpis = [
-      ('Total Patients Today', ctrl.totalPatientsToday.value.toString(), Icons.people_alt_outlined, AppColors.primary, null),
-      ('Regular Patients', ctrl.regularPatients.value.toString(), Icons.person_outlined, AppColors.info, null),
-      ('Emergency Cases', ctrl.emergencyPatients.value.toString(), Icons.emergency_outlined, AppColors.emergency, 'Priority flow'),
-      ('Currently Waiting', ctrl.waitingPatients.value.toString(), Icons.hourglass_top_rounded, AppColors.warning, null),
-      ('Currently in Service', ctrl.inProgressPatients.value.toString(), Icons.medical_services_outlined, AppColors.secondary, null),
-      ('Completed Visits', ctrl.completedVisits.value.toString(), Icons.check_circle_outline, AppColors.success, null),
-      ('Active Admissions', ctrl.activeAdmissions.value.toString(), Icons.hotel_rounded, const Color(0xFF1565C0), null),
-      ('Discharges Today', ctrl.dischargesToday.value.toString(), Icons.meeting_room_outlined, const Color(0xFF00897B), null),
-      ('Pending Diagnostics', ctrl.pendingDiagnostics.value.toString(), Icons.biotech_rounded, const Color(0xFF673AB7), 'Lab / XR / Scan'),
-      ('Pending Payments', ctrl.pendingPayments.value.toString(), Icons.receipt_long_rounded, const Color(0xFFC2185B), 'Unpaid invoices'),
-      ('Pharmacy Queue', ctrl.pharmacyQueue.value.toString(), Icons.medication_liquid_rounded, const Color(0xFFE65100), 'Prescriptions'),
-      ('Available Beds', ctrl.availableBeds.value.toString(), Icons.bed_outlined, const Color(0xFF2E7D32), 'Open ward beds'),
+      (
+        'Total Patients Today',
+        ctrl.totalPatientsToday.value.toString(),
+        Icons.people_alt_outlined,
+        AppColors.primary,
+        null
+      ),
+      (
+        'Regular Patients',
+        ctrl.regularPatients.value.toString(),
+        Icons.person_outlined,
+        AppColors.info,
+        null
+      ),
+      (
+        'Emergency Cases',
+        ctrl.emergencyPatients.value.toString(),
+        Icons.emergency_outlined,
+        AppColors.emergency,
+        'Priority flow'
+      ),
+      (
+        'Currently Waiting',
+        ctrl.waitingPatients.value.toString(),
+        Icons.hourglass_top_rounded,
+        AppColors.warning,
+        null
+      ),
+      (
+        'Currently in Service',
+        ctrl.inProgressPatients.value.toString(),
+        Icons.medical_services_outlined,
+        AppColors.secondary,
+        null
+      ),
+      (
+        'Completed Visits',
+        ctrl.completedVisits.value.toString(),
+        Icons.check_circle_outline,
+        AppColors.success,
+        null
+      ),
+      (
+        'Active Admissions',
+        ctrl.activeAdmissions.value.toString(),
+        Icons.hotel_rounded,
+        const Color(0xFF1565C0),
+        null
+      ),
+      (
+        'Discharges Today',
+        ctrl.dischargesToday.value.toString(),
+        Icons.meeting_room_outlined,
+        const Color(0xFF00897B),
+        null
+      ),
+      (
+        'Pending Diagnostics',
+        ctrl.pendingDiagnostics.value.toString(),
+        Icons.biotech_rounded,
+        const Color(0xFF673AB7),
+        'Lab / XR / Scan'
+      ),
+      (
+        'Pending Payments',
+        ctrl.pendingPayments.value.toString(),
+        Icons.receipt_long_rounded,
+        const Color(0xFFC2185B),
+        'Unpaid invoices'
+      ),
+      (
+        'Pharmacy Queue',
+        ctrl.pharmacyQueue.value.toString(),
+        Icons.medication_liquid_rounded,
+        const Color(0xFFE65100),
+        'Prescriptions'
+      ),
+      (
+        'Available Beds',
+        ctrl.availableBeds.value.toString(),
+        Icons.bed_outlined,
+        const Color(0xFF2E7D32),
+        'Open ward beds'
+      ),
     ];
 
     return LayoutBuilder(builder: (ctx, constraints) {
       final width = constraints.maxWidth;
-      final crossCount = width > 1150
-          ? 4
-          : (width > 800
-              ? 3
-              : (width > 320 ? 2 : 1));
+      final crossCount =
+          width > 1150 ? 4 : (width > 800 ? 3 : (width > 320 ? 2 : 1));
       final childAspectRatio = width > 1150
           ? 1.55
-          : (width > 800
-              ? 1.45
-              : (width > 320 ? 1.30 : 2.4));
+          : (width > 800 ? 1.45 : (width > 320 ? 1.30 : 2.4));
       final spacing = width > 600 ? 14.0 : 10.0;
 
       return GridView.count(
@@ -260,7 +348,8 @@ class _OperationsHeader extends StatelessWidget {
                             color: Colors.white24,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 28),
+                          child: const Icon(Icons.local_hospital_rounded,
+                              color: Colors.white, size: 28),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -297,12 +386,16 @@ class _OperationsHeader extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: AppColors.primary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
+                        onPressed: () =>
+                            Get.toNamed(AppRoutes.digitalQueueDisplay),
                         icon: const Icon(Icons.tv_rounded, size: 18),
-                        label: const Text('Open TV Queue Display', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                        label: const Text('Open TV Queue Display',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 13)),
                       ),
                     ),
                   ],
@@ -315,7 +408,8 @@ class _OperationsHeader extends StatelessWidget {
                         color: Colors.white24,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.local_hospital_rounded, color: Colors.white, size: 36),
+                      child: const Icon(Icons.local_hospital_rounded,
+                          color: Colors.white, size: 36),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -347,12 +441,17 @@ class _OperationsHeader extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: AppColors.primary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                       ),
-                      onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
+                      onPressed: () =>
+                          Get.toNamed(AppRoutes.digitalQueueDisplay),
                       icon: const Icon(Icons.tv_rounded, size: 18),
-                      label: const Text('Open TV Queue Display', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      label: const Text('Open TV Queue Display',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 13)),
                     ),
                   ],
                 ),
@@ -381,7 +480,8 @@ class _DepartmentQueuesTab extends StatelessWidget {
             _buildAdminSectionHeader(
               context: context,
               title: 'Department Queue Monitoring',
-              subtitle: 'Real-time queue throughput, waiting counts, and calculated service durations',
+              subtitle:
+                  'Real-time queue throughput, waiting counts, and calculated service durations',
               action: OutlinedButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.digitalQueueDisplay),
                 icon: const Icon(Icons.tv_rounded, size: 16),
@@ -392,24 +492,84 @@ class _DepartmentQueuesTab extends StatelessWidget {
             Obx(() {
               final stats = ctrl.departmentStats;
               if (stats.isEmpty) {
-                return const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator()));
+                return const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: CircularProgressIndicator()));
               }
 
               final items = [
-                ('REG', 'Registration Desk', Icons.app_registration, AppColors.secondary, AppRoutes.registrationDashboard),
-                ('DOC', 'Consultation (Doctors)', Icons.medical_services, AppColors.primary, AppRoutes.doctorDashboard),
-                ('LAB', 'Laboratory Unit', Icons.biotech, const Color(0xFF673AB7), AppRoutes.diagnosticDashboard),
-                ('XR', 'X-Ray Department', Icons.camera_indoor, const Color(0xFF00897B), AppRoutes.diagnosticDashboard),
-                ('SCAN', 'Ultrasound & Scan', Icons.radar, const Color(0xFF1565C0), AppRoutes.diagnosticDashboard),
-                ('ACC', 'Billing & Accounts', Icons.receipt_long, const Color(0xFF00897B), AppRoutes.accountDashboard),
-                ('PHM', 'Pharmacy & Dispensary', Icons.medication, const Color(0xFFE65100), AppRoutes.pharmacyDashboard),
-                ('ADM', 'Admissions & Wards', Icons.hotel, const Color(0xFF283593), AppRoutes.admissionDashboard),
-                ('DIS', 'Discharge Lounge', Icons.exit_to_app, const Color(0xFF43A047), AppRoutes.admissionDashboard),
+                (
+                  'REG',
+                  'Registration Desk',
+                  Icons.app_registration,
+                  AppColors.secondary,
+                  AppRoutes.registrationDashboard
+                ),
+                (
+                  'DOC',
+                  'Consultation (Doctors)',
+                  Icons.medical_services,
+                  AppColors.primary,
+                  AppRoutes.doctorDashboard
+                ),
+                (
+                  'LAB',
+                  'Laboratory Unit',
+                  Icons.biotech,
+                  const Color(0xFF673AB7),
+                  AppRoutes.diagnosticDashboard
+                ),
+                (
+                  'XR',
+                  'X-Ray Department',
+                  Icons.camera_indoor,
+                  const Color(0xFF00897B),
+                  AppRoutes.diagnosticDashboard
+                ),
+                (
+                  'SCAN',
+                  'Ultrasound & Scan',
+                  Icons.radar,
+                  const Color(0xFF1565C0),
+                  AppRoutes.diagnosticDashboard
+                ),
+                (
+                  'ACC',
+                  'Billing & Accounts',
+                  Icons.receipt_long,
+                  const Color(0xFF00897B),
+                  AppRoutes.accountDashboard
+                ),
+                (
+                  'PHM',
+                  'Pharmacy & Dispensary',
+                  Icons.medication,
+                  const Color(0xFFE65100),
+                  AppRoutes.pharmacyDashboard
+                ),
+                (
+                  'ADM',
+                  'Admissions & Wards',
+                  Icons.hotel,
+                  const Color(0xFF283593),
+                  AppRoutes.admissionDashboard
+                ),
+                (
+                  'DIS',
+                  'Discharge Lounge',
+                  Icons.exit_to_app,
+                  const Color(0xFF43A047),
+                  AppRoutes.admissionDashboard
+                ),
               ];
 
               return LayoutBuilder(builder: (ctx, constraints) {
-                final crossCount = constraints.maxWidth > 1100 ? 3 : (constraints.maxWidth > 700 ? 2 : 1);
-                final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
+                final crossCount = constraints.maxWidth > 1100
+                    ? 3
+                    : (constraints.maxWidth > 700 ? 2 : 1);
+                final itemWidth =
+                    (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
 
                 return Wrap(
                   spacing: 16,
@@ -500,9 +660,13 @@ class _DepartmentQueueCard extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(stats.departmentName, style: AppTextStyles.titleMedium, overflow: TextOverflow.ellipsis),
+                                Text(stats.departmentName,
+                                    style: AppTextStyles.titleMedium,
+                                    overflow: TextOverflow.ellipsis),
                                 Text('Code: ${stats.departmentCode}',
-                                    style: const TextStyle(fontSize: 11, color: AppColors.textHint)),
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textHint)),
                               ],
                             ),
                           ),
@@ -510,7 +674,8 @@ class _DepartmentQueueCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textHint),
+                    const Icon(Icons.arrow_forward_ios_rounded,
+                        size: 14, color: AppColors.textHint),
                   ],
                 ),
                 const SizedBox(height: 18),
@@ -521,9 +686,12 @@ class _DepartmentQueueCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildSubMetric('Waiting', stats.waitingCount.toString(), AppColors.warning),
-                    _buildSubMetric('In Service', stats.inServiceCount.toString(), AppColors.secondary),
-                    _buildSubMetric('Completed', stats.completedCount.toString(), AppColors.success),
+                    _buildSubMetric('Waiting', stats.waitingCount.toString(),
+                        AppColors.warning),
+                    _buildSubMetric('In Service',
+                        stats.inServiceCount.toString(), AppColors.secondary),
+                    _buildSubMetric('Completed',
+                        stats.completedCount.toString(), AppColors.success),
                   ],
                 ),
                 const SizedBox(height: 14),
@@ -539,19 +707,23 @@ class _DepartmentQueueCard extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.schedule, size: 14, color: AppColors.textSecondary),
+                        const Icon(Icons.schedule,
+                            size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
                         Text('Avg Wait: ${stats.avgWaitingMinutes} min',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.timer_outlined, size: 14, color: AppColors.textSecondary),
+                        const Icon(Icons.timer_outlined,
+                            size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 6),
                         Text('Avg Service: ${stats.avgServiceMinutes} min',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ],
@@ -568,8 +740,12 @@ class _DepartmentQueueCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-        Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+        Text(value,
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: color)),
+        Text(label,
+            style:
+                const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
       ],
     );
   }
@@ -598,7 +774,8 @@ class _AnalyticsTab extends StatelessWidget {
             _buildAdminSectionHeader(
               context: context,
               title: 'Executive Analytics & Volume Intelligence',
-              subtitle: 'Calculated duration breakdowns, throughput trends, and resource utilization',
+              subtitle:
+                  'Calculated duration breakdowns, throughput trends, and resource utilization',
               action: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: _buildFilterChips(ctrl),
@@ -621,19 +798,34 @@ class _AnalyticsTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Timestamp-Calculated Journey Times', style: AppTextStyles.titleMedium),
+                    const Text('Timestamp-Calculated Journey Times',
+                        style: AppTextStyles.titleMedium),
                     const SizedBox(height: 4),
-                    const Text('Evaluated automatically from queue item transition timestamps',
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                    const Text(
+                        'Evaluated automatically from queue item transition timestamps',
+                        style: TextStyle(
+                            fontSize: 12, color: AppColors.textSecondary)),
                     const SizedBox(height: 16),
                     Wrap(
                       spacing: 24,
                       runSpacing: 16,
                       alignment: WrapAlignment.spaceAround,
                       children: [
-                        _buildTimerBadge('Overall Avg Wait', '${timings.overallAvgWaitMinutes} min', Icons.hourglass_empty, AppColors.warning),
-                        _buildTimerBadge('Overall Avg Service', '${timings.overallAvgServiceMinutes} min', Icons.medical_services_outlined, AppColors.secondary),
-                        _buildTimerBadge('Avg Total Journey', '${timings.overallAvgJourneyMinutes} min', Icons.route_rounded, AppColors.primary),
+                        _buildTimerBadge(
+                            'Overall Avg Wait',
+                            '${timings.overallAvgWaitMinutes} min',
+                            Icons.hourglass_empty,
+                            AppColors.warning),
+                        _buildTimerBadge(
+                            'Overall Avg Service',
+                            '${timings.overallAvgServiceMinutes} min',
+                            Icons.medical_services_outlined,
+                            AppColors.secondary),
+                        _buildTimerBadge(
+                            'Avg Total Journey',
+                            '${timings.overallAvgJourneyMinutes} min',
+                            Icons.route_rounded,
+                            AppColors.primary),
                       ],
                     ),
                   ],
@@ -645,7 +837,8 @@ class _AnalyticsTab extends StatelessWidget {
             // ── Charts Row (fl_chart) ─────────────────────────────
             Obx(() {
               final vol = ctrl.volumeData.value;
-              if (vol == null) return const Center(child: CircularProgressIndicator());
+              if (vol == null)
+                return const Center(child: CircularProgressIndicator());
 
               return LayoutBuilder(builder: (ctx, chartConstraints) {
                 final isWide = chartConstraints.maxWidth > 900;
@@ -691,13 +884,19 @@ class _AnalyticsTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Diagnostics Analytics', style: AppTextStyles.titleMedium),
+                      const Text('Diagnostics Analytics',
+                          style: AppTextStyles.titleMedium),
                       const SizedBox(height: 14),
-                      _buildRowStat('Lab Requests', diag.labRequests.toString()),
-                      _buildRowStat('X-Ray Requests', diag.xrayRequests.toString()),
-                      _buildRowStat('Scan Requests', diag.scanRequests.toString()),
-                      _buildRowStat('Completed Tests', diag.completedTests.toString()),
-                      _buildRowStat('Avg Turnaround Time', '${diag.avgCompletionMinutes} min'),
+                      _buildRowStat(
+                          'Lab Requests', diag.labRequests.toString()),
+                      _buildRowStat(
+                          'X-Ray Requests', diag.xrayRequests.toString()),
+                      _buildRowStat(
+                          'Scan Requests', diag.scanRequests.toString()),
+                      _buildRowStat(
+                          'Completed Tests', diag.completedTests.toString()),
+                      _buildRowStat('Avg Turnaround Time',
+                          '${diag.avgCompletionMinutes} min'),
                     ],
                   ),
                 );
@@ -717,13 +916,22 @@ class _AnalyticsTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Pharmacy & Inventory Analytics', style: AppTextStyles.titleMedium),
+                      const Text('Pharmacy & Inventory Analytics',
+                          style: AppTextStyles.titleMedium),
                       const SizedBox(height: 14),
-                      _buildRowStat('Total Prescriptions', pharm.totalPrescriptions.toString()),
-                      _buildRowStat('Dispensed', pharm.dispensedPrescriptions.toString()),
-                      _buildRowStat('Low Stock Drugs', pharm.lowStockDrugs.toString(), isAlert: pharm.lowStockDrugs > 0),
-                      _buildRowStat('Expired / Near Expiry', '${pharm.expiredDrugs + pharm.nearExpiryDrugs}', isAlert: (pharm.expiredDrugs + pharm.nearExpiryDrugs) > 0),
-                      _buildRowStat('Inventory Valuation', '\$${pharm.inventoryValue.toStringAsFixed(2)}'),
+                      _buildRowStat('Total Prescriptions',
+                          pharm.totalPrescriptions.toString()),
+                      _buildRowStat(
+                          'Dispensed', pharm.dispensedPrescriptions.toString()),
+                      _buildRowStat(
+                          'Low Stock Drugs', pharm.lowStockDrugs.toString(),
+                          isAlert: pharm.lowStockDrugs > 0),
+                      _buildRowStat('Expired / Near Expiry',
+                          '${pharm.expiredDrugs + pharm.nearExpiryDrugs}',
+                          isAlert:
+                              (pharm.expiredDrugs + pharm.nearExpiryDrugs) > 0),
+                      _buildRowStat('Inventory Valuation',
+                          '\$${pharm.inventoryValue.toStringAsFixed(2)}'),
                     ],
                   ),
                 );
@@ -770,13 +978,22 @@ class _AnalyticsTab extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Expanded(
-                            child: Text('Financial Revenue & Billing Aggregation',
-                                style: AppTextStyles.titleMedium, overflow: TextOverflow.ellipsis),
+                            child: Text(
+                                'Financial Revenue & Billing Aggregation',
+                                style: AppTextStyles.titleMedium,
+                                overflow: TextOverflow.ellipsis),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(color: AppColors.success.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                            child: const Text('Authorized View', style: TextStyle(color: AppColors.success, fontSize: 11, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                                color: AppColors.success.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8)),
+                            child: const Text('Authorized View',
+                                style: TextStyle(
+                                    color: AppColors.success,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -785,10 +1002,22 @@ class _AnalyticsTab extends StatelessWidget {
                         builder: (ctx, finConstraints) {
                           final isNarrow = finConstraints.maxWidth < 650;
                           final metrics = [
-                            _buildFinMetric('Daily Revenue', '\$${fin.dailyRevenue.toStringAsFixed(2)}', AppColors.success),
-                            _buildFinMetric('Weekly Revenue', '\$${fin.weeklyRevenue.toStringAsFixed(2)}', AppColors.primary),
-                            _buildFinMetric('Consultation Rev', '\$${fin.consultationRevenue.toStringAsFixed(2)}', const Color(0xFF673AB7)),
-                            _buildFinMetric('Outstanding Balance', '\$${fin.outstandingBalance.toStringAsFixed(2)}', AppColors.warning),
+                            _buildFinMetric(
+                                'Daily Revenue',
+                                '\$${fin.dailyRevenue.toStringAsFixed(2)}',
+                                AppColors.success),
+                            _buildFinMetric(
+                                'Weekly Revenue',
+                                '\$${fin.weeklyRevenue.toStringAsFixed(2)}',
+                                AppColors.primary),
+                            _buildFinMetric(
+                                'Consultation Rev',
+                                '\$${fin.consultationRevenue.toStringAsFixed(2)}',
+                                const Color(0xFF673AB7)),
+                            _buildFinMetric(
+                                'Outstanding Balance',
+                                '\$${fin.outstandingBalance.toStringAsFixed(2)}',
+                                AppColors.warning),
                           ];
 
                           if (isNarrow) {
@@ -831,7 +1060,8 @@ class _AnalyticsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Priority Volume Distribution', style: AppTextStyles.titleMedium),
+          const Text('Priority Volume Distribution',
+              style: AppTextStyles.titleMedium),
           const SizedBox(height: 16),
           Expanded(
             child: PieChart(
@@ -844,28 +1074,42 @@ class _AnalyticsTab extends StatelessWidget {
                     value: (vol.emergencyVsRegular['REGULAR'] ?? 1).toDouble(),
                     title: 'Reg',
                     radius: 50,
-                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    titleStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
                   PieChartSectionData(
                     color: AppColors.warning,
                     value: (vol.emergencyVsRegular['URGENT'] ?? 0).toDouble(),
                     title: 'Urg',
                     radius: 50,
-                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    titleStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
                   PieChartSectionData(
                     color: AppColors.emergency,
-                    value: (vol.emergencyVsRegular['EMERGENCY'] ?? 0).toDouble(),
+                    value:
+                        (vol.emergencyVsRegular['EMERGENCY'] ?? 0).toDouble(),
                     title: 'Emg',
                     radius: 50,
-                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    titleStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
                   PieChartSectionData(
                     color: Colors.purple,
-                    value: (vol.emergencyVsRegular['CRITICAL_EMERGENCY'] ?? 0).toDouble(),
+                    value: (vol.emergencyVsRegular['CRITICAL_EMERGENCY'] ?? 0)
+                        .toDouble(),
                     title: 'Crit',
                     radius: 50,
-                    titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    titleStyle: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12),
                   ),
                 ],
               ),
@@ -888,7 +1132,8 @@ class _AnalyticsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Patient Volume by Operational Station', style: AppTextStyles.titleMedium),
+          const Text('Patient Volume by Operational Station',
+              style: AppTextStyles.titleMedium),
           const SizedBox(height: 16),
           Expanded(
             child: BarChart(
@@ -905,25 +1150,36 @@ class _AnalyticsTab extends StatelessWidget {
                         final depts = ['REG', 'DOC', 'LAB', 'XR', 'PHM', 'ADM'];
                         final idx = val.toInt();
                         if (idx >= 0 && idx < depts.length) {
-                          return Text(depts[idx], style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold));
+                          return Text(depts[idx],
+                              style: const TextStyle(
+                                  fontSize: 11, fontWeight: FontWeight.bold));
                         }
                         return const SizedBox.shrink();
                       },
                     ),
                   ),
-                  leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false)),
                 ),
                 gridData: const FlGridData(show: false),
                 borderData: FlBorderData(show: false),
                 barGroups: [
-                  _makeGroupData(0, (vol.patientsByDept['REG'] ?? 0).toDouble(), AppColors.secondary),
-                  _makeGroupData(1, (vol.patientsByDept['DOC'] ?? 0).toDouble(), AppColors.primary),
-                  _makeGroupData(2, (vol.patientsByDept['LAB'] ?? 0).toDouble(), const Color(0xFF673AB7)),
-                  _makeGroupData(3, (vol.patientsByDept['XR'] ?? 0).toDouble(), const Color(0xFF00897B)),
-                  _makeGroupData(4, (vol.patientsByDept['PHM'] ?? 0).toDouble(), const Color(0xFFE65100)),
-                  _makeGroupData(5, (vol.patientsByDept['ADM'] ?? 0).toDouble(), const Color(0xFF1565C0)),
+                  _makeGroupData(0, (vol.patientsByDept['REG'] ?? 0).toDouble(),
+                      AppColors.secondary),
+                  _makeGroupData(1, (vol.patientsByDept['DOC'] ?? 0).toDouble(),
+                      AppColors.primary),
+                  _makeGroupData(2, (vol.patientsByDept['LAB'] ?? 0).toDouble(),
+                      const Color(0xFF673AB7)),
+                  _makeGroupData(3, (vol.patientsByDept['XR'] ?? 0).toDouble(),
+                      const Color(0xFF00897B)),
+                  _makeGroupData(4, (vol.patientsByDept['PHM'] ?? 0).toDouble(),
+                      const Color(0xFFE65100)),
+                  _makeGroupData(5, (vol.patientsByDept['ADM'] ?? 0).toDouble(),
+                      const Color(0xFF1565C0)),
                 ],
               ),
             ),
@@ -948,7 +1204,13 @@ class _AnalyticsTab extends StatelessWidget {
   }
 
   Widget _buildFilterChips(AdminController ctrl) {
-    final filters = ['Today', 'Last 7 days', 'Last 30 days', '3 months', '1 year'];
+    final filters = [
+      'Today',
+      'Last 7 days',
+      'Last 30 days',
+      '3 months',
+      '1 year'
+    ];
     return Obx(() {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -957,7 +1219,11 @@ class _AnalyticsTab extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 6),
             child: ChoiceChip(
-              label: Text(f, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+              label: Text(f,
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal)),
               selected: isSelected,
               onSelected: (_) => ctrl.selectedDateFilter.value = f,
             ),
@@ -967,14 +1233,21 @@ class _AnalyticsTab extends StatelessWidget {
     });
   }
 
-  Widget _buildTimerBadge(String label, String value, IconData icon, Color color) {
+  Widget _buildTimerBadge(
+      String label, String value, IconData icon, Color color) {
     return Column(
       children: [
-        CircleAvatar(radius: 20, backgroundColor: color.withValues(alpha: 0.12), child: Icon(icon, color: color, size: 20)),
+        CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withValues(alpha: 0.12),
+            child: Icon(icon, color: color, size: 20)),
         const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        Text(label,
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -985,8 +1258,14 @@ class _AnalyticsTab extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-          Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: isAlert ? AppColors.error : AppColors.textPrimary)),
+          Text(label,
+              style: const TextStyle(
+                  fontSize: 13, color: AppColors.textSecondary)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: isAlert ? AppColors.error : AppColors.textPrimary)),
         ],
       ),
     );
@@ -995,9 +1274,19 @@ class _AnalyticsTab extends StatelessWidget {
   Widget _buildFinMetric(String label, String value, Color color) {
     return Column(
       children: [
-        Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(value,
+              style: TextStyle(
+                  fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+        ),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        Text(label,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style:
+                const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
       ],
     );
   }
@@ -1022,7 +1311,8 @@ class _StaffAndSchedulingTab extends StatelessWidget {
             _buildAdminSectionHeader(
               context: context,
               title: 'Staff Management & Duty Scheduling',
-              subtitle: 'Administer staff accounts, roles, departments, rooms, specialties, and conflict-checked rosters',
+              subtitle:
+                  'Administer staff accounts, roles, departments, rooms, specialties, and conflict-checked rosters',
               action: ElevatedButton.icon(
                 onPressed: () => _showCreateScheduleDialog(context, ctrl),
                 icon: const Icon(Icons.add_task_rounded, size: 16),
@@ -1030,24 +1320,31 @@ class _StaffAndSchedulingTab extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
             ),
             const SizedBox(height: 24),
 
             // ── Staff Directory ───────────────────────────────────
-            const Text('Hospital Staff Directory', style: AppTextStyles.titleMedium),
+            const Text('Hospital Staff Directory',
+                style: AppTextStyles.titleMedium),
             const SizedBox(height: 12),
             Obx(() {
               final staff = ctrl.allStaff;
               if (staff.isEmpty) {
-                return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No staff members registered.')));
+                return const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text('No staff members registered.')));
               }
 
               return Card(
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(color: AppColors.divider)),
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1057,36 +1354,55 @@ class _StaffAndSchedulingTab extends StatelessWidget {
                     final s = staff[idx];
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                        child: Text(AppUtils.getInitials(s.fullName), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                        backgroundColor:
+                            AppColors.primary.withValues(alpha: 0.12),
+                        child: Text(AppUtils.getInitials(s.fullName),
+                            style: const TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold)),
                       ),
                       title: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 8,
                         runSpacing: 4,
                         children: [
-                          Text(s.fullName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(s.fullName,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold)),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(6)),
-                            child: Text(AppUtils.getRoleLabel(s.role), style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                                color:
+                                    AppColors.primary.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(6)),
+                            child: Text(AppUtils.getRoleLabel(s.role),
+                                style: const TextStyle(
+                                    color: AppColors.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold)),
                           ),
                           if (s.specialty != null && s.specialty!.isNotEmpty)
-                            Text('• ${s.specialty}', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            Text('• ${s.specialty}',
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary)),
                         ],
                       ),
-                      subtitle: Text('${s.email} | Dept: ${s.departmentId ?? "All"} | Room: ${s.roomId ?? "N/A"}'),
+                      subtitle: Text(
+                          '${s.email} | Dept: ${s.departmentId ?? "All"} | Room: ${s.roomId ?? "N/A"}'),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit_outlined, size: 18),
                             tooltip: 'Edit Profile & Room',
-                            onPressed: () => _showEditStaffDialog(context, ctrl, s),
+                            onPressed: () =>
+                                _showEditStaffDialog(context, ctrl, s),
                           ),
                           Switch(
                             value: s.active,
-                            activeColor: AppColors.success,
+                            activeThumbColor: AppColors.success,
                             onChanged: (_) => ctrl.toggleStaffStatus(s),
                           ),
                         ],
@@ -1099,17 +1415,23 @@ class _StaffAndSchedulingTab extends StatelessWidget {
             const SizedBox(height: 32),
 
             // ── Duty Schedules Roster ─────────────────────────────
-            const Text('Upcoming Active Duty Schedules', style: AppTextStyles.titleMedium),
+            const Text('Upcoming Active Duty Schedules',
+                style: AppTextStyles.titleMedium),
             const SizedBox(height: 12),
             Obx(() {
               final scheds = ctrl.schedules;
               if (scheds.isEmpty) {
-                return const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No active schedules for this period.')));
+                return const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text('No active schedules for this period.')));
               }
 
               return Card(
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(color: AppColors.divider)),
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1120,13 +1442,17 @@ class _StaffAndSchedulingTab extends StatelessWidget {
                     return ListTile(
                       leading: const CircleAvatar(
                         backgroundColor: Colors.blueGrey,
-                        child: Icon(Icons.calendar_month, color: Colors.white, size: 20),
+                        child: Icon(Icons.calendar_month,
+                            color: Colors.white, size: 20),
                       ),
-                      title: Text('${sc.staffName} (${AppUtils.getRoleLabel(sc.role)})', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                          '${sc.staffName} (${AppUtils.getRoleLabel(sc.role)})',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                       subtitle: Text(
                           'Date: ${DateFormat.yMMMd().format(sc.date)} | Shift: ${sc.startTime} - ${sc.endTime} | Room: ${sc.roomName ?? sc.roomId ?? "N/A"}'),
                       trailing: IconButton(
-                        icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                        icon: const Icon(Icons.delete_outline,
+                            color: AppColors.error, size: 20),
                         tooltip: 'Cancel Shift',
                         onPressed: () => ctrl.cancelSchedule(sc.scheduleId),
                       ),
@@ -1166,37 +1492,53 @@ class _StaffAndSchedulingTab extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButtonFormField<UserModel>(
-                    value: selectedUser,
-                    decoration: const InputDecoration(labelText: 'Staff Member'),
+                    initialValue: selectedUser,
+                    decoration:
+                        const InputDecoration(labelText: 'Staff Member'),
                     items: staff
-                        .map((u) => DropdownMenuItem(value: u, child: Text('${u.fullName} (${AppUtils.getRoleLabel(u.role)})')))
+                        .map((u) => DropdownMenuItem(
+                            value: u,
+                            child: Text(
+                                '${u.fullName} (${AppUtils.getRoleLabel(u.role)})')))
                         .toList(),
                     onChanged: (u) => setState(() => selectedUser = u!),
                   ),
                   const SizedBox(height: 12),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: Text('Date: ${DateFormat.yMMMd().format(selectedDate)}'),
+                    title: Text(
+                        'Date: ${DateFormat.yMMMd().format(selectedDate)}'),
                     trailing: const Icon(Icons.calendar_today),
                     onTap: () async {
                       final d = await showDatePicker(
                         context: context,
                         initialDate: selectedDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 1)),
+                        firstDate:
+                            DateTime.now().subtract(const Duration(days: 1)),
                         lastDate: DateTime.now().add(const Duration(days: 90)),
                       );
                       if (d != null) setState(() => selectedDate = d);
                     },
                   ),
-                  TextField(controller: startCtrl, decoration: const InputDecoration(labelText: 'Start Time (HH:mm)')),
-                  TextField(controller: endCtrl, decoration: const InputDecoration(labelText: 'End Time (HH:mm)')),
-                  TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Assigned Room (Optional)')),
+                  TextField(
+                      controller: startCtrl,
+                      decoration: const InputDecoration(
+                          labelText: 'Start Time (HH:mm)')),
+                  TextField(
+                      controller: endCtrl,
+                      decoration:
+                          const InputDecoration(labelText: 'End Time (HH:mm)')),
+                  TextField(
+                      controller: roomCtrl,
+                      decoration: const InputDecoration(
+                          labelText: 'Assigned Room (Optional)')),
                 ],
               ),
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Get.back(), child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () async {
                 final ok = await ctrl.createSchedule(
@@ -1217,7 +1559,8 @@ class _StaffAndSchedulingTab extends StatelessWidget {
     );
   }
 
-  void _showEditStaffDialog(BuildContext context, AdminController ctrl, UserModel staff) {
+  void _showEditStaffDialog(
+      BuildContext context, AdminController ctrl, UserModel staff) {
     final nameCtrl = TextEditingController(text: staff.fullName);
     final roomCtrl = TextEditingController(text: staff.roomId ?? '');
     final specCtrl = TextEditingController(text: staff.specialty ?? '');
@@ -1235,33 +1578,57 @@ class _StaffAndSchedulingTab extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full Name')),
+                  TextField(
+                      controller: nameCtrl,
+                      decoration:
+                          const InputDecoration(labelText: 'Full Name')),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: selectedRole,
-                    decoration: const InputDecoration(labelText: 'Assigned Role'),
+                    initialValue: selectedRole,
+                    decoration:
+                        const InputDecoration(labelText: 'Assigned Role'),
                     items: const [
                       DropdownMenuItem(value: 'doctor', child: Text('Doctor')),
                       DropdownMenuItem(value: 'nurse', child: Text('Nurse')),
-                      DropdownMenuItem(value: 'pharmacist', child: Text('Pharmacist')),
-                      DropdownMenuItem(value: 'diagnostic_staff', child: Text('Diagnostic / Lab Tech')),
-                      DropdownMenuItem(value: 'account_officer', child: Text('Account Officer')),
-                      DropdownMenuItem(value: 'registration_officer', child: Text('Registration Officer')),
-                      DropdownMenuItem(value: 'gate_officer', child: Text('Gate Officer')),
-                      DropdownMenuItem(value: 'admission_officer', child: Text('Admission Officer')),
-                      DropdownMenuItem(value: 'hospital_admin', child: Text('Hospital Admin')),
+                      DropdownMenuItem(
+                          value: 'pharmacist', child: Text('Pharmacist')),
+                      DropdownMenuItem(
+                          value: 'diagnostic_staff',
+                          child: Text('Diagnostic / Lab Tech')),
+                      DropdownMenuItem(
+                          value: 'account_officer',
+                          child: Text('Account Officer')),
+                      DropdownMenuItem(
+                          value: 'registration_officer',
+                          child: Text('Registration Officer')),
+                      DropdownMenuItem(
+                          value: 'gate_officer', child: Text('Gate Officer')),
+                      DropdownMenuItem(
+                          value: 'admission_officer',
+                          child: Text('Admission Officer')),
+                      DropdownMenuItem(
+                          value: 'hospital_admin',
+                          child: Text('Hospital Admin')),
                     ],
                     onChanged: (r) => setState(() => selectedRole = r!),
                   ),
                   const SizedBox(height: 12),
-                  TextField(controller: specCtrl, decoration: const InputDecoration(labelText: 'Specialty (e.g. Pediatrics, Cardiology)')),
-                  TextField(controller: roomCtrl, decoration: const InputDecoration(labelText: 'Default Room (e.g. 102)')),
+                  TextField(
+                      controller: specCtrl,
+                      decoration: const InputDecoration(
+                          labelText:
+                              'Specialty (e.g. Pediatrics, Cardiology)')),
+                  TextField(
+                      controller: roomCtrl,
+                      decoration: const InputDecoration(
+                          labelText: 'Default Room (e.g. 102)')),
                 ],
               ),
             ),
           ),
           actions: [
-            TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Get.back(), child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () {
                 ctrl.updateStaffProfile(
@@ -1302,7 +1669,8 @@ class _AuditLogsTab extends StatelessWidget {
             _buildAdminSectionHeader(
               context: context,
               title: 'System Audit Logs & Security Trails',
-              subtitle: 'Read-only tamper-evident event log recording clinical, financial, and operational decisions',
+              subtitle:
+                  'Read-only tamper-evident event log recording clinical, financial, and operational decisions',
               action: Obx(() {
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1315,15 +1683,30 @@ class _AuditLogsTab extends StatelessWidget {
                     child: DropdownButton<String>(
                       value: ctrl.selectedAuditModule.value,
                       items: const [
-                        DropdownMenuItem(value: 'ALL', child: Text('All Modules')),
-                        DropdownMenuItem(value: 'QUEUE', child: Text('Queue Module')),
-                        DropdownMenuItem(value: 'DOCTOR', child: Text('Doctor Consultations')),
-                        DropdownMenuItem(value: 'DIAGNOSTICS', child: Text('Diagnostics & Lab')),
-                        DropdownMenuItem(value: 'BILLING', child: Text('Billing & Payments')),
-                        DropdownMenuItem(value: 'PHARMACY', child: Text('Pharmacy Dispensing')),
-                        DropdownMenuItem(value: 'ADMISSION', child: Text('Admissions & Beds')),
-                        DropdownMenuItem(value: 'STAFF', child: Text('Staff Administration')),
-                        DropdownMenuItem(value: 'SETTINGS', child: Text('System Settings')),
+                        DropdownMenuItem(
+                            value: 'ALL', child: Text('All Modules')),
+                        DropdownMenuItem(
+                            value: 'QUEUE', child: Text('Queue Module')),
+                        DropdownMenuItem(
+                            value: 'DOCTOR',
+                            child: Text('Doctor Consultations')),
+                        DropdownMenuItem(
+                            value: 'DIAGNOSTICS',
+                            child: Text('Diagnostics & Lab')),
+                        DropdownMenuItem(
+                            value: 'BILLING',
+                            child: Text('Billing & Payments')),
+                        DropdownMenuItem(
+                            value: 'PHARMACY',
+                            child: Text('Pharmacy Dispensing')),
+                        DropdownMenuItem(
+                            value: 'ADMISSION',
+                            child: Text('Admissions & Beds')),
+                        DropdownMenuItem(
+                            value: 'STAFF',
+                            child: Text('Staff Administration')),
+                        DropdownMenuItem(
+                            value: 'SETTINGS', child: Text('System Settings')),
                       ],
                       onChanged: (m) => ctrl.filterAuditLogs(m ?? 'ALL'),
                     ),
@@ -1332,16 +1715,20 @@ class _AuditLogsTab extends StatelessWidget {
               }),
             ),
             const SizedBox(height: 20),
-
             Obx(() {
               final logs = ctrl.auditLogs;
               if (logs.isEmpty) {
-                return const Center(child: Padding(padding: EdgeInsets.all(40), child: Text('No audit events found.')));
+                return const Center(
+                    child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: Text('No audit events found.')));
               }
 
               return Card(
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: AppColors.divider)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(color: AppColors.divider)),
                 child: ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -1350,20 +1737,30 @@ class _AuditLogsTab extends StatelessWidget {
                   itemBuilder: (ctx, idx) {
                     final log = logs[idx];
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       leading: CircleAvatar(
-                        backgroundColor: _getModuleColor(log.module).withValues(alpha: 0.12),
-                        child: Icon(_getModuleIcon(log.module), color: _getModuleColor(log.module), size: 18),
+                        backgroundColor:
+                            _getModuleColor(log.module).withValues(alpha: 0.12),
+                        child: Icon(_getModuleIcon(log.module),
+                            color: _getModuleColor(log.module), size: 18),
                       ),
                       title: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         spacing: 8,
                         children: [
-                          Text(log.action, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                          Text(log.action,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 13)),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4)),
-                            child: Text(log.module, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                                color: Colors.grey.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(4)),
+                            child: Text(log.module,
+                                style: const TextStyle(
+                                    fontSize: 10, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -1371,13 +1768,20 @@ class _AuditLogsTab extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 2),
-                          Text('By: ${log.userName} (${log.role}) • Record: ${log.recordId}', style: const TextStyle(fontSize: 12)),
+                          Text(
+                              'By: ${log.userName} (${log.role}) • Record: ${log.recordId}',
+                              style: const TextStyle(fontSize: 12)),
                           if (log.details != null)
-                            Text(log.details!, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                            Text(log.details!,
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary)),
                           const SizedBox(height: 2),
                           Text(
-                            DateFormat('MMM d, h:mm:ss a').format(log.timestamp),
-                            style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                            DateFormat('MMM d, h:mm:ss a')
+                                .format(log.timestamp),
+                            style: const TextStyle(
+                                fontSize: 11, color: AppColors.textHint),
                           ),
                         ],
                       ),
@@ -1441,15 +1845,51 @@ class _ReportsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reports = [
-      (ReportType.dailyPatients, Icons.people, 'Patient census, queue arrivals, and visit outcomes'),
-      (ReportType.departmentPerformance, Icons.table_chart, 'Queue wait and service times across all units'),
-      (ReportType.queuePerformance, Icons.access_time, 'Detailed entry, call, start and completion queue items'),
-      (ReportType.diagnostics, Icons.biotech, 'Laboratory, X-Ray, and Ultrasound turnaround metrics'),
-      (ReportType.pharmacy, Icons.medication, 'Dispensed medications, dosages, and stock depletion'),
-      (ReportType.admissions, Icons.hotel, 'Ward admissions, reasons, and bed occupancy'),
-      (ReportType.discharges, Icons.exit_to_app, 'Discharged patients and average length of stay'),
-      (ReportType.revenue, Icons.receipt_long, 'Billed invoices, amounts received, and balances'),
-      (ReportType.staffPerformance, Icons.badge, 'Staff consultations, workloads, and service durations'),
+      (
+        ReportType.dailyPatients,
+        Icons.people,
+        'Patient census, queue arrivals, and visit outcomes'
+      ),
+      (
+        ReportType.departmentPerformance,
+        Icons.table_chart,
+        'Queue wait and service times across all units'
+      ),
+      (
+        ReportType.queuePerformance,
+        Icons.access_time,
+        'Detailed entry, call, start and completion queue items'
+      ),
+      (
+        ReportType.diagnostics,
+        Icons.biotech,
+        'Laboratory, X-Ray, and Ultrasound turnaround metrics'
+      ),
+      (
+        ReportType.pharmacy,
+        Icons.medication,
+        'Dispensed medications, dosages, and stock depletion'
+      ),
+      (
+        ReportType.admissions,
+        Icons.hotel,
+        'Ward admissions, reasons, and bed occupancy'
+      ),
+      (
+        ReportType.discharges,
+        Icons.exit_to_app,
+        'Discharged patients and average length of stay'
+      ),
+      (
+        ReportType.revenue,
+        Icons.receipt_long,
+        'Billed invoices, amounts received, and balances'
+      ),
+      (
+        ReportType.staffPerformance,
+        Icons.badge,
+        'Staff consultations, workloads, and service durations'
+      ),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
@@ -1459,14 +1899,19 @@ class _ReportsTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Downloadable & Printable Operational Reports', style: AppTextStyles.titleLarge),
+            const Text('Downloadable & Printable Operational Reports',
+                style: AppTextStyles.titleLarge),
             const SizedBox(height: 4),
-            const Text('Export RFC-4180 standard CSV datasets ready for auditing, reporting, and printing',
+            const Text(
+                'Export RFC-4180 standard CSV datasets ready for auditing, reporting, and printing',
                 style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
             const SizedBox(height: 24),
             LayoutBuilder(builder: (ctx, constraints) {
-              final crossCount = constraints.maxWidth > 950 ? 3 : (constraints.maxWidth > 650 ? 2 : 1);
-              final itemWidth = (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
+              final crossCount = constraints.maxWidth > 950
+                  ? 3
+                  : (constraints.maxWidth > 650 ? 2 : 1);
+              final itemWidth =
+                  (constraints.maxWidth - (crossCount - 1) * 16) / crossCount;
 
               return Wrap(
                 spacing: 16,
@@ -1487,26 +1932,39 @@ class _ReportsTab extends StatelessWidget {
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                                child: Icon(r.$2, color: AppColors.primary, size: 20),
+                                backgroundColor:
+                                    AppColors.primary.withValues(alpha: 0.1),
+                                child: Icon(r.$2,
+                                    color: AppColors.primary, size: 20),
                               ),
                               const SizedBox(width: 12),
-                              Expanded(child: Text(r.$1.displayName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+                              Expanded(
+                                  child: Text(r.$1.displayName,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14))),
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Text(r.$3, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary), maxLines: 2),
+                          Text(r.$3,
+                              style: const TextStyle(
+                                  fontSize: 12, color: AppColors.textSecondary),
+                              maxLines: 2),
                           const SizedBox(height: 16),
                           ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
                               foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 10),
                             ),
-                            onPressed: () => _previewAndDownloadReport(context, ctrl, r.$1),
+                            onPressed: () =>
+                                _previewAndDownloadReport(context, ctrl, r.$1),
                             icon: const Icon(Icons.download_rounded, size: 16),
-                            label: const Text('Export & Preview', style: TextStyle(fontSize: 12)),
+                            label: const Text('Export & Preview',
+                                style: TextStyle(fontSize: 12)),
                           ),
                         ],
                       ),
@@ -1521,7 +1979,8 @@ class _ReportsTab extends StatelessWidget {
     });
   }
 
-  void _previewAndDownloadReport(BuildContext context, AdminController ctrl, ReportType type) {
+  void _previewAndDownloadReport(
+      BuildContext context, AdminController ctrl, ReportType type) {
     final csv = ctrl.exportReport(type);
     Get.dialog(
       AlertDialog(
@@ -1532,14 +1991,21 @@ class _ReportsTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Generated RFC-4180 CSV Content:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+              const Text('Generated RFC-4180 CSV Content:',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
               const SizedBox(height: 8),
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(
+                      color: const Color(0xFF0F172A),
+                      borderRadius: BorderRadius.circular(8)),
                   child: SingleChildScrollView(
-                    child: Text(csv, style: const TextStyle(color: Colors.greenAccent, fontFamily: 'monospace', fontSize: 11)),
+                    child: Text(csv,
+                        style: const TextStyle(
+                            color: Colors.greenAccent,
+                            fontFamily: 'monospace',
+                            fontSize: 11)),
                   ),
                 ),
               ),
@@ -1551,7 +2017,8 @@ class _ReportsTab extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () {
               Get.back();
-              Get.snackbar('Downloaded', '${type.displayName} successfully exported.');
+              Get.snackbar(
+                  'Downloaded', '${type.displayName} successfully exported.');
             },
             icon: const Icon(Icons.print_rounded, size: 16),
             label: const Text('Print / Download'),
@@ -1589,7 +2056,8 @@ class _SystemSettingsTab extends StatelessWidget {
               _buildAdminSectionHeader(
                 context: context,
                 title: 'Hospital System Configuration',
-                subtitle: 'Adjust hospital identity, queue display speech parameters, and financial rules',
+                subtitle:
+                    'Adjust hospital identity, queue display speech parameters, and financial rules',
                 action: ElevatedButton.icon(
                   onPressed: () {
                     ctrl.updateSettings(s.copyWith(
@@ -1605,7 +2073,8 @@ class _SystemSettingsTab extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 12),
                   ),
                 ),
               ),
@@ -1622,32 +2091,56 @@ class _SystemSettingsTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Hospital Identity', style: AppTextStyles.titleMedium),
+                    const Text('Hospital Identity',
+                        style: AppTextStyles.titleMedium),
                     const SizedBox(height: 16),
-                    TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Hospital Name')),
+                    TextField(
+                        controller: nameCtrl,
+                        decoration:
+                            const InputDecoration(labelText: 'Hospital Name')),
                     const SizedBox(height: 12),
-                    TextField(controller: tagCtrl, decoration: const InputDecoration(labelText: 'Tagline')),
+                    TextField(
+                        controller: tagCtrl,
+                        decoration:
+                            const InputDecoration(labelText: 'Tagline')),
                     const SizedBox(height: 12),
                     LayoutBuilder(builder: (ctx, c) {
                       if (c.maxWidth < 600) {
                         return Column(
                           children: [
-                            TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact Phone')),
+                            TextField(
+                                controller: phoneCtrl,
+                                decoration: const InputDecoration(
+                                    labelText: 'Contact Phone')),
                             const SizedBox(height: 12),
-                            TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Contact Email')),
+                            TextField(
+                                controller: emailCtrl,
+                                decoration: const InputDecoration(
+                                    labelText: 'Contact Email')),
                           ],
                         );
                       }
                       return Row(
                         children: [
-                          Expanded(child: TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Contact Phone'))),
+                          Expanded(
+                              child: TextField(
+                                  controller: phoneCtrl,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Contact Phone'))),
                           const SizedBox(width: 16),
-                          Expanded(child: TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Contact Email'))),
+                          Expanded(
+                              child: TextField(
+                                  controller: emailCtrl,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Contact Email'))),
                         ],
                       );
                     }),
                     const SizedBox(height: 12),
-                    TextField(controller: addrCtrl, decoration: const InputDecoration(labelText: 'Physical Address')),
+                    TextField(
+                        controller: addrCtrl,
+                        decoration: const InputDecoration(
+                            labelText: 'Physical Address')),
                   ],
                 ),
               ),
@@ -1664,28 +2157,36 @@ class _SystemSettingsTab extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Queue & Audio Announcements', style: AppTextStyles.titleMedium),
+                    const Text('Queue & Audio Announcements',
+                        style: AppTextStyles.titleMedium),
                     const SizedBox(height: 12),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Enable Voice Queue Announcements'),
-                      subtitle: const Text('Plays: "Queue number DOC-024, please proceed to Room 103"'),
+                      subtitle: const Text(
+                          'Plays: "Queue number DOC-024, please proceed to Room 103"'),
                       value: s.enableAudioAnnouncements,
-                      onChanged: (val) => ctrl.updateSettings(s.copyWith(enableAudioAnnouncements: val)),
+                      onChanged: (val) => ctrl.updateSettings(
+                          s.copyWith(enableAudioAnnouncements: val)),
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Require Payment Prior to Diagnostic Execution'),
-                      subtitle: const Text('Diagnostic requests cannot begin until marked PAID at cashier'),
+                      title: const Text(
+                          'Require Payment Prior to Diagnostic Execution'),
+                      subtitle: const Text(
+                          'Diagnostic requests cannot begin until marked PAID at cashier'),
                       value: s.requirePaymentBeforeDiagnostics,
-                      onChanged: (val) => ctrl.updateSettings(s.copyWith(requirePaymentBeforeDiagnostics: val)),
+                      onChanged: (val) => ctrl.updateSettings(
+                          s.copyWith(requirePaymentBeforeDiagnostics: val)),
                     ),
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('24-Hour Emergency Operation Mode'),
-                      subtitle: const Text('Keep Emergency Gate and Triage units open continuously'),
+                      subtitle: const Text(
+                          'Keep Emergency Gate and Triage units open continuously'),
                       value: s.emergencyOpen24h,
-                      onChanged: (val) => ctrl.updateSettings(s.copyWith(emergencyOpen24h: val)),
+                      onChanged: (val) => ctrl
+                          .updateSettings(s.copyWith(emergencyOpen24h: val)),
                     ),
                   ],
                 ),
@@ -1705,33 +2206,75 @@ class _QuickActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final actions = [
-      (Icons.meeting_room_rounded, 'Gate Entry', AppColors.primary, AppRoutes.gateDashboard),
-      (Icons.how_to_reg_rounded, 'Registration', AppColors.secondary, AppRoutes.registrationDashboard),
-      (Icons.medical_services_rounded, 'Consultation', AppColors.success, AppRoutes.doctorDashboard),
-      (Icons.biotech_rounded, 'Diagnostics & Lab', const Color(0xFF673AB7), AppRoutes.diagnosticDashboard),
-      (Icons.receipt_long_rounded, 'Billing & Cashier', const Color(0xFF00897B), AppRoutes.accountDashboard),
-      (Icons.medication_rounded, 'Pharmacy', const Color(0xFFE65100), AppRoutes.pharmacyDashboard),
-      (Icons.hotel_rounded, 'Wards & Admissions', const Color(0xFF1565C0), AppRoutes.admissionDashboard),
-      (Icons.tv_rounded, 'Queue Display TV', const Color(0xFF0284C7), AppRoutes.digitalQueueDisplay),
+      (
+        Icons.meeting_room_rounded,
+        'Gate Entry',
+        AppColors.primary,
+        AppRoutes.gateDashboard
+      ),
+      (
+        Icons.how_to_reg_rounded,
+        'Registration',
+        AppColors.secondary,
+        AppRoutes.registrationDashboard
+      ),
+      (
+        Icons.medical_services_rounded,
+        'Consultation',
+        AppColors.success,
+        AppRoutes.doctorDashboard
+      ),
+      (
+        Icons.biotech_rounded,
+        'Diagnostics & Lab',
+        const Color(0xFF673AB7),
+        AppRoutes.diagnosticDashboard
+      ),
+      (
+        Icons.receipt_long_rounded,
+        'Billing & Cashier',
+        const Color(0xFF00897B),
+        AppRoutes.accountDashboard
+      ),
+      (
+        Icons.medication_rounded,
+        'Pharmacy',
+        const Color(0xFFE65100),
+        AppRoutes.pharmacyDashboard
+      ),
+      (
+        Icons.hotel_rounded,
+        'Wards & Admissions',
+        const Color(0xFF1565C0),
+        AppRoutes.admissionDashboard
+      ),
+      (
+        Icons.tv_rounded,
+        'Queue Display TV',
+        const Color(0xFF0284C7),
+        AppRoutes.digitalQueueDisplay
+      ),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
       final isSmall = constraints.maxWidth < 650;
       if (isSmall) {
+        final isVeryNarrow = constraints.maxWidth < 360;
         return GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
+          crossAxisCount: isVeryNarrow ? 1 : 2,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
-          childAspectRatio: 2.7,
+          childAspectRatio: isVeryNarrow ? 4.5 : 2.7,
           children: actions.map((a) {
             return OutlinedButton.icon(
               onPressed: () => Get.offNamed(a.$4),
               icon: Icon(a.$1, color: a.$3, size: 16),
               label: Text(
                 a.$2,
-                style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600, color: a.$3),
+                style: TextStyle(
+                    fontSize: 11.5, fontWeight: FontWeight.w600, color: a.$3),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1739,7 +2282,8 @@ class _QuickActions extends StatelessWidget {
                 foregroundColor: a.$3,
                 side: BorderSide(color: a.$3.withValues(alpha: 0.35)),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
             );
           }).toList(),
@@ -1757,8 +2301,10 @@ class _QuickActions extends StatelessWidget {
                   style: OutlinedButton.styleFrom(
                     foregroundColor: a.$3,
                     side: BorderSide(color: a.$3.withValues(alpha: 0.4)),
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                 ))
             .toList(),
@@ -1789,12 +2335,18 @@ class _PendingStaffSection extends StatelessWidget {
           spacing: 10,
           runSpacing: 6,
           children: [
-            const Text('Pending Staff Verifications', style: AppTextStyles.titleLarge),
+            const Text('Pending Staff Verifications',
+                style: AppTextStyles.titleLarge),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(
+                  color: AppColors.error,
+                  borderRadius: BorderRadius.circular(12)),
               child: Text('${pendingList.length} Pending',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 12)),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12)),
             ),
           ],
         ),
@@ -1807,7 +2359,8 @@ class _PendingStaffSection extends StatelessWidget {
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: AppColors.warning.withValues(alpha: 0.4)),
+                side:
+                    BorderSide(color: AppColors.warning.withValues(alpha: 0.4)),
               ),
               color: AppColors.surface,
               child: ListView.separated(
@@ -1828,24 +2381,34 @@ class _PendingStaffSection extends StatelessWidget {
                             children: [
                               CircleAvatar(
                                 backgroundColor: AppColors.primaryLight,
-                                child: Text(AppUtils.getInitials(staff.fullName),
-                                    style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                                child: Text(
+                                    AppUtils.getInitials(staff.fullName),
+                                    style: const TextStyle(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.w700)),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(staff.fullName, style: AppTextStyles.titleMedium),
+                                    Text(staff.fullName,
+                                        style: AppTextStyles.titleMedium),
                                     const SizedBox(height: 2),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primary.withValues(alpha: 0.1),
+                                        color: AppColors.primary
+                                            .withValues(alpha: 0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text(AppUtils.getRoleLabel(staff.role),
-                                          style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                                      child: Text(
+                                          AppUtils.getRoleLabel(staff.role),
+                                          style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600)),
                                     ),
                                   ],
                                 ),
@@ -1853,8 +2416,10 @@ class _PendingStaffSection extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Text('${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                              '${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(color: AppColors.textSecondary)),
                           const SizedBox(height: 14),
                           Row(
                             children: [
@@ -1862,9 +2427,13 @@ class _PendingStaffSection extends StatelessWidget {
                                 child: OutlinedButton.icon(
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: AppColors.error,
-                                    side: const BorderSide(color: AppColors.error),
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    side: const BorderSide(
+                                        color: AppColors.error),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                   ),
                                   onPressed: () => onReject(staff.uid),
                                   icon: const Icon(Icons.close, size: 16),
@@ -1877,8 +2446,11 @@ class _PendingStaffSection extends StatelessWidget {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.success,
                                     foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
                                   ),
                                   onPressed: () => onApprove(staff.uid),
                                   icon: const Icon(Icons.check, size: 16),
@@ -1893,47 +2465,60 @@ class _PendingStaffSection extends StatelessWidget {
                   }
 
                   return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                     leading: CircleAvatar(
                       backgroundColor: AppColors.primaryLight,
                       child: Text(AppUtils.getInitials(staff.fullName),
-                          style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                          style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700)),
                     ),
                     title: Row(
                       children: [
                         Text(staff.fullName, style: AppTextStyles.titleMedium),
                         const SizedBox(width: 10),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(AppUtils.getRoleLabel(staff.role),
-                              style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                              style: const TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600)),
                         ),
                       ],
                     ),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(top: 4),
-                      child: Text('${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
-                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                      child: Text(
+                          '${staff.email} • ${staff.phone.isNotEmpty ? staff.phone : "No phone"}',
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.textSecondary)),
                     ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         TextButton.icon(
                           onPressed: () => onReject(staff.uid),
-                          icon: const Icon(Icons.close, size: 16, color: AppColors.error),
-                          label: const Text('Reject', style: TextStyle(color: AppColors.error)),
+                          icon: const Icon(Icons.close,
+                              size: 16, color: AppColors.error),
+                          label: const Text('Reject',
+                              style: TextStyle(color: AppColors.error)),
                         ),
                         const SizedBox(width: 8),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.success,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
                           ),
                           onPressed: () => onApprove(staff.uid),
                           icon: const Icon(Icons.check, size: 16),
@@ -1952,4 +2537,3 @@ class _PendingStaffSection extends StatelessWidget {
     );
   }
 }
-

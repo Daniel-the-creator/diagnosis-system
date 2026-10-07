@@ -146,8 +146,10 @@ class DoctorController extends GetxController {
   final RxString treatmentPlan = ''.obs;
 
   // Order lists for active consultation
-  final RxList<PendingDiagnosticItem> pendingDiagnostics = <PendingDiagnosticItem>[].obs;
-  final RxList<PendingPrescriptionItem> pendingPrescriptions = <PendingPrescriptionItem>[].obs;
+  final RxList<PendingDiagnosticItem> pendingDiagnostics =
+      <PendingDiagnosticItem>[].obs;
+  final RxList<PendingPrescriptionItem> pendingPrescriptions =
+      <PendingPrescriptionItem>[].obs;
   final RxBool admissionRequested = false.obs;
   final RxString admissionReason = ''.obs;
   final RxString admissionPriority = 'ROUTINE'.obs;
@@ -155,8 +157,10 @@ class DoctorController extends GetxController {
   final RxString dischargeSummary = ''.obs;
 
   // Patient past consultations & test results for review
-  final RxList<ConsultationModel> patientConsultations = <ConsultationModel>[].obs;
-  final RxList<DiagnosticResultModel> visitDiagnosticResults = <DiagnosticResultModel>[].obs;
+  final RxList<ConsultationModel> patientConsultations =
+      <ConsultationModel>[].obs;
+  final RxList<DiagnosticResultModel> visitDiagnosticResults =
+      <DiagnosticResultModel>[].obs;
 
   final RxBool isLoading = false.obs;
   final RxString errorMessage = ''.obs;
@@ -175,32 +179,43 @@ class DoctorController extends GetxController {
   String get doctorId => _doctorId;
 
   /// Call this once the doctor's UID is known (from AuthController in the view).
-  void setDoctorId(String doctorId, {bool isAdmin = false, bool force = false}) {
+  void setDoctorId(String doctorId,
+      {bool isAdmin = false, bool force = false}) {
     final wasAdmin = this.isAdmin.value;
     this.isAdmin.value = isAdmin;
     if (this.isAdmin.value && !wasAdmin) {
       currentDeptCode.value = 'ALL';
       _setupStreams();
     }
-    if (_doctorId == doctorId && !this.isAdmin.value && !force && _aptSubscriptions.isNotEmpty) return;
+    if (_doctorId == doctorId &&
+        !this.isAdmin.value &&
+        !force &&
+        _aptSubscriptions.isNotEmpty) return;
     _doctorId = doctorId;
     _setupAppointmentStream();
     if (doctorQueue.isNotEmpty) {
-      currentlyServing.value = doctorQueue.where((i) =>
-        i.status == QueueStatus.inProgress &&
-        (_doctorId.isEmpty || this.isAdmin.value || i.assignedStaffId == _doctorId)
-      ).firstOrNull;
+      currentlyServing.value = doctorQueue
+          .where((i) =>
+              i.status == QueueStatus.inProgress &&
+              (_doctorId.isEmpty ||
+                  this.isAdmin.value ||
+                  i.assignedStaffId == _doctorId))
+          .firstOrNull;
     }
   }
 
   void _setupStreams() {
     _queueSub?.cancel();
-    _queueSub = _queueRepo.streamActiveQueue(currentDeptCode.value).listen((items) {
+    _queueSub =
+        _queueRepo.streamActiveQueue(currentDeptCode.value).listen((items) {
       doctorQueue.assignAll(items);
-      currentlyServing.value = items.where((i) =>
-        i.status == QueueStatus.inProgress &&
-        (_doctorId.isEmpty || isAdmin.value || i.assignedStaffId == _doctorId)
-      ).firstOrNull;
+      currentlyServing.value = items
+          .where((i) =>
+              i.status == QueueStatus.inProgress &&
+              (_doctorId.isEmpty ||
+                  isAdmin.value ||
+                  i.assignedStaffId == _doctorId))
+          .firstOrNull;
     });
   }
 
@@ -220,8 +235,10 @@ class DoctorController extends GetxController {
     isAppointmentsLoading.value = true;
 
     final Stream<List<AppointmentModel>> stream = isAdmin.value
-        ? _aptRepo!.streamAllAppointments()
-        : (_doctorId.isNotEmpty ? _aptRepo!.streamDoctorAppointments(_doctorId) : Stream.value([]));
+        ? _aptRepo.streamAllAppointments()
+        : (_doctorId.isNotEmpty
+            ? _aptRepo.streamDoctorAppointments(_doctorId)
+            : Stream.value([]));
 
     _aptSubscriptions.add(
       stream.listen(
@@ -243,7 +260,8 @@ class DoctorController extends GetxController {
         },
         onError: (e) {
           isAppointmentsLoading.value = false;
-          errorMessage.value = 'Doctor appointments stream error: ${e.toString()}';
+          errorMessage.value =
+              'Doctor appointments stream error: ${e.toString()}';
         },
       ),
     );
@@ -251,20 +269,25 @@ class DoctorController extends GetxController {
 
   Future<void> confirmAppointment(String appointmentId) async {
     // Immediate optimistic update
-    final allIdx = allAppointments.indexWhere((a) => a.appointmentId == appointmentId);
+    final allIdx =
+        allAppointments.indexWhere((a) => a.appointmentId == appointmentId);
     if (allIdx != -1) {
-      allAppointments[allIdx] = allAppointments[allIdx].copyWith(status: 'CONFIRMED');
+      allAppointments[allIdx] =
+          allAppointments[allIdx].copyWith(status: 'CONFIRMED');
       allAppointments.refresh();
     }
-    final todayIdx = todayAppointments.indexWhere((a) => a.appointmentId == appointmentId);
+    final todayIdx =
+        todayAppointments.indexWhere((a) => a.appointmentId == appointmentId);
     if (todayIdx != -1) {
-      todayAppointments[todayIdx] = todayAppointments[todayIdx].copyWith(status: 'CONFIRMED');
+      todayAppointments[todayIdx] =
+          todayAppointments[todayIdx].copyWith(status: 'CONFIRMED');
       todayAppointments.refresh();
     }
 
     try {
       await _aptRepo?.updateAppointment(appointmentId, {'status': 'CONFIRMED'});
-      Get.snackbar('Appointment Confirmed', 'The appointment has been confirmed.',
+      Get.snackbar(
+          'Appointment Confirmed', 'The appointment has been confirmed.',
           snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       errorMessage.value = FirebaseErrorHandler.toMessage(e);
@@ -273,17 +296,21 @@ class DoctorController extends GetxController {
 
   Future<void> cancelAppointmentByDoctor(String appointmentId) async {
     // Immediate optimistic update
-    final allIdx = allAppointments.indexWhere((a) => a.appointmentId == appointmentId);
+    final allIdx =
+        allAppointments.indexWhere((a) => a.appointmentId == appointmentId);
     if (allIdx != -1) {
-      allAppointments[allIdx] = allAppointments[allIdx].copyWith(status: 'CANCELLED');
+      allAppointments[allIdx] =
+          allAppointments[allIdx].copyWith(status: 'CANCELLED');
       allAppointments.refresh();
     }
     todayAppointments.removeWhere((a) => a.appointmentId == appointmentId);
     todayAppointments.refresh();
 
     try {
-      await _aptRepo?.cancelAppointment(appointmentId, reason: 'Cancelled by doctor');
-      Get.snackbar('Appointment Cancelled', 'The appointment has been cancelled.',
+      await _aptRepo?.cancelAppointment(appointmentId,
+          reason: 'Cancelled by doctor');
+      Get.snackbar(
+          'Appointment Cancelled', 'The appointment has been cancelled.',
           snackPosition: SnackPosition.BOTTOM);
     } catch (e) {
       errorMessage.value = FirebaseErrorHandler.toMessage(e);
@@ -342,9 +369,8 @@ class DoctorController extends GetxController {
         await _queueRepo.callPatient(itemToCall.queueId, effectiveStaffId);
       } else {
         // 2. Fallback to repository query if local queue has not streamed yet
-        final targetDept = currentDeptCode.value == 'ALL'
-            ? 'GEN'
-            : currentDeptCode.value;
+        final targetDept =
+            currentDeptCode.value == 'ALL' ? 'GEN' : currentDeptCode.value;
         itemToCall = await _queueRepo.callNext(targetDept, effectiveStaffId);
       }
 
@@ -407,18 +433,21 @@ class DoctorController extends GetxController {
       currentVisit.value = await _visitRepo.getVisitById(item.visitId);
 
       // Pre-fill triage vitals if available on visit
-      if (currentVisit.value?.vitals != null && currentVisit.value!.vitals!.isNotEmpty) {
+      if (currentVisit.value?.vitals != null &&
+          currentVisit.value!.vitals!.isNotEmpty) {
         vitals.addAll(currentVisit.value!.vitals!);
       }
 
       // Load past consultations and visit diagnostic results
       if (_consultationRepo != null && item.patientId.isNotEmpty) {
-        _consultationRepo!.streamPatientConsultations(item.patientId).listen((list) {
+        _consultationRepo
+            .streamPatientConsultations(item.patientId)
+            .listen((list) {
           patientConsultations.assignAll(list);
         });
       }
       if (_diagnosticRepo != null && item.visitId.isNotEmpty) {
-        _diagnosticRepo!.streamVisitResults(item.visitId).listen((list) {
+        _diagnosticRepo.streamVisitResults(item.visitId).listen((list) {
           visitDiagnosticResults.assignAll(list);
         });
       }
@@ -449,7 +478,8 @@ class DoctorController extends GetxController {
     try {
       final now = DateTime.now();
       // 1. Get or create today's visit for this patient
-      VisitModel? visit = await _visitRepo.getTodaysVisitForPatient(apt.patientId);
+      VisitModel? visit =
+          await _visitRepo.getTodaysVisitForPatient(apt.patientId);
       if (visit == null) {
         final visitId = const Uuid().v4();
         visit = VisitModel(
@@ -459,7 +489,8 @@ class DoctorController extends GetxController {
           arrivalTime: now,
           patientType: 'REGULAR',
           priority: Priority.regular,
-          currentDepartment: apt.departmentId.isNotEmpty ? apt.departmentId : 'GEN',
+          currentDepartment:
+              apt.departmentId.isNotEmpty ? apt.departmentId : 'GEN',
           currentStatus: 'IN_CONSULTATION',
           completed: false,
           createdAt: now,
@@ -479,7 +510,9 @@ class DoctorController extends GetxController {
         patientId: apt.patientId,
         visitId: visit.visitId,
         departmentId: deptCode,
-        departmentName: apt.departmentName.isNotEmpty ? apt.departmentName : 'General Medicine',
+        departmentName: apt.departmentName.isNotEmpty
+            ? apt.departmentName
+            : 'General Medicine',
         priority: Priority.regular.toMap(),
         status: QueueStatus.inProgress,
         createdAt: now,
@@ -493,14 +526,18 @@ class DoctorController extends GetxController {
         'status': 'CONFIRMED',
         'updatedAt': Timestamp.fromDate(now),
       });
-      final allIdx = allAppointments.indexWhere((a) => a.appointmentId == apt.appointmentId);
+      final allIdx = allAppointments
+          .indexWhere((a) => a.appointmentId == apt.appointmentId);
       if (allIdx != -1) {
-        allAppointments[allIdx] = allAppointments[allIdx].copyWith(status: 'CONFIRMED');
+        allAppointments[allIdx] =
+            allAppointments[allIdx].copyWith(status: 'CONFIRMED');
         allAppointments.refresh();
       }
-      final todayIdx = todayAppointments.indexWhere((a) => a.appointmentId == apt.appointmentId);
+      final todayIdx = todayAppointments
+          .indexWhere((a) => a.appointmentId == apt.appointmentId);
       if (todayIdx != -1) {
-        todayAppointments[todayIdx] = todayAppointments[todayIdx].copyWith(status: 'CONFIRMED');
+        todayAppointments[todayIdx] =
+            todayAppointments[todayIdx].copyWith(status: 'CONFIRMED');
         todayAppointments.refresh();
       }
 
@@ -516,12 +553,14 @@ class DoctorController extends GetxController {
 
       // 6. Load past consultations & diagnostic results
       if (_consultationRepo != null && apt.patientId.isNotEmpty) {
-        _consultationRepo!.streamPatientConsultations(apt.patientId).listen((list) {
+        _consultationRepo
+            .streamPatientConsultations(apt.patientId)
+            .listen((list) {
           patientConsultations.assignAll(list);
         });
       }
       if (_diagnosticRepo != null && visit.visitId.isNotEmpty) {
-        _diagnosticRepo!.streamVisitResults(visit.visitId).listen((list) {
+        _diagnosticRepo.streamVisitResults(visit.visitId).listen((list) {
           visitDiagnosticResults.assignAll(list);
         });
       }
@@ -545,7 +584,8 @@ class DoctorController extends GetxController {
     debugPrint(msg);
     debugPrint('═════════════════════════════════════════════');
 
-    final match = RegExp(r'https://console\.firebase\.google\.com[^\s\)]+').firstMatch(msg);
+    final match = RegExp(r'https://console\.firebase\.google\.com[^\s\)]+')
+        .firstMatch(msg);
     if (match != null) {
       final url = match.group(0)!;
       Clipboard.setData(ClipboardData(text: url));
@@ -586,7 +626,8 @@ class DoctorController extends GetxController {
             TextButton(
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: url));
-                Get.snackbar('Copied', 'Index URL copied to clipboard!', snackPosition: SnackPosition.BOTTOM);
+                Get.snackbar('Copied', 'Index URL copied to clipboard!',
+                    snackPosition: SnackPosition.BOTTOM);
               },
               child: const Text('Copy Link Again'),
             ),
@@ -598,7 +639,8 @@ class DoctorController extends GetxController {
         ),
       );
     } else {
-      Get.snackbar('Error', 'Failed to $actionName: $e', snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', 'Failed to $actionName: $e',
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -706,7 +748,7 @@ class DoctorController extends GetxController {
       // 1. Process Diagnostics
       if (_diagnosticRepo != null && pendingDiagnostics.isNotEmpty) {
         for (final diag in pendingDiagnostics) {
-          final reqId = _diagnosticRepo!.generateRequestId();
+          final reqId = _diagnosticRepo.generateRequestId();
           createdDiagnosticRequestIds.add(reqId);
 
           final req = DiagnosticRequestModel(
@@ -724,7 +766,7 @@ class DoctorController extends GetxController {
             status: 'WAITING',
             requestedAt: DateTime.now(),
           );
-          await _diagnosticRepo!.saveRequest(req);
+          await _diagnosticRepo.saveRequest(req);
 
           // Add to bill
           invoiceItems.add(InvoiceItemModel(
@@ -740,7 +782,7 @@ class DoctorController extends GetxController {
       // 2. Process Prescriptions
       if (_pharmacyRepo != null && pendingPrescriptions.isNotEmpty) {
         for (final rx in pendingPrescriptions) {
-          final rxId = _pharmacyRepo!.generatePrescriptionId();
+          final rxId = _pharmacyRepo.generatePrescriptionId();
           createdPrescriptionIds.add(rxId);
 
           final rxModel = PrescriptionModel(
@@ -760,7 +802,7 @@ class DoctorController extends GetxController {
             status: 'PENDING',
             createdAt: DateTime.now(),
           );
-          await _pharmacyRepo!.savePrescription(rxModel);
+          await _pharmacyRepo.savePrescription(rxModel);
 
           // Add to bill
           final rxTotal = rx.estimatedFee * rx.quantity;
@@ -776,7 +818,7 @@ class DoctorController extends GetxController {
 
       // 3. Process Admission Request
       if (_admissionRepo != null && admissionRequested.value) {
-        final admId = _admissionRepo!.generateAdmissionId();
+        final admId = _admissionRepo.generateAdmissionId();
         createdAdmissionId = admId;
 
         final admModel = AdmissionRequestModel(
@@ -786,12 +828,14 @@ class DoctorController extends GetxController {
           visitId: visitId,
           doctorId: doctorId,
           doctorName: doctorName,
-          reason: admissionReason.value.isNotEmpty ? admissionReason.value : 'In-patient care recommended',
+          reason: admissionReason.value.isNotEmpty
+              ? admissionReason.value
+              : 'In-patient care recommended',
           priority: admissionPriority.value,
           status: 'REQUESTED',
           requestedAt: DateTime.now(),
         );
-        await _admissionRepo!.saveAdmissionRequest(admModel);
+        await _admissionRepo.saveAdmissionRequest(admModel);
 
         invoiceItems.add(const InvoiceItemModel(
           description: 'In-Patient Admission Deposit',
@@ -805,7 +849,7 @@ class DoctorController extends GetxController {
       // 4. Save Consultation Record
       String consultationId = '';
       if (_consultationRepo != null) {
-        consultationId = _consultationRepo!.generateId();
+        consultationId = _consultationRepo.generateId();
         final consultation = ConsultationModel(
           consultationId: consultationId,
           patientId: patientId,
@@ -825,14 +869,15 @@ class DoctorController extends GetxController {
           dischargeRecommended: dischargeRecommended.value,
           createdAt: DateTime.now(),
         );
-        await _consultationRepo!.saveConsultation(consultation);
+        await _consultationRepo.saveConsultation(consultation);
       }
 
       // 5. Generate / Update Itemized Invoice
       String? invoiceId;
       if (_billingRepo != null && invoiceItems.isNotEmpty) {
-        invoiceId = _billingRepo!.generateInvoiceId();
-        final double subtotal = invoiceItems.fold(0.0, (acc, item) => acc + item.total);
+        invoiceId = _billingRepo.generateInvoiceId();
+        final double subtotal =
+            invoiceItems.fold(0.0, (acc, item) => acc + item.total);
         final invoice = InvoiceModel(
           invoiceId: invoiceId,
           patientId: patientId,
@@ -847,7 +892,7 @@ class DoctorController extends GetxController {
           status: 'PENDING',
           createdAt: DateTime.now(),
         );
-        await _billingRepo!.saveInvoice(invoice);
+        await _billingRepo.saveInvoice(invoice);
       }
 
       // 6. Dynamic Visit Status Progression
@@ -879,7 +924,8 @@ class DoctorController extends GetxController {
           'diagnosticRequestIds': createdDiagnosticRequestIds,
         if (createdPrescriptionIds.isNotEmpty)
           'prescriptionIds': createdPrescriptionIds,
-        if (createdAdmissionId != null) 'admissionRequestId': createdAdmissionId,
+        if (createdAdmissionId != null)
+          'admissionRequestId': createdAdmissionId,
         if (invoiceId != null) 'invoiceId': invoiceId,
       });
 
@@ -891,11 +937,12 @@ class DoctorController extends GetxController {
 
       // 9. Send Notification to patient
       if (_notificationRepo != null && patientId.isNotEmpty) {
-        await _notificationRepo!.notify(
+        await _notificationRepo.notify(
           recipientId: patientId,
           recipientType: 'patient',
           title: 'Consultation Completed',
-          body: 'Dr. $doctorName has finalized your consultation. Your next step is: $nextCareStage.',
+          body:
+              'Dr. $doctorName has finalized your consultation. Your next step is: $nextCareStage.',
           type: 'CONSULTATION_DONE',
           relatedId: visitId,
         );

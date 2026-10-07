@@ -13,15 +13,18 @@ class NotificationCenterView extends StatefulWidget {
   const NotificationCenterView({super.key});
 
   static Future<void> show(BuildContext context) {
+    final screen = MediaQuery.sizeOf(context);
+    final isPhone = screen.width < 600;
     return showDialog(
       context: context,
-      builder: (ctx) => const Dialog(
+      builder: (ctx) => Dialog(
         backgroundColor: Colors.transparent,
-        insetPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        insetPadding: EdgeInsets.symmetric(
+            horizontal: isPhone ? 12 : 24, vertical: isPhone ? 16 : 24),
         child: SizedBox(
-          width: 580,
-          height: 680,
-          child: NotificationCenterView(),
+          width: isPhone ? screen.width : 580,
+          height: isPhone ? screen.height * 0.85 : 680,
+          child: const NotificationCenterView(),
         ),
       ),
     );
@@ -111,32 +114,56 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
   }
 
   Widget _buildHeader(String uid) {
+    final isPhone = MediaQuery.of(context).size.width < 500;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding:
+          EdgeInsets.symmetric(horizontal: isPhone ? 14 : 20, vertical: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.notifications_active_rounded,
-                  color: AppColors.primary, size: 24),
-              const SizedBox(width: 12),
-              const Text('Notification Center', style: AppTextStyles.titleMedium),
-            ],
-          ),
-          Row(
-            children: [
-              TextButton.icon(
-                onPressed: () async {
-                  await _notifRepo.markAllAsRead(uid);
-                },
-                icon: const Icon(Icons.done_all_rounded, size: 16),
-                label: const Text('Mark all read', style: TextStyle(fontSize: 12)),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          Expanded(
+            child: Row(
+              children: [
+                const Icon(Icons.notifications_active_rounded,
+                    color: AppColors.primary, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    isPhone ? 'Notifications' : 'Notification Center',
+                    style: AppTextStyles.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isPhone)
+                IconButton(
+                  tooltip: 'Mark all read',
+                  icon: const Icon(Icons.done_all_rounded,
+                      size: 20, color: AppColors.primary),
+                  onPressed: () async {
+                    await _notifRepo.markAllAsRead(uid);
+                  },
+                )
+              else
+                TextButton.icon(
+                  onPressed: () async {
+                    await _notifRepo.markAllAsRead(uid);
+                  },
+                  icon: const Icon(Icons.done_all_rounded, size: 16),
+                  label: const Text('Mark all read',
+                      style: TextStyle(fontSize: 12)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.primary,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  ),
+                ),
               IconButton(
                 icon: const Icon(Icons.close_rounded, size: 20),
                 onPressed: () => Navigator.of(context).pop(),
@@ -186,7 +213,9 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
     final timeStr = DateFormat('MMM d, h:mm a').format(item.createdAt);
 
     return Container(
-      color: item.read ? Colors.transparent : AppColors.primary.withValues(alpha: 0.04),
+      color: item.read
+          ? Colors.transparent
+          : AppColors.primary.withValues(alpha: 0.04),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,7 +237,8 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
                         item.title,
                         style: TextStyle(
                           fontSize: 14,
-                          fontWeight: item.read ? FontWeight.w600 : FontWeight.bold,
+                          fontWeight:
+                              item.read ? FontWeight.w600 : FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
                       ),
@@ -239,15 +269,18 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
                   children: [
                     Text(
                       timeStr,
-                      style: const TextStyle(fontSize: 11, color: AppColors.textHint),
+                      style: const TextStyle(
+                          fontSize: 11, color: AppColors.textHint),
                     ),
                     Row(
                       children: [
                         if (!item.read)
                           InkWell(
-                            onTap: () => _notifRepo.markAsRead(item.notificationId),
+                            onTap: () =>
+                                _notifRepo.markAsRead(item.notificationId),
                             child: const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               child: Text('Mark read',
                                   style: TextStyle(
                                       fontSize: 11,
@@ -256,9 +289,11 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
                             ),
                           ),
                         InkWell(
-                          onTap: () => _notifRepo.archiveNotification(item.notificationId),
+                          onTap: () => _notifRepo
+                              .archiveNotification(item.notificationId),
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             child: Text('Archive',
                                 style: TextStyle(
                                     fontSize: 11,
@@ -283,13 +318,15 @@ class _NotificationCenterViewState extends State<NotificationCenterView> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.notifications_none_rounded, size: 56, color: AppColors.textHint.withValues(alpha: 0.5)),
+          Icon(Icons.notifications_none_rounded,
+              size: 56, color: AppColors.textHint.withValues(alpha: 0.5)),
           const SizedBox(height: 12),
           Text(
             _selectedCategory == 'ALL'
                 ? 'No notifications found'
                 : 'No $_selectedCategory notifications',
-            style: AppTextStyles.titleMedium.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.titleMedium
+                .copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 4),
           const Text(

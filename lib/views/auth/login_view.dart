@@ -108,43 +108,46 @@ class _LoginViewState extends State<LoginView> {
             ),
 
           // ── Right panel (login form) ───────────────────────────
-          Container(
-            width: isWide ? 460 : size.width,
-            decoration: const BoxDecoration(
-              color: AppColors.background,
-            ),
-            child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(40),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (!isWide) ...[
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              gradient: AppColors.primaryGradient,
-                              borderRadius: BorderRadius.circular(14),
+          Expanded(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: AppColors.background,
+              ),
+              child: SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: isWide ? 40 : 20, vertical: 32),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: isWide ? 460 : 420),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (!isWide) ...[
+                              Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  gradient: AppColors.primaryGradient,
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: const Icon(Icons.local_hospital,
+                                    color: Colors.white, size: 26),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                            const Text('Welcome back',
+                                style: AppTextStyles.headlineLarge),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Sign in to access your dashboard',
+                              style: AppTextStyles.bodyLarge
+                                  .copyWith(color: AppColors.textSecondary),
                             ),
-                            child: const Icon(Icons.local_hospital,
-                                color: Colors.white, size: 26),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                        const Text('Welcome back',
-                            style: AppTextStyles.headlineLarge),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Sign in to access your dashboard',
-                          style: AppTextStyles.bodyLarge
-                              .copyWith(color: AppColors.textSecondary),
-                        ),
-                        const SizedBox(height: 40),
+                            SizedBox(height: isWide ? 40 : 24),
 
                         // Email
                         AppTextField(
@@ -307,7 +310,9 @@ class _LoginViewState extends State<LoginView> {
               ),
             ),
           ),
-        ],
+        ),
+      ),
+    ],
       ),
     );
   }

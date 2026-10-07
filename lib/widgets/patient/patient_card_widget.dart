@@ -63,19 +63,31 @@ class PatientCard extends StatelessWidget {
                       style: AppTextStyles.titleMedium,
                       overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 4),
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 12,
+                    runSpacing: 4,
                     children: [
-                      const Icon(Icons.badge_outlined,
-                          size: 13, color: AppColors.textHint),
-                      const SizedBox(width: 4),
-                      Text(patient.hospitalNumber,
-                          style: AppTextStyles.hospitalNumber),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.phone_outlined,
-                          size: 13, color: AppColors.textHint),
-                      const SizedBox(width: 4),
-                      Text(patient.phone,
-                          style: AppTextStyles.bodySmall),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.badge_outlined,
+                              size: 13, color: AppColors.textHint),
+                          const SizedBox(width: 4),
+                          Text(patient.hospitalNumber,
+                              style: AppTextStyles.hospitalNumber),
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.phone_outlined,
+                              size: 13, color: AppColors.textHint),
+                          const SizedBox(width: 4),
+                          Text(patient.phone,
+                              style: AppTextStyles.bodySmall),
+                        ],
+                      ),
                     ],
                   ),
                   if (subtitle != null) ...[

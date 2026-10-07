@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -66,22 +66,23 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final isMobile = width < 760;
+    final isPhone = width < 600;
 
     final content = Obx(() => IndexedStack(
-      index: _portalCtrl.currentTabIndex.value,
-      children: [
-        _buildLiveVisitTab(),
-        _buildDiagnosticResultsTab(),
-        _buildPrescriptionsTab(),
-        _buildBillingTab(),
-        _buildAppointmentsTab(),
-        _buildProfileTab(),
-      ],
-    ));
+          index: _portalCtrl.currentTabIndex.value,
+          children: [
+            _buildLiveVisitTab(isPhone),
+            _buildDiagnosticResultsTab(isPhone),
+            _buildPrescriptionsTab(isPhone),
+            _buildBillingTab(isPhone),
+            _buildAppointmentsTab(isPhone),
+            _buildProfileTab(isPhone),
+          ],
+        ));
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(isPhone),
       body: isMobile
           ? content
           : Row(
@@ -102,19 +103,26 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 selectedFontSize: 11,
                 unselectedFontSize: 10,
                 items: const [
-                  BottomNavigationBarItem(icon: Icon(Icons.stream_rounded), label: 'Live Visit'),
-                  BottomNavigationBarItem(icon: Icon(Icons.biotech_rounded), label: 'Tests'),
-                  BottomNavigationBarItem(icon: Icon(Icons.medication_rounded), label: 'Rx'),
-                  BottomNavigationBarItem(icon: Icon(Icons.receipt_long_rounded), label: 'Bills'),
-                  BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Appointments'),
-                  BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.stream_rounded), label: 'Live Visit'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.biotech_rounded), label: 'Tests'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.medication_rounded), label: 'Rx'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.receipt_long_rounded), label: 'Bills'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.calendar_month_rounded),
+                      label: 'Appointments'),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.person_rounded), label: 'Profile'),
                 ],
               ))
           : null,
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(bool isPhone) {
     return AppBar(
       elevation: 0.5,
       backgroundColor: Colors.white,
@@ -126,14 +134,19 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.favorite_rounded, color: AppColors.primary, size: 24),
+            child: const Icon(Icons.favorite_rounded,
+                color: AppColors.primary, size: 24),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('MediFlow HMS', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
-              Text('Patient Portal', style: AppTextStyles.h4.copyWith(fontWeight: FontWeight.bold)),
+              Text('MediFlow HMS',
+                  style: AppTextStyles.caption.copyWith(
+                      color: AppColors.primary, fontWeight: FontWeight.bold)),
+              Text('Patient Portal',
+                  style:
+                      AppTextStyles.h4.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
         ],
@@ -145,7 +158,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
+                icon: const Icon(Icons.notifications_outlined,
+                color: AppColors.textPrimary),
                 onPressed: _showNotificationsDialog,
               ),
               if (count > 0)
@@ -160,33 +174,42 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                     ),
                     child: Text(
                       '$count',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
             ],
           );
         }),
+        if (!isPhone) ...[
+          const SizedBox(width: 8),
+          Obx(() {
+            final p = _portalCtrl.patient.value;
+            return Chip(
+              avatar: const Icon(Icons.badge_outlined,
+                  size: 16, color: AppColors.primary),
+              label: Text(p?.hospitalNumber ?? 'MFP-00000',
+                  style: AppTextStyles.bodySmall
+                      .copyWith(fontWeight: FontWeight.bold)),
+              backgroundColor: AppColors.primary.withOpacity(0.08),
+            );
+          }),
+        ],
         const SizedBox(width: 8),
-        Obx(() {
-          final p = _portalCtrl.patient.value;
-          return Chip(
-            avatar: const Icon(Icons.badge_outlined, size: 16, color: AppColors.primary),
-            label: Text(p?.hospitalNumber ?? 'MFP-00000', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
-            backgroundColor: AppColors.primary.withOpacity(0.08),
-          );
-        }),
-        const SizedBox(width: 12),
         IconButton(
           tooltip: 'Sign Out',
           icon: const Icon(Icons.logout, color: AppColors.textSecondary),
           onPressed: () => _auth.signOut(),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
       ],
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(2),
-        child: Obx(() => _portalCtrl.isLoading.value || _portalCtrl.isBookingAppointment.value
+        child: Obx(() => _portalCtrl.isLoading.value ||
+                _portalCtrl.isBookingAppointment.value
             ? const LinearProgressIndicator(minHeight: 2)
             : const SizedBox(height: 2)),
       ),
@@ -209,8 +232,10 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
       labelType: NavigationRailLabelType.all,
       backgroundColor: Colors.white,
       selectedIconTheme: const IconThemeData(color: AppColors.primary),
-      selectedLabelTextStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
-      unselectedLabelTextStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+      selectedLabelTextStyle: AppTextStyles.bodySmall
+          .copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
+      unselectedLabelTextStyle:
+          AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
       destinations: tabs
           .map((t) => NavigationRailDestination(
                 icon: Icon(t['icon'] as IconData),
@@ -221,14 +246,14 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
   }
 
   // ── Tab 1: Live Visit & Queue ──────────────────────────────────────
-  Widget _buildLiveVisitTab() {
+  Widget _buildLiveVisitTab(bool isPhone) {
     return Obx(() {
       final queue = _portalCtrl.activeQueueItem.value;
       final isCalled = _portalCtrl.isCalled.value;
       final stages = _portalCtrl.journeyStages;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -237,15 +262,20 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 margin: const EdgeInsets.only(bottom: 24),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF2E7D32), Color(0xFF43A047)]),
+                  gradient: const LinearGradient(
+                      colors: [Color(0xFF2E7D32), Color(0xFF43A047)]),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
-                    BoxShadow(color: Colors.green.withOpacity(0.3), blurRadius: 12, offset: const Offset(0, 4)),
+                    BoxShadow(
+                        color: Colors.green.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4)),
                   ],
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.campaign_rounded, color: Colors.white, size: 36),
+                    const Icon(Icons.campaign_rounded,
+                        color: Colors.white, size: 36),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -253,12 +283,16 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                         children: [
                           const Text(
                             'YOU HAVE BEEN CALLED!',
-                            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Please proceed to Room ${queue?.assignedRoomNumber ?? queue?.assignedRoomName ?? 'Consultation Room'}.',
-                            style: const TextStyle(color: Colors.white, fontSize: 14),
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 14),
                           ),
                         ],
                       ),
@@ -271,52 +305,149 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
             if (queue != null)
               AppCard(
                 child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
-                        ),
-                        child: Column(
-                          children: [
-                            Text('YOUR TICKET', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                            Text(queue.displayQueueNumber, style: AppTextStyles.h1.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 36)),
-                            Text(queue.departmentCode, style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 32),
-                      Expanded(
-                        child: Column(
+                  padding: EdgeInsets.all(isPhone ? 16 : 20),
+                  child: isPhone
+                      ? Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(queue.departmentName, style: AppTextStyles.h3),
-                            const SizedBox(height: 8),
                             Row(
                               children: [
-                                _buildMetricChip(Icons.play_circle_fill_rounded, 'Now Serving', '#${_portalCtrl.nowServingNumber.value}'),
-                                const SizedBox(width: 16),
-                                _buildMetricChip(Icons.people_alt_rounded, 'Ahead of You', '${_portalCtrl.peopleAhead.value}'),
-                                const SizedBox(width: 16),
-                                _buildMetricChip(Icons.schedule_rounded, 'Est. Wait', '${_portalCtrl.peopleAhead.value * 8} mins'),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 18, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                        color: AppColors.primary.withOpacity(0.2)),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Text('YOUR TICKET',
+                                          style: AppTextStyles.caption.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 10)),
+                                      Text(queue.displayQueueNumber,
+                                          style: AppTextStyles.h2.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.bold)),
+                                      Text(queue.departmentCode,
+                                          style: AppTextStyles.caption.copyWith(
+                                              color: AppColors.textSecondary,
+                                              fontSize: 10)),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(queue.departmentName,
+                                          style: AppTextStyles.h4),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Room: ${queue.assignedRoomNumber ?? queue.assignedRoomName ?? 'Waiting Room'}',
+                                        style: AppTextStyles.caption.copyWith(
+                                            color: AppColors.textSecondary),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                _buildMetricChip(
+                                    Icons.play_circle_fill_rounded,
+                                    'Now Serving',
+                                    '#${_portalCtrl.nowServingNumber.value}'),
+                                _buildMetricChip(
+                                    Icons.people_alt_rounded,
+                                    'Ahead of You',
+                                    '${_portalCtrl.peopleAhead.value}'),
+                                _buildMetricChip(
+                                    Icons.schedule_rounded,
+                                    'Est. Wait',
+                                    '${_portalCtrl.peopleAhead.value * 8} mins'),
                               ],
                             ),
                           ],
+                        )
+                      : Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 24, vertical: 16),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: AppColors.primary.withOpacity(0.2)),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text('YOUR TICKET',
+                                      style: AppTextStyles.caption.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.bold)),
+                                  Text(queue.displayQueueNumber,
+                                      style: AppTextStyles.h1.copyWith(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 36)),
+                                  Text(queue.departmentCode,
+                                      style: AppTextStyles.caption.copyWith(
+                                          color: AppColors.textSecondary)),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 32),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(queue.departmentName,
+                                      style: AppTextStyles.h3),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 12,
+                                    runSpacing: 8,
+                                    children: [
+                                      _buildMetricChip(
+                                          Icons.play_circle_fill_rounded,
+                                          'Now Serving',
+                                          '#${_portalCtrl.nowServingNumber.value}'),
+                                      _buildMetricChip(
+                                          Icons.people_alt_rounded,
+                                          'Ahead of You',
+                                          '${_portalCtrl.peopleAhead.value}'),
+                                      _buildMetricChip(
+                                          Icons.schedule_rounded,
+                                          'Est. Wait',
+                                          '${_portalCtrl.peopleAhead.value * 8} mins'),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
 
             const SizedBox(height: 28),
-            Text('Dynamic Care Pathway', style: AppTextStyles.h3),
+            const Text('Dynamic Care Pathway', style: AppTextStyles.h3),
             const SizedBox(height: 6),
-            Text('Real-time timeline tracking your personalized journey across hospital units.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+                'Real-time timeline tracking your personalized journey across hospital units.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 20),
 
             if (stages.isEmpty)
@@ -324,7 +455,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 child: Padding(
                   padding: EdgeInsets.all(32),
                   child: Center(
-                    child: Text('No active visit found. When you arrive at the hospital, your journey will appear here in real time.'),
+                    child: Text(
+                        'No active visit found. When you arrive at the hospital, your journey will appear here in real time.'),
                   ),
                 ),
               )
@@ -339,7 +471,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                     separatorBuilder: (_, __) => const SizedBox(height: 16),
                     itemBuilder: (ctx, idx) {
                       final stage = stages[idx];
-                      return _buildJourneyStep(stage, isLast: idx == stages.length - 1);
+                      return _buildJourneyStep(stage,
+                          isLast: idx == stages.length - 1);
                     },
                   ),
                 ),
@@ -365,8 +498,12 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary)),
-              Text(value, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 10, color: AppColors.textSecondary)),
+              Text(value,
+                  style: AppTextStyles.bodyMedium
+                      .copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
         ],
@@ -398,7 +535,9 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
               Container(
                 width: 2,
                 height: 36,
-                color: stage.isCompleted ? AppColors.success.withOpacity(0.4) : Colors.black.withOpacity(0.1),
+                color: stage.isCompleted
+                    ? AppColors.success.withOpacity(0.4)
+                    : Colors.black.withOpacity(0.1),
               ),
           ],
         ),
@@ -410,13 +549,22 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(stage.title, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: stage.isPending ? AppColors.textSecondary : AppColors.textPrimary)),
+                  Text(stage.title,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: stage.isPending
+                              ? AppColors.textSecondary
+                              : AppColors.textPrimary)),
                   if (stage.timestamp != null)
-                    Text(DateFormat.jm().format(stage.timestamp!), style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                    Text(DateFormat.jm().format(stage.timestamp!),
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textSecondary)),
                 ],
               ),
               const SizedBox(height: 4),
-              Text(stage.subtitle, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+              Text(stage.subtitle,
+                  style: AppTextStyles.bodySmall
+                      .copyWith(color: AppColors.textSecondary)),
             ],
           ),
         ),
@@ -425,20 +573,23 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
   }
 
   // ── Tab 2: Diagnostic Results ──────────────────────────────────────
-  Widget _buildDiagnosticResultsTab() {
+  Widget _buildDiagnosticResultsTab(bool isPhone) {
     return Obx(() {
       final results = _portalCtrl.releasedResults;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Diagnostic & Laboratory Reports', style: AppTextStyles.h3),
+            const Text('Diagnostic & Laboratory Reports',
+                style: AppTextStyles.h3),
             const SizedBox(height: 6),
-            Text('Official laboratory, x-ray, and scan reports released by medical specialists.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+                'Official laboratory, x-ray, and scan reports released by medical specialists.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 24),
-
             if (results.isEmpty)
               const AppCard(
                 child: Padding(
@@ -446,7 +597,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(Icons.biotech_outlined, size: 48, color: AppColors.textSecondary),
+                        Icon(Icons.biotech_outlined,
+                            size: 48, color: AppColors.textSecondary),
                         SizedBox(height: 12),
                         Text('No released reports available at this time.'),
                       ],
@@ -464,32 +616,47 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   final res = results[idx];
                   return AppCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(isPhone ? 14 : 20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
                             children: [
                               Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: AppColors.primary.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: Text(res.diagnosticType, style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
+                                    child: Text(res.diagnosticType,
+                                        style: AppTextStyles.caption.copyWith(
+                                            color: AppColors.primary,
+                                            fontWeight: FontWeight.bold)),
                                   ),
                                   const SizedBox(width: 10),
-                                  Text(res.testName, style: AppTextStyles.h4),
+                                  Flexible(
+                                    child: Text(res.testName,
+                                        style: AppTextStyles.h4),
+                                  ),
                                 ],
                               ),
-                              Text(DateFormat.yMMMd().format(res.createdAt), style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                              Text(DateFormat.yMMMd().format(res.createdAt),
+                                  style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.textSecondary)),
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Text('Findings / Results:', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
+                          Text('Findings / Results:',
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 4),
                           Container(
                             width: double.infinity,
@@ -498,16 +665,24 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                               color: AppColors.surface,
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(res.findings, style: AppTextStyles.bodyMedium),
+                            child: Text(res.findings,
+                                style: AppTextStyles.bodyMedium),
                           ),
                           if (res.interpretation.isNotEmpty) ...[
                             const SizedBox(height: 12),
-                            Text('Clinical Interpretation:', style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.bold)),
+                            Text('Clinical Interpretation:',
+                                style: AppTextStyles.bodySmall
+                                    .copyWith(fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
-                            Text(res.interpretation, style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                            Text(res.interpretation,
+                                style: AppTextStyles.bodySmall
+                                    .copyWith(color: AppColors.textSecondary)),
                           ],
                           const SizedBox(height: 12),
-                          Text('Performed by: ${res.performedByName.isNotEmpty ? res.performedByName : 'Diagnostic Staff'}', style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                              'Performed by: ${res.performedByName.isNotEmpty ? res.performedByName : 'Diagnostic Staff'}',
+                              style: AppTextStyles.caption
+                                  .copyWith(color: AppColors.textSecondary)),
                         ],
                       ),
                     ),
@@ -521,20 +696,22 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
   }
 
   // ── Tab 3: Prescriptions ───────────────────────────────────────────
-  Widget _buildPrescriptionsTab() {
+  Widget _buildPrescriptionsTab(bool isPhone) {
     return Obx(() {
       final rxs = _portalCtrl.prescriptions;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Prescribed Medications', style: AppTextStyles.h3),
+            const Text('Prescribed Medications', style: AppTextStyles.h3),
             const SizedBox(height: 6),
-            Text('Prescriptions issued by your doctor with dosage directions and dispensing status.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+                'Prescriptions issued by your doctor with dosage directions and dispensing status.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 24),
-
             if (rxs.isEmpty)
               const AppCard(
                 child: Padding(
@@ -542,7 +719,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(Icons.medication_outlined, size: 48, color: AppColors.textSecondary),
+                        Icon(Icons.medication_outlined,
+                            size: 48, color: AppColors.textSecondary),
                         SizedBox(height: 12),
                         Text('No prescriptions on record.'),
                       ],
@@ -560,37 +738,55 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   final rx = rxs[idx];
                   return AppCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: EdgeInsets.all(isPhone ? 14 : 20),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: rx.isDispensed ? AppColors.success.withOpacity(0.1) : AppColors.warning.withOpacity(0.1),
+                              color: rx.isDispensed
+                                  ? AppColors.success.withOpacity(0.1)
+                                  : AppColors.warning.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.medication_rounded, color: rx.isDispensed ? AppColors.success : AppColors.warning, size: 28),
+                            child: Icon(Icons.medication_rounded,
+                                color: rx.isDispensed
+                                    ? AppColors.success
+                                    : AppColors.warning,
+                                size: 28),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(rx.medicationName, style: AppTextStyles.h4),
+                                    Expanded(
+                                      child: Text(rx.medicationName,
+                                          style: AppTextStyles.h4),
+                                    ),
+                                    const SizedBox(width: 8),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: rx.isDispensed ? AppColors.success.withOpacity(0.15) : AppColors.warning.withOpacity(0.15),
+                                        color: rx.isDispensed
+                                            ? AppColors.success
+                                                .withOpacity(0.15)
+                                            : AppColors.warning
+                                                .withOpacity(0.15),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(
                                         rx.status,
                                         style: TextStyle(
-                                          color: rx.isDispensed ? AppColors.success : AppColors.warning,
+                                          color: rx.isDispensed
+                                              ? AppColors.success
+                                              : AppColors.warning,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12,
                                         ),
@@ -599,13 +795,20 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text('Dosage: ${rx.dosage} • Frequency: ${rx.frequency} • Duration: ${rx.duration}', style: AppTextStyles.bodyMedium),
+                                Text(
+                                    'Dosage: ${rx.dosage} • Frequency: ${rx.frequency} • Duration: ${rx.duration}',
+                                    style: AppTextStyles.bodyMedium),
                                 if (rx.instructions.isNotEmpty) ...[
                                   const SizedBox(height: 4),
-                                  Text('Instructions: ${rx.instructions}', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                  Text('Instructions: ${rx.instructions}',
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.textSecondary)),
                                 ],
                                 const SizedBox(height: 8),
-                                Text('Prescribed by Dr. ${rx.doctorName} on ${DateFormat.yMMMd().format(rx.createdAt)}', style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary)),
+                                Text(
+                                    'Prescribed by Dr. ${rx.doctorName} on ${DateFormat.yMMMd().format(rx.createdAt)}',
+                                    style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.textSecondary)),
                               ],
                             ),
                           ),
@@ -622,20 +825,21 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
   }
 
   // ── Tab 4: Billing & Payments ──────────────────────────────────────
-  Widget _buildBillingTab() {
+  Widget _buildBillingTab(bool isPhone) {
     return Obx(() {
       final invoices = _portalCtrl.invoices;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Bills & Invoices', style: AppTextStyles.h3),
+            const Text('Bills & Invoices', style: AppTextStyles.h3),
             const SizedBox(height: 6),
-            Text('Itemized medical charges, payments, and electronic receipts.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+            Text('Itemized medical charges, payments, and electronic receipts.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 24),
-
             if (invoices.isEmpty)
               const AppCard(
                 child: Padding(
@@ -643,7 +847,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(Icons.receipt_long_outlined, size: 48, color: AppColors.textSecondary),
+                        Icon(Icons.receipt_long_outlined,
+                            size: 48, color: AppColors.textSecondary),
                         SizedBox(height: 12),
                         Text('No billing records found.'),
                       ],
@@ -661,24 +866,34 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   final inv = invoices[idx];
                   return AppCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(24),
+                      padding: EdgeInsets.all(isPhone ? 16 : 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          Wrap(
+                            alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 8,
+                            runSpacing: 6,
                             children: [
-                              Text('Invoice #${inv.invoiceId.substring(0, 8).toUpperCase()}', style: AppTextStyles.h4),
+                              Text(
+                                  'Invoice #${inv.invoiceId.substring(0, 8).toUpperCase()}',
+                                  style: AppTextStyles.h4),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: inv.isPaid ? AppColors.success.withOpacity(0.15) : AppColors.warning.withOpacity(0.15),
+                                  color: inv.isPaid
+                                      ? AppColors.success.withOpacity(0.15)
+                                      : AppColors.warning.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Text(
                                   inv.status,
                                   style: TextStyle(
-                                    color: inv.isPaid ? AppColors.success : AppColors.warning,
+                                    color: inv.isPaid
+                                        ? AppColors.success
+                                        : AppColors.warning,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                   ),
@@ -690,12 +905,22 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                           const Divider(),
                           const SizedBox(height: 12),
                           ...inv.items.map((item) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 4),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('${item.description} (x${item.quantity})', style: AppTextStyles.bodyMedium),
-                                    Text('\$${item.total.toStringAsFixed(2)}', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
+                                    Expanded(
+                                      child: Text(
+                                          '${item.description} (x${item.quantity})',
+                                          style: AppTextStyles.bodyMedium),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text('\$${item.total.toStringAsFixed(2)}',
+                                        style: AppTextStyles.bodyMedium
+                                            .copyWith(
+                                                fontWeight: FontWeight.w600)),
                                   ],
                                 ),
                               )),
@@ -705,24 +930,39 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Total Amount:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('\$${inv.total.toStringAsFixed(2)}', style: AppTextStyles.h4.copyWith(fontWeight: FontWeight.bold)),
+                              const Text('Total Amount:',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text('\$${inv.total.toStringAsFixed(2)}',
+                                  style: AppTextStyles.h4
+                                      .copyWith(fontWeight: FontWeight.bold)),
                             ],
                           ),
                           const SizedBox(height: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Amount Paid:', style: TextStyle(color: AppColors.success)),
-                              Text('\$${inv.amountPaid.toStringAsFixed(2)}', style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.bold)),
+                              const Text('Amount Paid:',
+                                  style: TextStyle(color: AppColors.success)),
+                              Text('\$${inv.amountPaid.toStringAsFixed(2)}',
+                                  style: const TextStyle(
+                                      color: AppColors.success,
+                                      fontWeight: FontWeight.bold)),
                             ],
                           ),
                           const SizedBox(height: 4),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Outstanding Balance:', style: TextStyle(fontWeight: FontWeight.bold)),
-                              Text('\$${inv.balance.toStringAsFixed(2)}', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: inv.balance > 0 ? AppColors.error : AppColors.success)),
+                              const Text('Outstanding Balance:',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              Text('\$${inv.balance.toStringAsFixed(2)}',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: inv.balance > 0
+                                          ? AppColors.error
+                                          : AppColors.success)),
                             ],
                           ),
                         ],
@@ -737,8 +977,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
     });
   }
 
-  // ── Tab 5: Appointments ────────────────────────────────────────────
-  Widget _buildAppointmentsTab() {
+  // Tab 5: Appointments
+  Widget _buildAppointmentsTab(bool isPhone) {
     return Obx(() {
       final allApts = _portalCtrl.appointments.toList();
       // Active: only show SCHEDULED and CONFIRMED
@@ -753,28 +993,52 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
       final err = _portalCtrl.errorMessage.value;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Appointments', style: AppTextStyles.h3),
-                    const SizedBox(height: 4),
-                    Text('Book encounters with medical specialists or view upcoming schedules.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
-                  ],
-                ),
-                AppButton(
-                  text: 'Book New Appointment',
-                  icon: Icons.add_rounded,
-                  onPressed: _showBookAppointmentDialog,
-                ),
-              ],
-            ),
+            isPhone
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Appointments', style: AppTextStyles.h3),
+                      const SizedBox(height: 4),
+                      Text(
+                          'Book encounters with medical specialists or view upcoming schedules.',
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.textSecondary)),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: AppButton(
+                          text: 'Book New Appointment',
+                          icon: Icons.add_rounded,
+                          onPressed: _showBookAppointmentDialog,
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Appointments', style: AppTextStyles.h3),
+                          const SizedBox(height: 4),
+                          Text(
+                              'Book encounters with medical specialists or view upcoming schedules.',
+                              style: AppTextStyles.bodySmall
+                                  .copyWith(color: AppColors.textSecondary)),
+                        ],
+                      ),
+                      AppButton(
+                        text: 'Book New Appointment',
+                        icon: Icons.add_rounded,
+                        onPressed: _showBookAppointmentDialog,
+                      ),
+                    ],
+                  ),
             const SizedBox(height: 24),
 
             if (err.isNotEmpty && err.startsWith('Appointments error:'))
@@ -788,9 +1052,13 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                    const Icon(Icons.error_outline,
+                        color: AppColors.error, size: 20),
                     const SizedBox(width: 10),
-                    Expanded(child: Text(err, style: TextStyle(color: AppColors.error, fontSize: 13))),
+                    Expanded(
+                        child: Text(err,
+                            style: const TextStyle(
+                                color: AppColors.error, fontSize: 13))),
                   ],
                 ),
               ),
@@ -803,9 +1071,11 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(Icons.calendar_today_outlined, size: 48, color: AppColors.textSecondary),
+                        Icon(Icons.calendar_today_outlined,
+                            size: 48, color: AppColors.textSecondary),
                         SizedBox(height: 12),
-                        Text('No upcoming appointments. Tap "Book New Appointment" to schedule one.'),
+                        Text(
+                            'No upcoming appointments. Tap "Book New Appointment" to schedule one.'),
                       ],
                     ),
                   ),
@@ -822,60 +1092,147 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   final isConfirmed = apt.status == 'CONFIRMED';
                   return AppCard(
                     child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: (isConfirmed ? AppColors.success : AppColors.primary).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(Icons.calendar_month_rounded,
-                                color: isConfirmed ? AppColors.success : AppColors.primary, size: 28),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
+                      padding: EdgeInsets.all(isPhone ? 14 : 20),
+                      child: isPhone
+                          ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Dr. ${apt.doctorName}', style: AppTextStyles.h4),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      padding: const EdgeInsets.all(10),
                                       decoration: BoxDecoration(
-                                        color: (isConfirmed ? AppColors.success : AppColors.primary).withOpacity(0.1),
+                                        color: (isConfirmed
+                                                ? AppColors.success
+                                                : AppColors.primary)
+                                            .withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(Icons.calendar_month_rounded,
+                                          color: isConfirmed
+                                              ? AppColors.success
+                                              : AppColors.primary,
+                                          size: 22),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text('Dr. ${apt.doctorName}',
+                                          style: AppTextStyles.h4),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: (isConfirmed
+                                                ? AppColors.success
+                                                : AppColors.primary)
+                                            .withOpacity(0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Text(apt.status,
                                           style: TextStyle(
-                                              color: isConfirmed ? AppColors.success : AppColors.primary,
+                                              color: isConfirmed
+                                                  ? AppColors.success
+                                                  : AppColors.primary,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 12)),
+                                              fontSize: 11)),
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 6),
-                                Text('${apt.departmentName} • ${DateFormat.yMMMd().format(apt.date)} at ${apt.timeSlot}',
+                                const SizedBox(height: 10),
+                                Text(
+                                    '${apt.departmentName} • ${DateFormat.yMMMd().format(apt.date)} at ${apt.timeSlot}',
                                     style: AppTextStyles.bodyMedium),
                                 if (apt.reason.isNotEmpty) ...[
                                   const SizedBox(height: 4),
                                   Text('Reason: ${apt.reason}',
-                                      style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                          color: AppColors.textSecondary)),
                                 ],
+                                const SizedBox(height: 8),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () => _portalCtrl
+                                        .cancelAppointment(apt.appointmentId),
+                                    style: TextButton.styleFrom(
+                                        foregroundColor: AppColors.error),
+                                    child: const Text('Cancel Appointment'),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: (isConfirmed
+                                            ? AppColors.success
+                                            : AppColors.primary)
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Icon(Icons.calendar_month_rounded,
+                                      color: isConfirmed
+                                          ? AppColors.success
+                                          : AppColors.primary,
+                                      size: 28),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text('Dr. ${apt.doctorName}',
+                                              style: AppTextStyles.h4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: (isConfirmed
+                                                      ? AppColors.success
+                                                      : AppColors.primary)
+                                                  .withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(apt.status,
+                                                style: TextStyle(
+                                                    color: isConfirmed
+                                                        ? AppColors.success
+                                                        : AppColors.primary,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 12)),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 6),
+                                      Text(
+                                          '${apt.departmentName} • ${DateFormat.yMMMd().format(apt.date)} at ${apt.timeSlot}',
+                                          style: AppTextStyles.bodyMedium),
+                                      if (apt.reason.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text('Reason: ${apt.reason}',
+                                            style: AppTextStyles.bodySmall.copyWith(
+                                                color: AppColors.textSecondary)),
+                                      ],
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                TextButton(
+                                  onPressed: () => _portalCtrl
+                                      .cancelAppointment(apt.appointmentId),
+                                  style: TextButton.styleFrom(
+                                      foregroundColor: AppColors.error),
+                                  child: const Text('Cancel'),
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          TextButton(
-                            onPressed: () => _portalCtrl.cancelAppointment(apt.appointmentId),
-                            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                            child: const Text('Cancel'),
-                          ),
-                        ],
-                      ),
                     ),
                   );
                 },
@@ -884,7 +1241,9 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
             // ── History: Cancelled / Completed ────────────────────
             if (historyApts.isNotEmpty) ...[
               const SizedBox(height: 28),
-              Text('Past & Cancelled', style: AppTextStyles.h4.copyWith(color: AppColors.textSecondary)),
+              Text('Past & Cancelled',
+                  style: AppTextStyles.h4
+                      .copyWith(color: AppColors.textSecondary)),
               const SizedBox(height: 12),
               ListView.separated(
                 shrinkWrap: true,
@@ -896,12 +1255,17 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   final isCancelled = apt.status == 'CANCELLED';
                   return AppCard(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: isPhone ? 12 : 20, vertical: isPhone ? 10 : 14),
                       child: Row(
                         children: [
                           Icon(
-                            isCancelled ? Icons.cancel_outlined : Icons.check_circle_outline,
-                            color: isCancelled ? AppColors.error : AppColors.textSecondary,
+                            isCancelled
+                                ? Icons.cancel_outlined
+                                : Icons.check_circle_outline,
+                            color: isCancelled
+                                ? AppColors.error
+                                : AppColors.textSecondary,
                             size: 28,
                           ),
                           const SizedBox(width: 14),
@@ -915,21 +1279,28 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                                         color: AppColors.textSecondary)),
                                 Text(
                                   '${apt.departmentName} • ${DateFormat.yMMMd().format(apt.date)} at ${apt.timeSlot}',
-                                  style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                                  style: AppTextStyles.bodySmall
+                                      .copyWith(color: AppColors.textSecondary),
                                 ),
                               ],
                             ),
                           ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: (isCancelled ? AppColors.error : AppColors.textSecondary).withOpacity(0.08),
+                              color: (isCancelled
+                                      ? AppColors.error
+                                      : AppColors.textSecondary)
+                                  .withOpacity(0.08),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               apt.status,
                               style: TextStyle(
-                                  color: isCancelled ? AppColors.error : AppColors.textSecondary,
+                                  color: isCancelled
+                                      ? AppColors.error
+                                      : AppColors.textSecondary,
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold),
                             ),
@@ -947,60 +1318,80 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
     });
   }
 
-
   // ── Tab 6: Profile & Health Info ──────────────────────────────────
-  Widget _buildProfileTab() {
+  Widget _buildProfileTab(bool isPhone) {
     return Obx(() {
       final p = _portalCtrl.patient.value;
       if (p == null) return const Center(child: Text('Loading profile...'));
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
+        padding: EdgeInsets.all(isPhone ? 16 : 28),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('My Health Profile', style: AppTextStyles.h3),
+            const Text('My Health Profile', style: AppTextStyles.h3),
             const SizedBox(height: 6),
-            Text('Your registered clinical information, emergency contacts, and identifiers.', style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary)),
+            Text(
+                'Your registered clinical information, emergency contacts, and identifiers.',
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textSecondary)),
             const SizedBox(height: 24),
-
             AppCard(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(isPhone ? 16 : 24),
                 child: Column(
                   children: [
-                    _buildProfileRow(Icons.badge_outlined, 'Hospital ID Number', p.hospitalNumber),
+                    _buildProfileRow(Icons.badge_outlined, 'Hospital ID Number',
+                        p.hospitalNumber, isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.person_outline, 'Full Name', p.fullName),
+                    _buildProfileRow(
+                        Icons.person_outline, 'Full Name', p.fullName, isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.wc_outlined, 'Gender', p.gender),
+                    _buildProfileRow(Icons.wc_outlined, 'Gender', p.gender, isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.cake_outlined, 'Date of Birth', p.dateOfBirth != null ? DateFormat.yMMMd().format(p.dateOfBirth!) : '—'),
+                    _buildProfileRow(
+                        Icons.cake_outlined,
+                        'Date of Birth',
+                        p.dateOfBirth != null
+                            ? DateFormat.yMMMd().format(p.dateOfBirth!)
+                            : '—', isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.phone_outlined, 'Phone', p.phone),
+                    _buildProfileRow(Icons.phone_outlined, 'Phone', p.phone, isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.email_outlined, 'Email', p.email ?? '—'),
+                    _buildProfileRow(
+                        Icons.email_outlined, 'Email', p.email ?? '—', isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.home_outlined, 'Address', p.address ?? '—'),
+                    _buildProfileRow(
+                        Icons.home_outlined, 'Address', p.address ?? '—', isPhone: isPhone),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            Text('Clinical Baseline', style: AppTextStyles.h4),
+            const Text('Clinical Baseline', style: AppTextStyles.h4),
             const SizedBox(height: 12),
             AppCard(
               child: Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(isPhone ? 16 : 24),
                 child: Column(
                   children: [
-                    _buildProfileRow(Icons.bloodtype_outlined, 'Blood Group', p.bloodGroup ?? '—'),
+                    _buildProfileRow(Icons.bloodtype_outlined, 'Blood Group',
+                        p.bloodGroup ?? '—', isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.biotech_outlined, 'Genotype', p.genotype ?? '—'),
+                    _buildProfileRow(
+                        Icons.biotech_outlined, 'Genotype', p.genotype ?? '—', isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.warning_amber_outlined, 'Allergies', p.allergies.isNotEmpty ? p.allergies.join(', ') : 'None known'),
+                    _buildProfileRow(
+                        Icons.warning_amber_outlined,
+                        'Allergies',
+                        p.allergies.isNotEmpty
+                            ? p.allergies.join(', ')
+                            : 'None known', isPhone: isPhone),
                     const Divider(),
-                    _buildProfileRow(Icons.contact_phone_outlined, 'Emergency Contact', '${p.emergencyContactName ?? '—'} (${p.emergencyContactPhone ?? '—'})'),
+                    _buildProfileRow(
+                        Icons.contact_phone_outlined,
+                        'Emergency Contact',
+                        '${p.emergencyContactName ?? '—'} (${p.emergencyContactPhone ?? '—'})', isPhone: isPhone),
                   ],
                 ),
               ),
@@ -1011,22 +1402,49 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
     });
   }
 
-  Widget _buildProfileRow(IconData icon, String label, String value) {
+  Widget _buildProfileRow(IconData icon, String label, String value,
+      {bool isPhone = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppColors.primary),
-          const SizedBox(width: 14),
-          SizedBox(
-            width: 180,
-            child: Text(label, style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary)),
-          ),
-          Expanded(
-            child: Text(value, style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
+      child: isPhone
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(icon, size: 18, color: AppColors.primary),
+                    const SizedBox(width: 8),
+                    Text(label,
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.textSecondary)),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Padding(
+                  padding: const EdgeInsets.only(left: 26),
+                  child: Text(value,
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(fontWeight: FontWeight.w600)),
+                ),
+              ],
+            )
+          : Row(
+              children: [
+                Icon(icon, size: 20, color: AppColors.primary),
+                const SizedBox(width: 14),
+                SizedBox(
+                  width: 180,
+                  child: Text(label,
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(color: AppColors.textSecondary)),
+                ),
+                Expanded(
+                  child: Text(value,
+                      style: AppTextStyles.bodyMedium
+                          .copyWith(fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
     );
   }
 
@@ -1037,12 +1455,19 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
 
     // Slots available for booking
     const slots = [
-      '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM',
-      '12:00 PM', '02:00 PM', '03:00 PM', '04:00 PM',
+      '08:00 AM',
+      '09:00 AM',
+      '10:00 AM',
+      '11:00 AM',
+      '12:00 PM',
+      '02:00 PM',
+      '03:00 PM',
+      '04:00 PM',
     ];
 
     // Fetch doctors from Firestore (users with role == 'doctor')
-    final Future<List<Map<String, String>>> doctorsFuture = FirebaseFirestore.instance
+    final Future<List<Map<String, String>>> doctorsFuture = FirebaseFirestore
+        .instance
         .collection('users')
         .where('role', isEqualTo: 'doctor')
         .get()
@@ -1060,16 +1485,17 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
     Get.dialog(
       StatefulBuilder(builder: (context, setState) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Book an Appointment', style: AppTextStyles.h3),
+                  const Text('Book an Appointment', style: AppTextStyles.h3),
                   const SizedBox(height: 20),
 
                   // Doctor selector
@@ -1098,11 +1524,12 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                       }
                       return DropdownButtonFormField<Map<String, String>>(
                         isExpanded: true,
-                        value: selectedDoctor,
+                        initialValue: selectedDoctor,
                         decoration: const InputDecoration(
                           labelText: 'Select Doctor',
                           border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 14),
                         ),
                         hint: const Text('Choose a doctor'),
                         items: doctors.map((doc) {
@@ -1114,7 +1541,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (val) => setState(() => selectedDoctor = val),
+                        onChanged: (val) =>
+                            setState(() => selectedDoctor = val),
                       );
                     },
                   ),
@@ -1133,14 +1561,16 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                       if (picked != null) setState(() => pickedDate = picked);
                     },
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 14),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today_outlined, size: 18, color: AppColors.primary),
+                          const Icon(Icons.calendar_today_outlined,
+                              size: 18, color: AppColors.primary),
                           const SizedBox(width: 10),
                           Text(DateFormat.yMMMd().format(pickedDate),
                               style: AppTextStyles.bodyMedium),
@@ -1152,16 +1582,18 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
 
                   // Time slot selector
                   DropdownButtonFormField<String>(
-                    value: pickedSlot,
+                    initialValue: pickedSlot,
                     decoration: const InputDecoration(
                       labelText: 'Time Slot',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                     ),
                     items: slots
                         .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                         .toList(),
-                    onChanged: (v) => setState(() => pickedSlot = v ?? pickedSlot),
+                    onChanged: (v) =>
+                        setState(() => pickedSlot = v ?? pickedSlot),
                   ),
                   const SizedBox(height: 14),
 
@@ -1175,7 +1607,9 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(onPressed: () => Get.back(), child: const Text('Cancel')),
+                      TextButton(
+                          onPressed: () => Get.back(),
+                          child: const Text('Cancel')),
                       const SizedBox(width: 12),
                       AppButton(
                         text: 'Confirm Booking',
@@ -1187,7 +1621,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                                   doctorId: selectedDoctor!['uid']!,
                                   doctorName: selectedDoctor!['name']!,
                                   departmentId: selectedDoctor!['dept'] ?? '',
-                                  departmentName: selectedDoctor!['dept'] ?? 'General',
+                                  departmentName:
+                                      selectedDoctor!['dept'] ?? 'General',
                                   date: pickedDate,
                                   timeSlot: pickedSlot,
                                   reason: reasonCtrl.text.trim(),
@@ -1205,8 +1640,6 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
     );
   }
 
-
-
   void _showNotificationsDialog() {
     Get.dialog(
       Dialog(
@@ -1221,7 +1654,7 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Notifications', style: AppTextStyles.h3),
+                    const Text('Notifications', style: AppTextStyles.h3),
                     TextButton(
                       onPressed: () => _portalCtrl.markAllNotificationsRead(),
                       child: const Text('Mark all as read'),
@@ -1243,13 +1676,23 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                         final n = notifs[idx];
                         return ListTile(
                           leading: Icon(
-                            n.read ? Icons.notifications_none : Icons.notifications_active,
-                            color: n.read ? AppColors.textSecondary : AppColors.primary,
+                            n.read
+                                ? Icons.notifications_none
+                                : Icons.notifications_active,
+                            color: n.read
+                                ? AppColors.textSecondary
+                                : AppColors.primary,
                           ),
-                          title: Text(n.title, style: TextStyle(fontWeight: n.read ? FontWeight.normal : FontWeight.bold)),
+                          title: Text(n.title,
+                              style: TextStyle(
+                                  fontWeight: n.read
+                                      ? FontWeight.normal
+                                      : FontWeight.bold)),
                           subtitle: Text(n.body),
-                          trailing: Text(DateFormat.jm().format(n.createdAt), style: AppTextStyles.caption),
-                          onTap: () => _portalCtrl.markNotificationRead(n.notificationId),
+                          trailing: Text(DateFormat.jm().format(n.createdAt),
+                              style: AppTextStyles.caption),
+                          onTap: () => _portalCtrl
+                              .markNotificationRead(n.notificationId),
                         );
                       },
                     );
@@ -1258,7 +1701,8 @@ class _PatientDashboardViewState extends State<PatientDashboardView> {
                 const SizedBox(height: 12),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: TextButton(onPressed: () => Get.back(), child: const Text('Close')),
+                  child: TextButton(
+                      onPressed: () => Get.back(), child: const Text('Close')),
                 ),
               ],
             ),

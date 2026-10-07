@@ -31,7 +31,8 @@ class _PatientLoginViewState extends State<PatientLoginView> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     _auth.clearError();
-    await _auth.signIn(_emailCtrl.text, _passCtrl.text, targetPortal: 'patient');
+    await _auth.signIn(_emailCtrl.text, _passCtrl.text,
+        targetPortal: 'patient');
   }
 
   @override
@@ -49,7 +50,11 @@ class _PatientLoginViewState extends State<PatientLoginView> {
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF0D47A1), Color(0xFF1976D2), Color(0xFF00897B)],
+                    colors: [
+                      Color(0xFF0D47A1),
+                      Color(0xFF1976D2),
+                      Color(0xFF00897B)
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -65,9 +70,11 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withOpacity(0.3)),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.3)),
                       ),
-                      child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 44),
+                      child: const Icon(Icons.favorite_rounded,
+                          color: Colors.white, size: 44),
                     ),
                     const SizedBox(height: 32),
                     Text(
@@ -89,11 +96,14 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                       ),
                     ),
                     const SizedBox(height: 36),
-                    _buildFeatureItem(Icons.queue_rounded, 'Real-time Live Queue & Wait Times'),
+                    _buildFeatureItem(Icons.queue_rounded,
+                        'Real-time Live Queue & Wait Times'),
                     const SizedBox(height: 14),
-                    _buildFeatureItem(Icons.biotech_rounded, 'Instant Access to Released Test Results'),
+                    _buildFeatureItem(Icons.biotech_rounded,
+                        'Instant Access to Released Test Results'),
                     const SizedBox(height: 14),
-                    _buildFeatureItem(Icons.medication_rounded, 'Digital Prescriptions & Billing History'),
+                    _buildFeatureItem(Icons.medication_rounded,
+                        'Digital Prescriptions & Billing History'),
                   ],
                 ),
               ),
@@ -102,7 +112,8 @@ class _PatientLoginViewState extends State<PatientLoginView> {
             flex: 5,
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+                padding:
+                    EdgeInsets.symmetric(horizontal: isWide ? 40 : 20, vertical: 32),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 440),
                   child: Form(
@@ -118,24 +129,32 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                                 color: AppColors.primary.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: const Icon(Icons.person_pin_rounded, color: AppColors.primary, size: 28),
+                              child: const Icon(Icons.person_pin_rounded,
+                                  color: AppColors.primary, size: 28),
                             ),
                             const SizedBox(width: 14),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('MediFlow HMS', style: AppTextStyles.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold)),
-                                Text('Patient Portal', style: AppTextStyles.h2.copyWith(fontWeight: FontWeight.bold)),
+                                Text('MediFlow HMS',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColors.primary,
+                                        fontWeight: FontWeight.bold)),
+                                Text('Patient Portal',
+                                    style: AppTextStyles.h2
+                                        .copyWith(fontWeight: FontWeight.bold)),
                               ],
                             ),
                           ],
                         ),
                         const SizedBox(height: 28),
-                        Text('Sign In to Your Account', style: AppTextStyles.h3),
+                        const Text('Sign In to Your Account',
+                            style: AppTextStyles.h3),
                         const SizedBox(height: 6),
                         Text(
                           'Enter your registered email and password to access your health portal.',
-                          style: AppTextStyles.bodySmall.copyWith(color: AppColors.textSecondary),
+                          style: AppTextStyles.bodySmall
+                              .copyWith(color: AppColors.textSecondary),
                         ),
                         const SizedBox(height: 24),
                         Obx(() {
@@ -147,14 +166,18 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                             decoration: BoxDecoration(
                               color: AppColors.error.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                              border: Border.all(
+                                  color: AppColors.error.withOpacity(0.3)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.error_outline, color: AppColors.error, size: 20),
+                                const Icon(Icons.error_outline,
+                                    color: AppColors.error, size: 20),
                                 const SizedBox(width: 10),
                                 Expanded(
-                                  child: Text(error, style: AppTextStyles.bodySmall.copyWith(color: AppColors.error)),
+                                  child: Text(error,
+                                      style: AppTextStyles.bodySmall
+                                          .copyWith(color: AppColors.error)),
                                 ),
                               ],
                             ),
@@ -167,8 +190,10 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                           keyboardType: TextInputType.emailAddress,
                           prefixIcon: const Icon(Icons.email_outlined),
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Email is required';
-                            if (!GetUtils.isEmail(v.trim())) return 'Enter a valid email address';
+                            if (v == null || v.trim().isEmpty)
+                              return 'Email is required';
+                            if (!GetUtils.isEmail(v.trim()))
+                              return 'Enter a valid email address';
                             return null;
                           },
                         ),
@@ -180,11 +205,15 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                           obscureText: _obscure,
                           prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
-                            icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                            onPressed: () => setState(() => _obscure = !_obscure),
+                            icon: Icon(_obscure
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined),
+                            onPressed: () =>
+                                setState(() => _obscure = !_obscure),
                           ),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Password is required';
+                            if (v == null || v.isEmpty)
+                              return 'Password is required';
                             return null;
                           },
                         ),
@@ -192,10 +221,13 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: TextButton(
-                            onPressed: () => Get.toNamed(AppRoutes.forgotPassword),
+                            onPressed: () =>
+                                Get.toNamed(AppRoutes.forgotPassword),
                             child: Text(
                               'Forgot Password?',
-                              style: AppTextStyles.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
+                              style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
@@ -210,7 +242,8 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Don't have an account? ", style: AppTextStyles.bodySmall),
+                            const Text("Don't have an account? ",
+                                style: AppTextStyles.bodySmall),
                             GestureDetector(
                               onTap: () => Get.toNamed(AppRoutes.patientSignUp),
                               child: Text(
@@ -229,7 +262,9 @@ class _PatientLoginViewState extends State<PatientLoginView> {
                         Center(
                           child: TextButton.icon(
                             onPressed: () => Get.offAllNamed(AppRoutes.login),
-                            icon: const Icon(Icons.admin_panel_settings_outlined, size: 18),
+                            icon: const Icon(
+                                Icons.admin_panel_settings_outlined,
+                                size: 18),
                             label: const Text('Staff & Admin Login'),
                             style: TextButton.styleFrom(
                               foregroundColor: AppColors.textSecondary,
@@ -263,7 +298,8 @@ class _PatientLoginViewState extends State<PatientLoginView> {
         Expanded(
           child: Text(
             text,
-            style: AppTextStyles.bodyMedium.copyWith(color: Colors.white, fontWeight: FontWeight.w500),
+            style: AppTextStyles.bodyMedium
+                .copyWith(color: Colors.white, fontWeight: FontWeight.w500),
           ),
         ),
       ],

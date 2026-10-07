@@ -46,10 +46,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
         title: const Text('Forgot Password'),
       ),
       body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Padding(
-            padding: const EdgeInsets.all(32),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width < 600 ? 20 : 32,
+            vertical: 24,
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 440),
             child: _sent
                 ? _SuccessPanel(email: _emailCtrl.text)
                 : _Form(

@@ -32,7 +32,8 @@ class BillingController extends GetxController {
 
   // Payment form state
   final RxDouble paymentAmount = 0.0.obs;
-  final RxString paymentMethod = 'CASH'.obs; // 'CASH' | 'POS' | 'BANK_TRANSFER' | 'ONLINE'
+  final RxString paymentMethod =
+      'CASH'.obs; // 'CASH' | 'POS' | 'BANK_TRANSFER' | 'ONLINE'
   final RxString transactionRef = ''.obs;
 
   final RxBool isLoading = false.obs;
@@ -82,7 +83,8 @@ class BillingController extends GetxController {
     _invSub = _billingRepo.streamAllInvoices().listen((list) {
       allInvoices.assignAll(list);
       pendingInvoices.assignAll(
-        list.where((i) => i.status == 'PENDING' || i.status == 'PARTIALLY_PAID'),
+        list.where(
+            (i) => i.status == 'PENDING' || i.status == 'PARTIALLY_PAID'),
       );
     });
   }
@@ -93,7 +95,9 @@ class BillingController extends GetxController {
     transactionRef.value = '';
 
     _paySub?.cancel();
-    _paySub = _billingRepo.streamInvoicePayments(invoice.invoiceId).listen((payments) {
+    _paySub = _billingRepo
+        .streamInvoicePayments(invoice.invoiceId)
+        .listen((payments) {
       selectedInvoicePayments.assignAll(payments);
     });
   }
@@ -111,7 +115,8 @@ class BillingController extends GetxController {
     }
 
     if (paymentAmount.value > inv.balance) {
-      errorMessage.value = 'Payment amount cannot exceed remaining balance of \$${inv.balance.toStringAsFixed(2)}.';
+      errorMessage.value =
+          'Payment amount cannot exceed remaining balance of \$${inv.balance.toStringAsFixed(2)}.';
       return false;
     }
 
@@ -148,11 +153,12 @@ class BillingController extends GetxController {
 
       // Notify patient
       if (_notificationRepo != null && inv.patientId.isNotEmpty) {
-        await _notificationRepo!.notify(
+        await _notificationRepo.notify(
           recipientId: inv.patientId,
           recipientType: 'patient',
           title: 'Payment Received',
-          body: 'Payment of \$${paymentAmount.value.toStringAsFixed(2)} via ${paymentMethod.value} was successfully processed.',
+          body:
+              'Payment of \$${paymentAmount.value.toStringAsFixed(2)} via ${paymentMethod.value} was successfully processed.',
           type: 'PAYMENT_RECEIVED',
           relatedId: inv.invoiceId,
         );

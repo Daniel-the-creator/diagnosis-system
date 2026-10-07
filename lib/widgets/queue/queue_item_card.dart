@@ -215,10 +215,12 @@ class QueueItemCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
                         children: [
                           QueueStatusChip(status: item.status),
-                          const SizedBox(width: 8),
                           Text(
                             AppUtils.waitingTime(item.createdAt),
                             style: AppTextStyles.bodySmall,

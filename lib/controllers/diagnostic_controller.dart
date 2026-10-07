@@ -23,8 +23,10 @@ class DiagnosticController extends GetxController {
   final NotificationRepository? _notificationRepo;
 
   final RxString selectedType = 'ALL'.obs; // 'ALL' | 'LAB' | 'XR' | 'SCAN'
-  final RxList<DiagnosticRequestModel> activeRequests = <DiagnosticRequestModel>[].obs;
-  final Rx<DiagnosticRequestModel?> currentRequest = Rx<DiagnosticRequestModel?>(null);
+  final RxList<DiagnosticRequestModel> activeRequests =
+      <DiagnosticRequestModel>[].obs;
+  final Rx<DiagnosticRequestModel?> currentRequest =
+      Rx<DiagnosticRequestModel?>(null);
 
   // Result entry form state
   final RxString findings = ''.obs;
@@ -56,7 +58,9 @@ class DiagnosticController extends GetxController {
 
   void _setupStream() {
     _reqSub?.cancel();
-    _reqSub = _diagnosticRepo.streamActiveRequestsByType(selectedType.value).listen((reqs) {
+    _reqSub = _diagnosticRepo
+        .streamActiveRequestsByType(selectedType.value)
+        .listen((reqs) {
       activeRequests.assignAll(reqs);
     });
   }
@@ -137,21 +141,23 @@ class DiagnosticController extends GetxController {
       // Send notifications
       if (_notificationRepo != null) {
         if (releaseToPatient.value && req.patientId.isNotEmpty) {
-          await _notificationRepo!.notify(
+          await _notificationRepo.notify(
             recipientId: req.patientId,
             recipientType: 'patient',
             title: 'Diagnostic Results Ready',
-            body: 'Your test results for "${req.testName}" are now available in your portal.',
+            body:
+                'Your test results for "${req.testName}" are now available in your portal.',
             type: 'RESULT_READY',
             relatedId: resultId,
           );
         }
         if (req.doctorId.isNotEmpty) {
-          await _notificationRepo!.notify(
+          await _notificationRepo.notify(
             recipientId: req.doctorId,
             recipientType: 'staff',
             title: 'Test Results Available',
-            body: 'Results for ${req.patientName} (${req.testName}) are ready for review.',
+            body:
+                'Results for ${req.patientName} (${req.testName}) are ready for review.',
             type: 'RESULT_READY',
             relatedId: req.visitId,
           );
